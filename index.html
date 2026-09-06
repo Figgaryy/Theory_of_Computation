@@ -1,0 +1,3442 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theory of Computation — สื่อการสอนฉบับสมบูรณ์</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root {
+  --bg: #f8fafc; --bg2: #f1f5f9; --bg3: #e2e8f0;
+  --text: #0f172a; --text2: #334155; --text3: #64748b;
+  --primary: #4f46e5; --primary-light: #e0e7ff; --primary-dark: #3730a3;
+  --accent: #0891b2; --accent-light: #cffafe;
+  --success: #059669; --success-light: #d1fae5;
+  --warning: #d97706; --warning-light: #fef3c7;
+  --danger: #dc2626; --danger-light: #fee2e2;
+  --card: #ffffff; --card-border: #e2e8f0;
+  --sidebar-bg: #1e293b; --sidebar-text: #e2e8f0;
+  --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+  --radius: 12px; --radius-sm: 8px;
+  --font: 'Noto Sans Thai', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --transition: .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] {
+  --bg: #0f172a; --bg2: #1e293b; --bg3: #334155;
+  --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+  --primary: #818cf8; --primary-light: #1e1b4b; --primary-dark: #a5b4fc;
+  --accent: #22d3ee; --accent-light: #164e63;
+  --success: #34d399; --success-light: #064e3b;
+  --warning: #fbbf24; --warning-light: #78350f;
+  --danger: #f87171; --danger-light: #7f1d1d;
+  --card: #1e293b; --card-border: #334155;
+  --sidebar-bg: #0f172a; --sidebar-text: #e2e8f0;
+  --shadow: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.3);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f172a; --bg2: #1e293b; --bg3: #334155;
+    --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+    --primary: #818cf8; --primary-light: #1e1b4b; --primary-dark: #a5b4fc;
+    --accent: #22d3ee; --accent-light: #164e63;
+    --success: #34d399; --success-light: #064e3b;
+    --warning: #fbbf24; --warning-light: #78350f;
+    --danger: #f87171; --danger-light: #7f1d1d;
+    --card: #1e293b; --card-border: #334155;
+    --sidebar-bg: #0f172a; --sidebar-text: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,.3);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,.3);
+  }
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font); background: var(--bg); color: var(--text);
+  line-height: 1.7; overflow: hidden; height: 100vh;
+}
+/* ===== PROGRESS BAR ===== */
+#progress-bar {
+  position: fixed; top:0; left:0; height:4px; background: linear-gradient(90deg, var(--primary), var(--accent));
+  z-index:1000; transition: width var(--transition);
+}
+/* ===== TOP NAV ===== */
+#topnav {
+  position:fixed; top:4px; left:0; right:0; height:52px;
+  background: var(--card); border-bottom:1px solid var(--card-border);
+  display:flex; align-items:center; padding:0 16px; z-index:99;
+  box-shadow: var(--shadow); gap:12px;
+}
+#topnav .logo { font-weight:700; font-size:15px; color:var(--primary); white-space:nowrap; }
+#topnav .slide-info { font-size:13px; color:var(--text3); margin-left:auto; white-space:nowrap; }
+.nav-btn {
+  border:none; background:var(--bg2); color:var(--text2); border-radius:var(--radius-sm);
+  padding:6px 14px; font-size:13px; cursor:pointer; font-family:var(--font);
+  transition: all var(--transition); display:flex; align-items:center; gap:4px;
+}
+.nav-btn:hover { background:var(--primary); color:#fff; }
+.nav-btn:disabled { opacity:.4; cursor:not-allowed; }
+#search-box {
+  border:1px solid var(--card-border); border-radius:var(--radius-sm);
+  padding:5px 10px; font-size:13px; background:var(--bg2); color:var(--text);
+  width:180px; font-family:var(--font); outline:none; transition: all var(--transition);
+}
+#search-box:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
+#theme-toggle {
+  border:none; background:none; font-size:20px; cursor:pointer; padding:4px;
+  transition: transform .3s;
+}
+#theme-toggle:hover { transform:rotate(30deg); }
+#toc-toggle {
+  border:none; background:var(--bg2); color:var(--text2); border-radius:var(--radius-sm);
+  padding:6px 10px; cursor:pointer; font-size:16px; transition: all var(--transition);
+}
+#toc-toggle:hover { background:var(--primary); color:#fff; }
+/* ===== SIDEBAR TOC ===== */
+#sidebar {
+  position:fixed; top:56px; left:0; bottom:0; width:320px;
+  background:var(--sidebar-bg); color:var(--sidebar-text);
+  transform:translateX(-100%); transition:transform var(--transition);
+  z-index:98; overflow-y:auto; padding:16px 0;
+  scrollbar-width:thin; scrollbar-color: var(--text3) transparent;
+}
+#sidebar.open { transform:translateX(0); }
+#sidebar h3 { padding:8px 20px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--text3); }
+.toc-chapter {
+  padding:8px 20px; font-size:14px; font-weight:600; color:var(--accent);
+  cursor:pointer; border-left:3px solid transparent;
+}
+.toc-item {
+  padding:6px 20px 6px 36px; font-size:13px; cursor:pointer;
+  color:var(--sidebar-text); opacity:.8; border-left:3px solid transparent;
+  transition: all .15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.toc-item:hover { opacity:1; background:rgba(255,255,255,.05); }
+.toc-item.active { opacity:1; border-left-color:var(--primary); color:var(--primary-dark); background:rgba(255,255,255,.08); }
+/* ===== MAIN CONTENT ===== */
+#main {
+  position:fixed; top:56px; left:0; right:0; bottom:0;
+  overflow-y:auto; scroll-behavior:smooth;
+  padding: 0; transition: left var(--transition);
+}
+#main.sidebar-open { left:320px; }
+.slide {
+  min-height:calc(100vh - 56px); padding:40px 5%; display:none;
+  max-width:960px; margin:0 auto;
+  animation: fadeIn .35s ease;
+}
+.slide.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+/* ===== TYPOGRAPHY ===== */
+.slide h1 {
+  font-size:clamp(24px,4vw,34px); font-weight:700; margin-bottom:8px;
+  background:linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.slide h2 {
+  font-size:clamp(20px,3vw,26px); font-weight:700; margin:28px 0 12px;
+  color:var(--primary); border-bottom:2px solid var(--primary-light); padding-bottom:6px;
+}
+.slide h3 { font-size:18px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+.slide p { margin:10px 0; color:var(--text2); }
+.slide ul, .slide ol { margin:8px 0 8px 24px; color:var(--text2); }
+.slide li { margin:4px 0; }
+.slide code {
+  font-family:var(--mono); background:var(--bg2); padding:2px 6px;
+  border-radius:4px; font-size:13px; color:var(--accent);
+}
+/* ===== SPECIAL BOXES ===== */
+.def-box, .thm-box, .tip-box, .warn-box, .example-box, .proof-box {
+  border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  border-left:4px solid; position:relative;
+}
+.def-box { background:var(--primary-light); border-color:var(--primary); }
+.def-box::before { content:'📖 นิยาม (Definition)'; font-weight:700; font-size:13px; color:var(--primary); display:block; margin-bottom:6px; }
+.thm-box { background:var(--accent-light); border-color:var(--accent); }
+.thm-box::before { content:'🏛️ ทฤษฎีบท (Theorem)'; font-weight:700; font-size:13px; color:var(--accent); display:block; margin-bottom:6px; }
+.tip-box { background:var(--success-light); border-color:var(--success); }
+.tip-box::before { content:'💡 เทคนิคจากห้องเรียน'; font-weight:700; font-size:13px; color:var(--success); display:block; margin-bottom:6px; }
+.warn-box { background:var(--warning-light); border-color:var(--warning); }
+.warn-box::before { content:'⚠️ จุดที่ผิดบ่อย (Common Mistake)'; font-weight:700; font-size:13px; color:var(--warning); display:block; margin-bottom:6px; }
+.example-box { background:var(--bg2); border-color:var(--text3); }
+.example-box::before { content:'✏️ ตัวอย่าง (Example)'; font-weight:700; font-size:13px; color:var(--text3); display:block; margin-bottom:6px; }
+.proof-box { background:var(--bg2); border-color:var(--primary); }
+.proof-box::before { content:'📝 การพิสูจน์ (Proof)'; font-weight:700; font-size:13px; color:var(--primary); display:block; margin-bottom:6px; }
+.exam-badge {
+  display:inline-block; background:var(--danger); color:#fff; font-size:11px;
+  padding:2px 8px; border-radius:10px; font-weight:600; margin-left:6px; vertical-align:middle;
+}
+/* ===== SOLUTION TOGGLE ===== */
+.solution-toggle {
+  background:var(--primary); color:#fff; border:none; border-radius:var(--radius-sm);
+  padding:8px 18px; font-size:14px; cursor:pointer; font-family:var(--font);
+  font-weight:500; margin:10px 0; transition: all var(--transition);
+}
+.solution-toggle:hover { background:var(--primary-dark); transform:translateY(-1px); }
+.solution-content {
+  display:none; background:var(--bg2); border-radius:var(--radius);
+  padding:18px; margin:8px 0; border:1px dashed var(--primary);
+  animation: fadeIn .3s ease;
+}
+.solution-content.show { display:block; }
+/* ===== QUIZ ===== */
+.quiz-q { margin:16px 0; padding:16px; background:var(--card); border-radius:var(--radius); border:1px solid var(--card-border); }
+.quiz-q p.q-text { font-weight:600; color:var(--text); margin-bottom:10px; }
+.quiz-option {
+  display:block; padding:10px 16px; margin:4px 0; border-radius:var(--radius-sm);
+  border:2px solid var(--card-border); cursor:pointer; transition: all .15s;
+  font-size:14px; color:var(--text2); background:var(--bg);
+}
+.quiz-option:hover { border-color:var(--primary); background:var(--primary-light); }
+.quiz-option.selected { border-color:var(--primary); background:var(--primary-light); font-weight:500; }
+.quiz-option.correct { border-color:var(--success); background:var(--success-light); }
+.quiz-option.wrong { border-color:var(--danger); background:var(--danger-light); }
+.quiz-explain { display:none; margin-top:8px; padding:10px; background:var(--bg2); border-radius:var(--radius-sm); font-size:13px; color:var(--text2); }
+.quiz-explain.show { display:block; }
+.quiz-check-btn {
+  background:var(--success); color:#fff; border:none; border-radius:var(--radius-sm);
+  padding:8px 20px; margin-top:8px; cursor:pointer; font-family:var(--font); font-weight:500;
+  transition: all var(--transition);
+}
+.quiz-check-btn:hover { opacity:.9; }
+/* ===== KATEX ===== */
+.katex-display { margin:12px 0; overflow-x:auto; }
+.katex { font-size:1.05em; }
+/* ===== CHAPTER COVER ===== */
+.chapter-cover {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:calc(100vh - 120px); text-align:center;
+}
+.chapter-cover .ch-num {
+  font-size:80px; font-weight:800; line-height:1;
+  background:linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.chapter-cover h1 { font-size:clamp(28px,5vw,42px); margin:12px 0; }
+.chapter-cover .ch-topics { list-style:none; margin:20px 0; padding:0; }
+.chapter-cover .ch-topics li {
+  padding:8px 20px; margin:4px 0; background:var(--bg2); border-radius:var(--radius-sm);
+  font-size:15px; color:var(--text2); display:inline-block;
+}
+/* ===== TABLE ===== */
+.slide table {
+  width:100%; border-collapse:collapse; margin:12px 0; font-size:14px;
+}
+.slide th { background:var(--primary); color:#fff; padding:10px 12px; text-align:left; font-weight:600; }
+.slide td { padding:8px 12px; border-bottom:1px solid var(--card-border); }
+.slide tr:hover td { background:var(--bg2); }
+/* ===== SEARCH RESULTS ===== */
+#search-results {
+  position:fixed; top:56px; left:50%; transform:translateX(-50%);
+  background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
+  box-shadow:var(--shadow-lg); max-height:60vh; overflow-y:auto; width:90%; max-width:500px;
+  z-index:100; display:none; padding:8px;
+}
+#search-results.show { display:block; }
+.search-item {
+  padding:10px 12px; border-radius:var(--radius-sm); cursor:pointer;
+  font-size:14px; color:var(--text2); transition: background .15s;
+}
+.search-item:hover { background:var(--bg2); }
+.search-item .match { background:var(--warning-light); padding:1px 3px; border-radius:3px; }
+/* ===== SVG DIAGRAMS ===== */
+.diagram-container {
+  margin:16px 0; padding:16px; background:var(--bg2); border-radius:var(--radius);
+  overflow-x:auto; text-align:center;
+}
+.diagram-container svg { max-width:100%; height:auto; }
+.diagram-container svg text { fill:var(--text); font-family:var(--font); }
+.diagram-container svg .state { fill:var(--bg); stroke:var(--primary); stroke-width:2; }
+.diagram-container svg .final-state { fill:var(--bg); stroke:var(--primary); stroke-width:2; }
+.diagram-container svg .arrow { stroke:var(--text2); fill:none; stroke-width:1.5; marker-end:url(#arrowhead); }
+.diagram-container svg .label { font-size:13px; fill:var(--text); }
+/* ===== STEP BY STEP ===== */
+.step-container { margin:12px 0; }
+.step {
+  display:flex; gap:12px; padding:10px 0; border-bottom:1px dashed var(--card-border);
+  align-items:flex-start;
+}
+.step-num {
+  background:var(--primary); color:#fff; width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;
+  flex-shrink:0;
+}
+.step-content { flex:1; }
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px) {
+  #sidebar { width:280px; }
+  .slide { padding:24px 4%; }
+  #search-box { width:120px; }
+  #topnav .logo { display:none; }
+}
+@media (max-width:480px) {
+  .slide { padding:20px 3%; }
+  .nav-btn span { display:none; }
+}
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--text3); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar" style="width:0%"></div>
+
+<!-- Top Navigation -->
+<nav id="topnav">
+  <button id="toc-toggle" onclick="toggleSidebar()" title="สารบัญ">☰</button>
+  <span class="logo">📚 Theory of Computation</span>
+  <input type="text" id="search-box" placeholder="🔍 ค้นหา..." oninput="doSearch(this.value)" onfocus="doSearch(this.value)" />
+  <button class="nav-btn" id="btn-prev" onclick="prevSlide()">◀ <span>ก่อนหน้า</span></button>
+  <span class="slide-info" id="slide-info">1 / 76</span>
+  <button class="nav-btn" id="btn-next" onclick="nextSlide()"><span>ถัดไป</span> ▶</button>
+  <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+</nav>
+
+<!-- Search Results -->
+<div id="search-results"></div>
+
+<!-- Sidebar TOC -->
+<aside id="sidebar">
+  <h3>📑 สารบัญ</h3>
+  <div id="toc-list"></div>
+</aside>
+
+<!-- Main Content Area -->
+<div id="main">
+
+<!-- ============================================================ -->
+<!-- CHAPTER 1: SETS, RELATIONS AND LANGUAGES                      -->
+<!-- ============================================================ -->
+
+<!-- Slide 1: Chapter 1 Cover -->
+<section class="slide" data-chapter="1" data-title="บทที่ 1: เซต ความสัมพันธ์ และภาษา">
+<div class="chapter-cover">
+  <div class="ch-num">01</div>
+  <h1>Sets, Relations and Languages</h1>
+  <p style="font-size:18px;color:var(--text3);">เซต ความสัมพันธ์ และภาษา</p>
+  <ul class="ch-topics">
+    <li>🔹 เซต (Sets)</li>
+    <li>🔹 การดำเนินการเซต (Set Operations)</li>
+    <li>🔹 ความสัมพันธ์และฟังก์ชัน (Relations & Functions)</li>
+    <li>🔹 เซตจำกัดและอนันต์ (Finite & Infinite Sets)</li>
+    <li>🔹 เทคนิคการพิสูจน์ (Proof Techniques)</li>
+    <li>🔹 ตัวอักษรและภาษา (Alphabet & Languages)</li>
+  </ul>
+</div>
+</section>
+
+<!-- Slide 2: Sets — Definition -->
+<section class="slide" data-chapter="1" data-title="เซต — นิยามและตัวอย่าง">
+<h1>เซต (Sets) — นิยามและตัวอย่าง <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>เซต (Set)</strong> คือ กลุ่มของวัตถุ (collection of <em>distinct</em> objects) ที่ไม่ซ้ำกัน<br>
+วัตถุแต่ละชิ้นในเซตเรียกว่า <strong>สมาชิก (element / member)</strong><br>
+ถ้า \(b\) เป็นสมาชิกของเซต \(L\) เขียนว่า \(b \in L\)
+</div>
+
+<h2>ตัวอย่างเซตที่สำคัญ</h2>
+<table>
+<tr><th>สัญลักษณ์</th><th>ชื่อ</th><th>ความหมาย</th></tr>
+<tr><td>\(\mathbb{Z}\)</td><td>Integers (จำนวนเต็ม)</td><td>\(\{...,-2,-1,0,1,2,...\}\)</td></tr>
+<tr><td>\(\mathbb{N}\)</td><td>Natural Numbers (จำนวนธรรมชาติ)</td><td>\(\{0, 1, 2, 3, ...\}\) (non-negative integers)</td></tr>
+<tr><td>\(\mathbb{B}\)</td><td>Truth Values (ค่าความจริง)</td><td>\(\{T, F\}\)</td></tr>
+<tr><td>\(\mathbb{R}\)</td><td>Real Numbers (จำนวนจริง)</td><td>จำนวนจริงทั้งหมด</td></tr>
+</table>
+
+<h2>วิธีแสดงเซต (2 วิธี)</h2>
+<h3>1. การแจกแจงสมาชิก (Explicit Listing)</h3>
+<p>เขียนสมาชิกทั้งหมดในวงเล็บปีกกา: \(\mathbb{B} = \{T, F\}\)</p>
+
+<h3>2. การระบุคุณสมบัติ (Set-Builder Notation)</h3>
+<p>ระบุเงื่อนไขที่สมาชิกต้องเป็น:</p>
+<p>\(\{x \mid x \in \mathbb{Z} \text{ and } x \bmod 2 = 0\}\) = เซตของจำนวนเต็มคู่</p>
+<p>เขียนแบบย่อได้: \(\{x \in \mathbb{Z} \mid x \bmod 2 = 0\}\)</p>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> สัญลักษณ์ \(\mid\) อ่านว่า "such that" (ซึ่ง) — หมายความว่า "โดยที่" เป็นตัวคั่นระหว่างตัวแปรกับเงื่อนไข
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบถามบ่อย:</strong> \(\emptyset \neq \{\emptyset\}\) — เซตว่างไม่เท่ากับเซตที่มีเซตว่างเป็นสมาชิก!<br>
+• \(\emptyset\) มี 0 สมาชิก<br>
+• \(\{\emptyset\}\) มี 1 สมาชิก (สมาชิกตัวนั้นคือ \(\emptyset\))
+</div>
+</section>
+
+<!-- Slide 3: Set Equality, Empty Set, Finite/Infinite -->
+<section class="slide" data-chapter="1" data-title="ความเท่ากัน, เซตว่าง, จำกัด/อนันต์">
+<h1>ความเท่ากันของเซต, เซตว่าง, เซตจำกัด/อนันต์</h1>
+
+<h2>ความเท่ากันของเซต (Set Equality)</h2>
+<div class="def-box">
+เซตสองเซต \(X\) และ \(Y\) <strong>เท่ากัน</strong> ก็ต่อเมื่อมีสมาชิกเหมือนกัน:<br>
+\(X = Y\) iff สำหรับทุก \(x \in X\) จะได้ \(x \in Y\), และสำหรับทุก \(x \in Y\) จะได้ \(x \in X\)
+</div>
+
+<h2>เซตว่าง (Empty Set) \(\emptyset\)</h2>
+<p>เซตที่ไม่มีสมาชิกเลย เขียนแทนด้วย \(\emptyset\) หรือ \(\{\}\)</p>
+
+<h2>เซตจำกัด vs อนันต์ (Finite vs Infinite)</h2>
+<ul>
+<li><strong>เซตจำกัด (Finite):</strong> มีสมาชิกจำนวนจำกัด — เช่น \(\{1,2,3\}\) — สามารถหา bijection กับ \(\{1,2,...,n\}\) ได้</li>
+<li><strong>เซตอนันต์ (Infinite):</strong> มีสมาชิกจำนวนไม่จำกัด แบ่งเป็น:
+  <ul>
+    <li><strong>Countably infinite (นับได้อนันต์):</strong> จับคู่ 1-1 กับ \(\mathbb{N}\) ได้ เช่น \(\mathbb{N}, \mathbb{Z}\)</li>
+    <li><strong>Uncountably infinite (นับไม่ได้อนันต์):</strong> จับคู่ 1-1 กับ \(\mathbb{N}\) ไม่ได้ เช่น \([0,1], \mathbb{R}\)</li>
+  </ul>
+</li>
+</ul>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> "finite" = มีจำนวนแน่นอน (exact number), "infinite" = ไม่มีจำนวนแน่นอน (inexact number) — คิดง่ายๆ ว่า finite คือนับหมดได้ infinite คือนับไม่หมด
+</div>
+</section>
+
+<!-- Slide 4: Subset -->
+<section class="slide" data-chapter="1" data-title="เซตย่อย (Subset)">
+<h1>เซตย่อย (Subset) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>เซตย่อย (Subset):</strong> \(X \subseteq Y\) iff ทุก \(x \in X\) จะได้ \(x \in Y\)<br>
+<em>— แปลไทย: X เป็นเซตย่อยของ Y ถ้าสมาชิกทุกตัวใน X อยู่ใน Y ด้วย</em>
+</div>
+
+<div class="def-box">
+<strong>เซตย่อยแท้ (Proper Subset):</strong> \(X \subsetneq Y\) iff \(X \subseteq Y\) and \(X \neq Y\)<br>
+<em>— แปลไทย: X เป็นส่วนหนึ่งของ Y แต่ไม่ใช่ Y ทั้งหมด</em>
+</div>
+
+<h3>ตัวอย่าง</h3>
+<p>\(\mathbb{N} \subsetneq \mathbb{Z}\) — จำนวนธรรมชาติเป็น proper subset ของจำนวนเต็ม (เพราะ \(\mathbb{Z}\) มีจำนวนลบด้วย)</p>
+
+<h2>ข้อเท็จจริงพื้นฐาน (ใช้บ่อยมากในข้อสอบ)</h2>
+<ol>
+<li>\(\emptyset \subseteq A\) สำหรับทุกเซต \(A\) — เซตว่างเป็นเซตย่อยของทุกเซต</li>
+<li>\(A \subseteq A\) สำหรับทุกเซต \(A\) — ทุกเซตเป็นเซตย่อยของตัวเอง</li>
+<li>ถ้า \(A \subseteq B\) และ \(B \subseteq A\) แล้ว \(A = B\) — ใช้พิสูจน์ความเท่ากันของเซต!</li>
+</ol>
+
+<div class="warn-box">
+<strong>ข้อสอบถามบ่อย:</strong> "\(S \subseteq 2^S\) สำหรับทุกเซต \(S\)?" — คำตอบคือ <strong>False!</strong><br>
+ตัวอย่าง: \(S = \{a\}\), \(2^S = \{\emptyset, \{a\}\}\). แต่ \(a \in S\) ไม่จำเป็นว่า \(a \in 2^S\) (เพราะ \(a\) ไม่ใช่เซต)
+</div>
+
+<div class="example-box">
+<strong>Proper Subset นับจำนวน:</strong> ถ้า \(A = \{a,b\}\) มีกี่ proper subset?<br>
+Subsets ทั้งหมด: \(\emptyset, \{a\}, \{b\}, \{a,b\}\) = 4 ชุด<br>
+Proper subsets (ไม่นับตัว \(A\) เอง): \(\emptyset, \{a\}, \{b\}\) = <strong>3 ชุด</strong><br>
+<em>สูตร: จำนวน proper subsets = \(2^{|A|} - 1\)</em>
+</div>
+</section>
+
+<!-- Slide 5: Set Operations -->
+<section class="slide" data-chapter="1" data-title="การดำเนินการเซต — Union, Intersection, Difference">
+<h1>การดำเนินการเซต <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>Union (ยูเนียน — หรือ)</h2>
+<div class="def-box">
+\(A \cup B = \{x \mid x \in A \lor x \in B\}\)<br>
+<em>สมาชิกที่อยู่ใน A <strong>หรือ</strong> B (อย่างน้อยหนึ่งเซต)</em>
+</div>
+
+<h2>Intersection (อินเตอร์เซกชัน — และ)</h2>
+<div class="def-box">
+\(A \cap B = \{x \mid x \in A \land x \in B\}\)<br>
+<em>สมาชิกที่อยู่<strong>ทั้ง</strong>ใน A <strong>และ</strong> B</em>
+</div>
+
+<h2>Set Difference (ผลต่าง — แต่ไม่)</h2>
+<div class="def-box">
+\(A \setminus B = \{x \mid x \in A \land x \notin B\}\)<br>
+<em>สมาชิกที่อยู่ใน A <strong>แต่ไม่</strong>อยู่ใน B</em>
+</div>
+
+<h2>Disjoint (ไม่มีสมาชิกร่วม)</h2>
+<p>เซต A, B เป็น <strong>disjoint</strong> ก็ต่อเมื่อ \(A \cap B = \emptyset\)</p>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong><br>
+• \(\cup\) = OR (มาจากตัว V = vel ภาษาละติน แปลว่า "หรือ")<br>
+• \(\cap\) = AND (พลิกกลับจาก ∪)<br>
+• \(A \setminus B\) = "A but not B"
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> \(\{a, b, \{a,b\}\} - \{\{a\}\} = ?\)<br>
+คำตอบ: \(\{a, b, \{a,b\}\}\) (ไม่เปลี่ยน!) เพราะ \(\{a\}\) ไม่ใช่สมาชิกของเซตซ้าย — สมาชิกคือ \(a\), \(b\), \(\{a,b\}\) ไม่มี \(\{a\}\)
+</div>
+</section>
+
+<!-- Slide 6: Laws of Set Operations (Part 1) -->
+<section class="slide" data-chapter="1" data-title="กฎของเซต — Idempotency, Commutativity, Associativity">
+<h1>กฎของการดำเนินการเซต (ชุดที่ 1)</h1>
+
+<h2>Idempotency (กฎเท่ากัน)</h2>
+<p>\(A \cup A = A\) และ \(A \cap A = A\)</p>
+<p><em>— "idempotent" มาจากภาษาละติน: idem (เหมือน) + potens (กำลัง) = ทำซ้ำกี่ทีก็เหมือนเดิม</em></p>
+
+<h2>Commutativity (กฎสลับที่)</h2>
+<p>\(A \cup B = B \cup A\) และ \(A \cap B = B \cap A\)</p>
+<p><em>— "commute" = เดินทาง/สลับ — สลับซ้ายขวาได้</em></p>
+
+<h2>Associativity (กฎเปลี่ยนกลุ่ม)</h2>
+<p>\((A \cup B) \cup C = A \cup (B \cup C)\)</p>
+<p>\((A \cap B) \cap C = A \cap (B \cap C)\)</p>
+<p><em>— "associate" = รวมกลุ่ม — จะจับกลุ่มคู่ไหนก่อนก็ได้ผลเหมือนกัน</em></p>
+
+<p>เพราะ Associativity ทำให้เราเขียน General Union/Intersection ได้:</p>
+<p>\(\bigcup\{A_1, A_2, A_3, ...\} = A_1 \cup A_2 \cup A_3 \cup ...\)</p>
+<p>\(\bigcap\{A_1, A_2, A_3, ...\} = A_1 \cap A_2 \cap A_3 \cap ...\)</p>
+
+<div class="tip-box">
+อาจารย์เน้น: กฎเหล่านี้หน้าตาคล้ายกับกฎของ + และ × ในเลขคณิต แต่มีข้อแตกต่างบางอย่าง (เช่น ∩ distribute over ∪ ก็ได้ ซึ่ง × distribute over + ได้ แต่ + ไม่ distribute over × ในเลขคณิต)
+</div>
+</section>
+
+<!-- Slide 7: Laws of Set Operations (Part 2) -->
+<section class="slide" data-chapter="1" data-title="กฎของเซต — Complement, Absorption, Distributivity, DeMorgan">
+<h1>กฎของการดำเนินการเซต (ชุดที่ 2) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>Complement (ส่วนเติมเต็ม)</h2>
+<p>ถ้ามีเซตใหญ่ \(U\) ที่ทั้ง \(A, B \subseteq U\) ให้ \(\overline{A} = U \setminus A\)</p>
+<ul>
+<li>\(A \setminus B = A \cap \overline{B}\)</li>
+<li>\(\overline{A \cap B} = \overline{A} \cup \overline{B}\) (DeMorgan)</li>
+<li>\(\overline{A \cup B} = \overline{A} \cap \overline{B}\) (DeMorgan)</li>
+</ul>
+
+<h2>Absorption Law (กฎดูดซับ)</h2>
+<p>\(A \cup (A \cap B) = A\) — ตัวเล็กถูกดูดซับโดยตัวใหญ่</p>
+<p>\(A \cap (A \cup B) = A\)</p>
+
+<h2>Distributivity Law (กฎแจกแจง)</h2>
+<p>\(A \cup (B \cap C) = (A \cup B) \cap (A \cup C)\)</p>
+<p>\(A \cap (B \cup C) = (A \cap B) \cup (A \cap C)\)</p>
+
+<h2>DeMorgan's Laws (กฎเดอมอร์แกน) ⭐</h2>
+<p>\(A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)\) — "ลบ union = ตัดกัน ของลบแต่ละตัว"</p>
+<p>\(A \setminus (B \cap C) = (A \setminus B) \cup (A \setminus C)\) — "ลบ intersection = รวมกัน ของลบแต่ละตัว"</p>
+
+<div class="tip-box">
+<strong>เทคนิคจำ DeMorgan:</strong> "สลับเครื่องหมาย!" — เมื่อ complement/ลบเข้าไปในวงเล็บ ∪ กลายเป็น ∩ และ ∩ กลายเป็น ∪ เสมอ
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> \(A - (B \cup C) = (A - B) \cap (A - C)\) — True ✓<br>
+แต่ \(A - (B \cup C) = (A - B) - C\) — ก็ True ✓ เช่นกัน! (Practice 2, Q1c)
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ:</strong> จงหาค่าของ \((\overline{A} \cup B) \cap (\overline{A} \cap (B \cup A))\)<br>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+พิจารณา \(\overline{A} \cap (B \cup A) = (\overline{A} \cap B) \cup (\overline{A} \cap A)\) (Distributivity)
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+\(\overline{A} \cap A = \emptyset\) ดังนั้น \(= (\overline{A} \cap B) \cup \emptyset = \overline{A} \cap B\)
+</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">
+ตอนนี้เหลือ \((\overline{A} \cup B) \cap (\overline{A} \cap B)\)
+</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">
+ใช้ Absorption: \((\overline{A} \cup B) \cap (\overline{A} \cap B) = \overline{A} \cap B\) ✓
+</div></div>
+</div>
+<p><strong>คำตอบ: \(\overline{A} \cap B\)</strong></p>
+</div>
+</div>
+</section>
+
+<!-- Slide 8: Proof of Distributivity & DeMorgan -->
+<section class="slide" data-chapter="1" data-title="การพิสูจน์ Distributivity และ DeMorgan">
+<h1>การพิสูจน์กฎเซต <span class="exam-badge">ออกสอบเป็นข้อพิสูจน์</span></h1>
+
+<h2>วิธีพิสูจน์ว่า A = B (สำหรับเซต)</h2>
+<div class="tip-box">
+พิสูจน์สองทาง: แสดงว่า \(A \subseteq B\) <strong>และ</strong> \(B \subseteq A\)<br>
+(จากห้องเรียน: ใช้ Venn's Diagram ช่วยวางแนวคิดก่อนเขียน proof)
+</div>
+
+<h2>ตัวอย่าง: พิสูจน์ \(A \cup (B \cap C) = (A \cup B) \cap (A \cup C)\)</h2>
+<div class="proof-box">
+<strong>ส่วนที่ 1: \(A \cup (B \cap C) \subseteq (A \cup B) \cap (A \cup C)\)</strong><br><br>
+สมมติ \(x \in A \cup (B \cap C)\) มี 2 กรณี:<br>
+<strong>กรณี 1:</strong> \(x \in A\)<br>
+→ \(x \in A \cup B\) (เพราะ \(x \in A\)) และ \(x \in A \cup C\) (เพราะ \(x \in A\))<br>
+→ \(x \in (A \cup B) \cap (A \cup C)\) ✓<br><br>
+<strong>กรณี 2:</strong> \(x \in B \cap C\)<br>
+→ \(x \in B\) และ \(x \in C\)<br>
+→ \(x \in A \cup B\) (เพราะ \(x \in B\)) และ \(x \in A \cup C\) (เพราะ \(x \in C\))<br>
+→ \(x \in (A \cup B) \cap (A \cup C)\) ✓<br><br>
+
+<strong>ส่วนที่ 2: \((A \cup B) \cap (A \cup C) \subseteq A \cup (B \cap C)\)</strong><br><br>
+สมมติ \(x \in (A \cup B) \cap (A \cup C)\)<br>
+→ \(x \in A \cup B\) และ \(x \in A \cup C\)<br>
+→ (\(x \in A\) or \(x \in B\)) and (\(x \in A\) or \(x \in C\))<br><br>
+<strong>กรณี 1:</strong> \(x \in A\) → \(x \in A \cup (B \cap C)\) ✓<br>
+<strong>กรณี 2:</strong> \(x \notin A\) → ต้อง \(x \in B\) และ \(x \in C\) → \(x \in B \cap C\) → \(x \in A \cup (B \cap C)\) ✓
+</div>
+
+<h2>ตัวอย่าง: พิสูจน์ \(A \cap B = A \setminus \overline{B}\) (ข้อสอบ Practice 4)</h2>
+<div class="proof-box">
+<strong>ทิศทาง ⊆:</strong> ถ้า \(x \in A \cap B\) → \(x \in A\) และ \(x \in B\) → \(x \notin \overline{B}\) → \(x \in A \setminus \overline{B}\) ✓<br><br>
+<strong>ทิศทาง ⊇:</strong> ถ้า \(x \in A \setminus \overline{B}\) → \(x \in A\) และ \(x \notin \overline{B}\) → \(x \in A\) และ \(x \in B\) → \(x \in A \cap B\) ✓
+</div>
+</section>
+
+<!-- Slide 9: General Union, Power Set, Partition -->
+<section class="slide" data-chapter="1" data-title="General Union, Power Set, Partition">
+<h1>General Union, Power Set, Partition <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>General Union \(\bigcup S\)</h2>
+<p>ถ้า \(S\) เป็นกลุ่มของเซต แล้ว \(\bigcup S\) = เซตที่ประกอบด้วยสมาชิกทั้งหมดจากทุกเซตใน \(S\)</p>
+<div class="example-box">
+\(S = \{\{a,b\}, \{c\}, \{a,d\}\}\) → \(\bigcup S = \{a,b,c,d\}\)<br>
+\(S = \{\{a,b\}, \{c\}, \{a,\{d,a\}\}\}\) → \(\bigcup S = \{a,b,c,\{d,a\}\}\)
+<p><em>สังเกต: \(\{d,a\}\) ยังคงเป็น "สมาชิกตัวหนึ่ง" ไม่ถูกแกะออก</em></p>
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> สำหรับทุกเซต \(L\), \(\bigcup 2^L = L\) — <strong>True</strong> ✓<br>
+เพราะ Power set ของ \(L\) มี subset ทุกตัว รวม \(\bigcup\) กลับมาก็ได้ \(L\) เดิม
+</div>
+
+<h2>Power Set (เซตกำลัง) \(2^S\)</h2>
+<div class="def-box">
+\(2^S\) = เซตของ<strong>ทุก subset</strong> ของ \(S\) (รวม \(\emptyset\) และ \(S\) เอง)
+</div>
+
+<div class="example-box">
+\(S = \{a\}\) → \(2^S = \{\emptyset, \{a\}\}\) (มี \(2^1 = 2\) สมาชิก)<br>
+\(S = \{a,b\}\) → \(2^S = \{\emptyset, \{a\}, \{b\}, \{a,b\}\}\) (มี \(2^2 = 4\) สมาชิก)<br>
+<strong>สูตร: \(|2^S| = 2^{|S|}\)</strong>
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> \(2^\emptyset = \emptyset\)? — <strong>False!</strong> \(2^\emptyset = \{\emptyset\}\) (มี 1 สมาชิกคือเซตว่าง)<br>
+<strong>ข้อสอบ:</strong> \(2^{A \cup B} = 2^A \cup 2^B\)? — <strong>False!</strong> เพราะ \(2^{A \cup B}\) มี \(A \cup B\) เป็นสมาชิก แต่ \(2^A \cup 2^B\) อาจไม่มี
+</div>
+
+<h2>Partition (พาร์ทิชัน)</h2>
+<div class="def-box">
+พาร์ทิชันของเซต \(S\) คือเซต \(\Pi\) ของ subsets ของ \(S\) โดยที่:<br>
+1. แต่ละสมาชิกของ \(\Pi\) ไม่เป็นเซตว่าง<br>
+2. สมาชิกต่างตัวของ \(\Pi\) เป็น disjoint (ไม่มีสมาชิกร่วม)<br>
+3. \(\bigcup \Pi = S\) (รวมกันครบ \(S\))
+</div>
+
+<div class="example-box">
+\(S = \{a,b,c\}\)<br>
+✅ \(\Pi = \{\{a\}, \{b,c\}\}\) — partition ✓<br>
+❌ \(A = \{\{a\}, \{a,b\}, \{c\}\}\) — ไม่ใช่ เพราะ \(\{a\}\) กับ \(\{a,b\}\) ไม่ disjoint<br>
+❌ \(B = \{\{a\}, \{b,c\}, \emptyset\}\) — ไม่ใช่ เพราะมี \(\emptyset\)
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ: \(A = \{a,b,c\}\) มีกี่ partition?</strong><br>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+\(\Pi_1 = \{\{a,b,c\}\}\)<br>
+\(\Pi_2 = \{\{a\}, \{b,c\}\}\)<br>
+\(\Pi_3 = \{\{b\}, \{a,c\}\}\)<br>
+\(\Pi_4 = \{\{c\}, \{a,b\}\}\)<br>
+\(\Pi_5 = \{\{a\}, \{b\}, \{c\}\}\)<br>
+<strong>คำตอบ: 5 partitions</strong> (Bell number \(B_3 = 5\))
+</div>
+</div>
+</section>
+
+<!-- Slide 10: Ordered Pair & Cartesian Product -->
+<section class="slide" data-chapter="1" data-title="คู่อันดับและผลคูณคาร์ทีเซียน">
+<h1>คู่อันดับและผลคูณคาร์ทีเซียน</h1>
+
+<h2>คู่อันดับ (Ordered Pair)</h2>
+<div class="def-box">
+คู่อันดับ \((a,b)\) โดย \(a\) เป็น <strong>first component</strong> และ \(b\) เป็น <strong>second component</strong><br>
+สำคัญ: \((a,b) \neq (b,a)\) ยกเว้นเมื่อ \(a = b\)
+</div>
+
+<h2>ผลคูณคาร์ทีเซียน (Cartesian Product)</h2>
+<div class="def-box">
+\(A \times B \triangleq \{(a,b) \mid a \in A, b \in B\}\)<br>
+<em>— เซตของทุกคู่อันดับ โดยตัวแรกมาจาก A ตัวที่สองมาจาก B</em>
+</div>
+
+<div class="example-box">
+\(\{a,b\} \times \{a\} = \{(a,a), (b,a)\}\)<br>
+ระนาบ = \(\mathbb{R} \times \mathbb{R} = \mathbb{R}^2\)
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> ถ้า \(A = \{0,1,2\}\), \(B = \emptyset\) แล้ว \(A \times B\) มีขนาดเท่าไร?<br>
+คำตอบ: \(|A \times B| = 0\) เพราะ \(A \times \emptyset = \emptyset\)
+</div>
+
+<h2>n-tuple และ n-fold Cartesian Product</h2>
+<p>\((a_1, a_2, ..., a_n)\) = ordered n-tuple</p>
+<p>\(A_1 \times A_2 \times ... \times A_n\) = เซตของทุก ordered n-tuple</p>
+</section>
+
+<!-- Slide 11: Functions -->
+<section class="slide" data-chapter="1" data-title="ฟังก์ชัน (Functions)">
+<h1>ฟังก์ชัน (Functions) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>ฟังก์ชัน (Function/Map):</strong> \(f: A \to B\) คือการกำหนดให้สมาชิก<strong>แต่ละตัว</strong>ใน \(A\) มีค่าเดียว \(f(a)\) ใน \(B\)<br><br>
+• <strong>Domain (โดเมน):</strong> เซต \(A\) (ตัวตั้งต้น)<br>
+• <strong>Co-domain (โคโดเมน):</strong> เซต \(B\) (เซตเป้าหมาย)<br>
+• <strong>Image:</strong> \(f(a)\) = ค่าที่ \(a\) ถูกส่งไป<br>
+• <strong>Range:</strong> \(f(A) = \{f(a) \mid a \in A\}\) = เซตของ image ทั้งหมด
+</div>
+
+<h2>จำนวนฟังก์ชันจาก A ไป B (ข้อสอบ!)</h2>
+<table>
+<tr><th>เงื่อนไข</th><th>จำนวนฟังก์ชัน</th><th>เหตุผล</th></tr>
+<tr><td>\(A = \emptyset\)</td><td><strong>1</strong></td><td>มีฟังก์ชันว่าง \(\emptyset\) ตัวเดียว</td></tr>
+<tr><td>\(B = \emptyset, A \neq \emptyset\)</td><td><strong>0</strong></td><td>ไม่มีที่ส่ง \(a\) ไป</td></tr>
+<tr><td>\(|A|=1\)</td><td>\(|B|\)</td><td>เลือกส่งไปตัวไหนก็ได้ใน B</td></tr>
+<tr><td>ทั่วไป</td><td>\(|B|^{|A|}\)</td><td>สมาชิกแต่ละตัวใน A มี |B| ตัวเลือก</td></tr>
+</table>
+
+<div class="warn-box">
+<strong>ข้อสอบ Practice 4:</strong> \(A = \{0,1,2\}, B = \{1\}\) มีกี่ฟังก์ชัน?<br>
+คำตอบ: \(1^3 = 1\) — ฟังก์ชันเดียวคือ \(\{(0,1),(1,1),(2,1)\}\)<br><br>
+\(A = \{0,1,2\}, B = \emptyset\) มีกี่ฟังก์ชัน?<br>
+คำตอบ: <strong>0</strong> — เพราะต้องมีคู่ \((0,b)\) แต่ไม่มี \(b\) ใน \(B\)
+</div>
+</section>
+
+<!-- Slide 12: Types of Functions -->
+<section class="slide" data-chapter="1" data-title="ประเภทของฟังก์ชัน — Injective, Surjective, Bijection">
+<h1>ประเภทของฟังก์ชัน <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>One-to-one (Injective — หนึ่งต่อหนึ่ง):</strong><br>
+\(f: A \to B\) เป็น one-to-one iff สำหรับทุก \(a, a' \in A\) ที่ \(a \neq a'\) จะได้ \(f(a) \neq f(a')\)<br>
+<em>— แปลง่ายๆ: ค่าต่างกันเข้า ต้องได้ผลต่างกันออก (ไม่มีชน)</em>
+</div>
+
+<div class="def-box">
+<strong>Onto (Surjective — ทั่วถึง):</strong><br>
+\(f: A \to B\) เป็น onto iff \(B = f(A)\)<br>
+<em>— แปลง่ายๆ: สมาชิกทุกตัวใน B ถูกส่งถึง (ไม่มีตัวตกหล่น)</em>
+</div>
+
+<div class="def-box">
+<strong>Bijection (ฟังก์ชันหนึ่งต่อหนึ่งทั่วถึง):</strong><br>
+\(f\) เป็น bijection iff \(f\) เป็น one-to-one <strong>และ</strong> onto<br>
+<em>— จับคู่สมบูรณ์ทุกตัว</em>
+</div>
+
+<div class="thm-box">
+เซต \(A\) และ \(B\) มีจำนวนสมาชิกเท่ากัน (equinumerous) ก็ต่อเมื่อมี bijection ระหว่าง \(A\) กับ \(B\)
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 1:</strong> \(f: \mathbb{N} \to \Sigma^*\) โดย \(\Sigma = \{0,...,9\}\) แปลงจำนวนเป็น decimal representation<br>
+• \(f\) เป็น one-to-one? ✅ (จำนวนต่างกัน → representation ต่างกัน)<br>
+• \(f\) เป็น onto \(\Sigma^*\)? ❌ (ไม่มี \(n\) ที่ \(f(n) = 001\))<br>
+• \(f\) เป็น bijection? ❌ (เพราะไม่ onto)<br>
+• \(\mathbb{N}\) กับ \(\Sigma^*\) equinumerous? ✅ (ใช้ bijection ตัวอื่นได้)
+</div>
+</section>
+
+<!-- Slide 13: Function Composition & Relations -->
+<section class="slide" data-chapter="1" data-title="Function Composition และ Relations">
+<h1>Function Composition & Relations <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>การประกอบฟังก์ชัน (Function Composition)</h2>
+<div class="def-box">
+ให้ \(f: A \to B\) และ \(g: B \to C\) การประกอบ \(f \cdot g: A \to C\) กำหนดโดย:<br>
+\(f \cdot g(a) = g(f(a))\)<br>
+<em>— ทำ f ก่อน แล้วเอาผลลัพธ์ไปทำ g</em>
+</div>
+
+<div class="example-box">
+\(f: \mathbb{N} \times \mathbb{N} \to \mathbb{N}\) โดย \(f(m,n) = m+n\)<br>
+\(g: \mathbb{N} \to \mathbb{N}\) โดย \(g(k) = 2k\)<br>
+\(f \cdot g(m,n) = g(f(m,n)) = g(m+n) = 2(m+n)\)
+</div>
+
+<h2>ความสัมพันธ์ (Binary Relation)</h2>
+<div class="def-box">
+<strong>Binary relation</strong> บนเซต \(A, B\) คือ subset ของ \(A \times B\)<br>
+เช่น \(R = \{(m,n) \mid m \geq n\} \subseteq \mathbb{Z} \times \mathbb{Z}\)
+</div>
+
+<h2>Relation Inverse \(R^{-1}\)</h2>
+<p>\((b,a) \in R^{-1}\) iff \((a,b) \in R\) — กลับข้าง!</p>
+
+<h2>Relation Composition \(Q \cdot R\)</h2>
+<p>\(Q \cdot R = \{(a,c) \mid \exists b \text{ s.t. } (a,b) \in Q \text{ and } (b,c) \in R\}\)</p>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 2:</strong> \(R = \{(a,b),(b,c),(c,f),(b,a)\}\)<br>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>\(R^{-1}\):</strong> กลับทุกคู่ → \(\{(b,a),(c,b),(f,c),(a,b)\}\) — มี <strong>4</strong> สมาชิก<br><br>
+<strong>\(R \circ R\):</strong> หาทุก \((a,c)\) ที่มี \(b\) เป็นตัวกลาง:<br>
+• \((a,b)\) + \((b,c)\) → \((a,c)\) ✓<br>
+• \((a,b)\) + \((b,a)\) → \((a,a)\) ✓<br>
+• \((b,c)\) + \((c,f)\) → \((b,f)\) ✓<br>
+• \((b,a)\) + \((a,b)\) → \((b,b)\) ✓<br>
+• \((b,c)\) + → ไม่มี \((c,?)\) นอกจาก \((c,f)\) → \((b,f)\) (ซ้ำ)<br>
+• \((b,a)\) + \((a,b)\) → \((b,b)\) (ซ้ำ), \(+ (b,c)\) ไม่ใช่ตัวกลาง<br>
+ผลลัพธ์: \(\{(a,c),(a,a),(b,f),(b,b),(b,c)\}\) — มี <strong>5</strong> สมาชิก<br><br>
+<strong>\(|2^R| = 2^4 = 16\)</strong>
+</div>
+</div>
+
+<h2>Functions vs Relations</h2>
+<div class="tip-box">
+<strong>เทคนิคจากห้องเรียน — วิธีตรวจว่า Relation เป็นฟังก์ชัน:</strong><br>
+"ต้องมี outgoing link เดียวสำหรับแต่ละ node ทาง LHS"<br>
+— ถ้ามีสมาชิก \((a,b)\) และ \((a,c)\) โดย \(b \neq c\) → ไม่เป็นฟังก์ชัน (one-to-many)
+</div>
+</section>
+
+<!-- Slide 14: Types of Relations -->
+<section class="slide" data-chapter="1" data-title="ประเภทของ Relations — Reflexive, Symmetric, Transitive">
+<h1>คุณสมบัติของ Relations <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<div class="def-box">
+ให้ \(R \subseteq A \times A\) เป็น binary relation บนเซต \(A\):<br><br>
+<strong>Reflexive (สะท้อน):</strong> สำหรับทุก \(a \in A\), \((a,a) \in R\)<br>
+<em>→ "ทุกตัวชี้ไปหาตัวเอง" (self-loop ทุกตัว)</em><br><br>
+<strong>Symmetric (สมมาตร):</strong> ถ้า \((a,b) \in R\) แล้ว \((b,a) \in R\)<br>
+<em>→ "ไปก็ได้ กลับก็ได้" (back & forth)</em><br><br>
+<strong>Transitive (ถ่ายทอด):</strong> ถ้า \((a,b) \in R\) และ \((b,c) \in R\) แล้ว \((a,c) \in R\)<br>
+<em>→ "ต่อกันได้" (ผ่านตัวกลาง = ตรงไปเลย)</em><br><br>
+<strong>Antisymmetric (ปฏิสมมาตร):</strong> ถ้า \((a,b) \in R\) และ \(a \neq b\) แล้ว \((b,a) \notin R\)<br>
+<em>→ "ทางเดียว ห้ามกลับ" (no return)</em>
+</div>
+
+<div class="tip-box">
+<strong>ตัวอย่างจากชีวิตจริง (จากห้องเรียน):</strong><br>
+• Reflexive: "รักตัวเอง" (self-love) — ทุกคนรักตัวเอง<br>
+• Symmetric: "แต่งงาน" — ถ้า A แต่งกับ B ก็ B แต่งกับ A<br>
+• Transitive: "บรรพบุรุษ" (ancestor) — ถ้า A เป็นบรรพบุรุษ B, B เป็นบรรพบุรุษ C → A เป็นบรรพบุรุษ C<br>
+• Equivalence: "สัญชาติเดียวกัน" (same nationality) — reflexive + symmetric + transitive
+</div>
+
+<h2>Equivalence Relation (ความสัมพันธ์สมมูล)</h2>
+<div class="def-box">
+\(R\) เป็น equivalence relation iff \(R\) เป็น <strong>reflexive + symmetric + transitive</strong>
+</div>
+
+<h2>Partial Order (อันดับบางส่วน)</h2>
+<div class="def-box">
+\(R\) เป็น partial order iff \(R\) เป็น <strong>reflexive + transitive + antisymmetric</strong>
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบสุดฮิต:</strong> ให้ \(R = \emptyset\) เป็น relation บน \(A\) แล้ว \(R\) เป็น?<br>
+• Reflexive? ❌ (ไม่มี \((a,a)\) เลย... ยกเว้น \(A = \emptyset\))<br>
+• Symmetric? ✅ (เป็น vacuously true — ไม่มี \((a,b)\) ให้ตรวจ)<br>
+• Antisymmetric? ✅ (vacuously true เช่นกัน)<br>
+• Transitive? ✅ (vacuously true)<br>
+• Partial order? ❌ (เพราะไม่ reflexive)
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 3:</strong> "mother" relation บนเซตครอบครัว<br>
+• Symmetric? ❌ (ถ้า A เป็นแม่ B ไม่ได้แปลว่า B เป็นแม่ A)<br>
+• Antisymmetric? ✅ (ถ้า A เป็นแม่ B แล้ว B ไม่ใช่แม่ A)<br><br>
+"ancestor" relation:<br>
+• Transitive? ✅<br>
+• Partial order? ❌ (ไม่ reflexive — คนไม่ใช่บรรพบุรุษตัวเอง)
+</div>
+</section>
+
+<!-- Slide 15: Equivalence Class & A/R -->
+<section class="slide" data-chapter="1" data-title="Equivalence Class และ A/R">
+<h1>Equivalence Class และ A modulo R</h1>
+
+<h2>Equivalence Class (ชั้นสมมูล)</h2>
+<div class="def-box">
+ให้ \(R\) เป็น equivalence relation บน \(A\) สำหรับแต่ละ \(a \in A\):<br>
+\([a]_R = \{b \mid (a,b) \in R\}\)<br>
+<em>— "กลุ่มของทุกสมาชิกที่สัมพันธ์กับ a"</em>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> ถ้า R = "สัญชาติเดียวกัน" แล้ว \([\text{ประชา}]_R\) = คนไทยทุกคนในเซต
+</div>
+
+<h2>คุณสมบัติสำคัญ</h2>
+<p>สำหรับทุก \(a, b \in A\): ถ้า \([a]_R = [b]_R\) (อยู่กลุ่มเดียวกัน) หรือ \([a]_R\) กับ \([b]_R\) เป็น disjoint (ไม่มีสมาชิกร่วม)</p>
+
+<h2>A modulo R</h2>
+<div class="def-box">
+\(A/R = \{[a]_R \mid a \in A\}\)
+</div>
+
+<div class="thm-box">
+\(A/R\) เป็น <strong>partition</strong> ของ \(A\) — ไม่มีช่องว่าง ไม่ซ้อนทับ
+</div>
+
+<div class="example-box">
+ให้ \(\mathbb{Z}^+\) = positive integers, กำหนด \((p,q) \equiv (r,s)\) iff \(ps = qr\)<br>
+นี่คือ equivalence relation ที่กำหนดจำนวนตรรกยะ!<br>
+เช่น \((2,3) \equiv (4,6)\) เพราะ \(2 \times 6 = 3 \times 4\) → ทั้งคู่แทน \(\frac{2}{3}\)<br>
+\((\mathbb{Z}^+ \times \mathbb{Z}^+) / \equiv\) = เซตของจำนวนตรรกยะ \(\mathbb{Q}^+\)
+</div>
+</section>
+
+<!-- Slide 16: Orders -->
+<section class="slide" data-chapter="1" data-title="Orders — Partial Order, Total Order, Path, Cycle">
+<h1>อันดับ (Orders), เส้นทาง (Path), วงรอบ (Cycle)</h1>
+
+<h2>Partial Order (อันดับบางส่วน)</h2>
+<p>\(R\) เป็น partial order iff reflexive + transitive + antisymmetric</p>
+<p>ตัวอย่าง: \(\subseteq\) บน power set เป็น partial order</p>
+
+<h2>Total Order (อันดับเต็ม)</h2>
+<div class="def-box">
+Partial order \(R \subseteq A \times A\) เป็น <strong>total order</strong> iff สำหรับทุก \(a, b \in A\):<br>
+\((a,b) \in R\) หรือ \((b,a) \in R\)<br>
+<em>— ทุกคู่เปรียบเทียบกันได้ เช่น ≤ บน \(\mathbb{Z}\)</em>
+</div>
+
+<h2>เส้นทาง (Path) และ วงรอบ (Cycle)</h2>
+<p><strong>Path</strong> จาก \(a\) ไป \(b\) ใน \(R\) = ลำดับ \(a_1, ..., a_n\) โดย \(a = a_1\), \(b = a_n\) และ \((a_i, a_{i+1}) \in R\)</p>
+<p><strong>Cycle</strong> = path ที่ \(a_1 = a_n\) และทุกจุดบนเส้นทาง distinct (ไม่ซ้ำ)</p>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> "traverse from a to b via R" = เดินจาก a ไป b ผ่าน R ทีละ step — "One way or another"
+</div>
+</section>
+
+<!-- Slide 17: Counting — Finite & Infinite Sets -->
+<section class="slide" data-chapter="1" data-title="การนับ — Equinumerous, Cardinality, Countable/Uncountable">
+<h1>การนับ — เซตจำกัดและอนันต์ <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>Equinumerous (มีจำนวนเท่ากัน):</strong> \(A\) กับ \(B\) equinumerous iff มี bijection \(f: A \to B\)<br><br>
+<strong>Cardinality (จำนวนเชิงการนับ):</strong> \(|A| = n\) iff \(A\) equinumerous กับ \(\{1,...,n\}\)<br><br>
+<strong>Countably infinite:</strong> equinumerous กับ \(\mathbb{N}\)<br>
+<strong>Uncountably infinite:</strong> infinite แต่ไม่ equinumerous กับ \(\mathbb{N}\)
+</div>
+
+<h2>ข้อเท็จจริงสำคัญ (ข้อสอบ!)</h2>
+<ul>
+<li>ทุก subset ของ finite set เป็น finite ✓</li>
+<li>ทุก subset ของ countably infinite set เป็น finite หรือ countably infinite ✓ <span class="exam-badge">Practice 4</span></li>
+<li>\(\mathbb{N} \times \mathbb{N}\) เป็น countably infinite ✓ (ใช้ dovetailing)</li>
+<li>Union ของ countably infinite collection ของ countably infinite sets เป็น countably infinite ✓</li>
+</ul>
+
+<div class="tip-box">
+<strong>Dovetailing (จากห้องเรียน):</strong> วิธีนับ \(\mathbb{N} \times \mathbb{N}\) — map \((i,j)\) ไปที่ตำแหน่ง \(1000i + j\) (เช่น Python: <code>for i in range(1000): for j in range(1000): print((i,j), 1000*i+j)</code>)
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 4:</strong> ข้อใดถูกต้อง?<br>
+(a) ทุก subset ของ countably infinite set เป็น finite → ❌<br>
+<strong>(b) ทุก subset ของ countably infinite set เป็น finite หรือ countably infinite → ✅</strong><br>
+(c) ทุก subset ของ uncountably infinite set เป็น finite → ❌<br>
+(d) ทุก subset ของ uncountably infinite set เป็น finite หรือ countably infinite → ❌
+</div>
+</section>
+
+<!-- Slide 18: Mathematical Induction -->
+<section class="slide" data-chapter="1" data-title="เทคนิคพิสูจน์ 1 — Mathematical Induction">
+<h1>เทคนิคพิสูจน์ 1: อุปนัยเชิงคณิตศาสตร์ (Mathematical Induction)</h1>
+
+<div class="thm-box">
+<strong>หลักอุปนัยเชิงคณิตศาสตร์:</strong> ให้ \(A\) เป็นเซตของจำนวนธรรมชาติ ถ้า:<br>
+1. \(0 \in A\) (Base case)<br>
+2. สำหรับทุก \(n\): ถ้า \(\{0,1,...,n\} \subseteq A\) แล้ว \(n+1 \in A\) (Inductive case)<br>
+แล้ว \(A = \mathbb{N}\) (เป็นจริงสำหรับทุกจำนวนธรรมชาติ)
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> "inducere" (ละติน) = นำไปสู่<br>
+Base case = เริ่มต้นจุดแรก<br>
+Inductive case = ถ้ารู้ว่าจริงถึง n แล้วพิสูจน์ว่า n+1 ก็จริง
+</div>
+
+<div class="example-box">
+<strong>พิสูจน์:</strong> \(1 + 2 + ... + n = \frac{n(n+1)}{2}\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+<strong>Base case (n=0):</strong> ผลรวมเป็น 0 = \(\frac{0 \cdot 1}{2} = 0\) ✓
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+<strong>Inductive hypothesis:</strong> สมมติว่า \(1+2+...+n = \frac{n(n+1)}{2}\)
+</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">
+<strong>Inductive step (n+1):</strong><br>
+\(1+2+...+n+(n+1) = \frac{n(n+1)}{2} + (n+1) = \frac{n(n+1) + 2(n+1)}{2} = \frac{(n+1)(n+2)}{2}\) ✓
+</div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Slide 19: Pigeonhole Principle -->
+<section class="slide" data-chapter="1" data-title="เทคนิคพิสูจน์ 2 — Pigeonhole Principle">
+<h1>เทคนิคพิสูจน์ 2: หลักรังนกพิราบ (Pigeonhole Principle)</h1>
+
+<div class="thm-box">
+ถ้า \(A, B\) เป็นเซตจำกัดและ \(|A| > |B|\) แล้ว <strong>ไม่มี</strong> one-to-one function จาก \(A\) ไป \(B\)
+</div>
+
+<p><em>— ถ้ามีนกพิราบ 10 ตัวแต่รังมี 9 รัง ต้องมีอย่างน้อย 1 รังที่มีนก ≥ 2 ตัว</em></p>
+
+<div class="example-box">
+<strong>ตัวอย่าง:</strong> มีนักเรียน 79 คน เก้าอี้ 70 ตัว จะให้นั่งคนละตัวได้ไหม?<br>
+ไม่ได้! เพราะ \(|A| = 79 > 70 = |B|\) → ไม่มี one-to-one function จาก นักเรียน → เก้าอี้
+</div>
+
+<div class="tip-box">
+<strong>เทคนิคพิสูจน์ Pigeonhole ด้วย Induction (จากห้องเรียน):</strong><br>
+1. FACT: ถ้า \(|B| = 0\) แล้วไม่มี 1-to-1 function<br>
+2. สมมติมี 1-to-1 function \(f\) ที่ map สมาชิก \(e\) ไปยัง \(f(e)\)<br>
+3. ลบ \(e\) ออกจาก \(A\) และลบ \(f(e)\) ออกจาก \(B\)<br>
+4. แสดงว่าจะเหลือ \(|B| = 0\) ในที่สุด → ขัดแย้ง
+</div>
+</section>
+
+<!-- Slide 20: Diagonalization Principle -->
+<section class="slide" data-chapter="1" data-title="เทคนิคพิสูจน์ 3 — Diagonalization Principle">
+<h1>เทคนิคพิสูจน์ 3: หลักทแยงมุม (Diagonalization) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="thm-box">
+ให้ \(R\) เป็น binary relation บนเซต \(A\) กำหนด:<br>
+• <strong>Diagonal set:</strong> \(D = \{a \in A \mid (a,a) \notin R\}\) — "สมาชิกที่ไม่ชี้ไปหาตัวเอง"<br>
+• <strong>Row set:</strong> \(R_a = \{b \in A \mid (a,b) \in R\}\) — "สมาชิกที่ a ชี้ไป"<br><br>
+แล้วสำหรับทุก \(a \in A\): \(R_a \neq D\) — <strong>Diagonal set ไม่เท่ากับ row set ใดๆ ทั้งสิ้น!</strong>
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 4:</strong> \(A = \{a,b,c,d\}\), \(R = \{(a,a),(b,b),(c,c),(d,d)\}\)<br>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Row set ของ a:</strong> \(R_a = \{x \mid (a,x) \in R\} = \{a\}\) (singleton)<br>
+<strong>Diagonal set:</strong> \(D = \{x \mid (x,x) \notin R\} = \emptyset\) (ทุกตัวมี self-loop)<br>
+ตรวจ: \(R_a = \{a\} \neq \emptyset = D\) ✓ — Diagonal principle ถูกต้อง!
+</div>
+</div>
+
+<h2>\(2^{\mathbb{N}}\) เป็น uncountably infinite</h2>
+<div class="proof-box">
+<strong>พิสูจน์โดยใช้ Diagonalization:</strong><br>
+สมมติ (proof by contradiction) ว่า \(2^{\mathbb{N}}\) เป็น countably infinite<br>
+→ มี bijection \(f: \mathbb{N} \to 2^{\mathbb{N}}\)<br>
+กำหนด \(R = \{(n,m) \mid m \in f(n)\}\)<br>
+Diagonal set \(D = \{n \mid n \notin f(n)\}\) ← \(D\) เป็น subset ของ \(\mathbb{N}\) → \(D \in 2^{\mathbb{N}}\)<br>
+เพราะ \(f\) เป็น bijection → มี \(k\) ที่ \(f(k) = D\)<br>
+แต่ \(k \in D \iff k \notin f(k) = D\) ← ขัดแย้ง! ∎
+</div>
+</section>
+
+<!-- Slide 21: Alphabet, Strings & Languages -->
+<section class="slide" data-chapter="1" data-title="ตัวอักษร สตริง และภาษา">
+<h1>ตัวอักษร (Alphabet), สตริง (String), ภาษา (Language) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>Alphabet (\(\Sigma\)):</strong> เซต<strong>จำกัด</strong>ของสัญลักษณ์ เช่น \(\Sigma = \{0,1\}\) หรือ \(\Sigma = \{a,b\}\)<br><br>
+<strong>String:</strong> ลำดับจำกัดของสัญลักษณ์จาก \(\Sigma\) เช่น \(aab, 0110\)<br><br>
+<strong>Empty string:</strong> \(e\) (หรือ \(\varepsilon\)) — สตริงที่ไม่มีสัญลักษณ์เลย, \(|e| = 0\)<br><br>
+<strong>Concatenation:</strong> \(x \cdot y\) หรือ \(xy\) = สตริง \(x\) ตามด้วย \(y\) (associative: \((xy)z = x(yz)\))
+</div>
+
+<h3>String Operations</h3>
+<ul>
+<li><strong>Length:</strong> \(|hello| = 5\)</li>
+<li><strong>Substring:</strong> \(v\) เป็น substring ของ \(w\) ถ้า \(w = xvy\) สำหรับบาง \(x, y\)</li>
+<li><strong>Power:</strong> \(\omega^0 = e\), \(\omega^{n+1} = \omega^n \cdot \omega\) (ทำซ้ำ \(n\) รอบ)</li>
+<li><strong>Reversal:</strong> \(e^R = e\), \((ua)^R = a \cdot u^R\)</li>
+</ul>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> x = prefix, y = suffix, v = infix (substring)<br>
+"fixere" (ละติน) = stay — pre = before, sub/suf = after
+</div>
+
+<h2>\(\Sigma^*\) และ ภาษา (Language)</h2>
+<div class="def-box">
+\(\Sigma^*\) = เซตของ<strong>ทุกสตริง</strong>ที่สร้างจาก \(\Sigma\) (รวม \(e\))<br>
+ตัวอย่าง: \(\{a,b\}^* = \{e, a, b, aa, ab, ba, bb, aaa, ...\}\)<br><br>
+<strong>ภาษา (Language):</strong> เซต \(L\) ใดๆ ของสตริงเหนือ \(\Sigma\) คือ \(L \subseteq \Sigma^*\)
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> \(\Sigma^*\) countably infinite? → ✅<br>
+\(2^{\Sigma^*}\) countably infinite? → ❌ (uncountably infinite! — ใช้ diagonalization)
+</div>
+
+<h2>Language Operations</h2>
+<ul>
+<li><strong>Complement:</strong> \(\overline{A} = \Sigma^* \setminus A\)</li>
+<li><strong>Concatenation:</strong> \(L_1 \cdot L_2 = \{xy \mid x \in L_1, y \in L_2\}\)</li>
+<li><strong>Kleene Star:</strong> \(L^* = L^0 \cup L^1 \cup L^2 \cup ... = \bigcup_{n \geq 0} L^n\) โดย \(L^0 = \{e\}\)</li>
+<li><strong>Kleene Plus:</strong> \(L^+ = L^1 \cup L^2 \cup ... = \bigcup_{n \geq 1} L^n\)</li>
+</ul>
+
+<div class="warn-box">
+<strong>ข้อสอบสุดฮิต:</strong> \(L^+ = L^* \setminus \{e\}\) เสมอ? → <strong>ไม่เสมอ!</strong><br>
+Counter-example: ถ้า \(L = \{e\}\) แล้ว \(L^+ = \{e\}\) แต่ \(L^* \setminus \{e\} = \emptyset\)<br><br>
+\(L^* = LL^*\) เสมอ? → <strong>ไม่!</strong> เพราะ \(e \in L^*\) แต่ \(e\) อาจไม่อยู่ใน \(LL^*\) (ถ้า \(e \notin L\))<br><br>
+\(L^* = LL^+\) เสมอ? → <strong>ไม่!</strong> เหมือนกัน \(L^* = LL^+\) iff \(e \in L\)<br><br>
+\(L^* = (L^*)^*\) เสมอ? → <strong>ใช่!</strong> ✅
+</div>
+</section>
+
+<!-- Slide 22: Regular Languages & Regular Expressions -->
+<section class="slide" data-chapter="1" data-title="ภาษาปรกติและนิพจน์ปรกติ">
+<h1>ภาษาปรกติ (Regular Languages) & นิพจน์ปรกติ (Regular Expressions) <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<h2>Regular Languages — นิยาม</h2>
+<div class="def-box">
+เซตของภาษาปรกติ (regular languages) คือเซตที่<strong>เล็กที่สุด</strong>ที่สอดคล้องเงื่อนไข:<br>
+1. \(\emptyset\) เป็น regular<br>
+2. สำหรับทุก \(a \in \Sigma\), \(\{a\}\) เป็น regular<br>
+3. ถ้า \(A, B\) เป็น regular แล้ว \(A^*\), \(A \cup B\), \(A \cdot B\) ก็เป็น regular
+</div>
+
+<h2>Regular Expressions — นิพจน์ปรกติ</h2>
+<div class="def-box">
+Regular expression เหนือ \(\Sigma\) สร้างจาก:<br>
+• \(\emptyset\) เป็น regular expression, \(L(\emptyset) = \emptyset\)<br>
+• ทุก \(a \in \Sigma\) เป็น regular expression, \(L(a) = \{a\}\)<br>
+• ถ้า \(\alpha, \beta\) เป็น RE แล้ว \((\alpha \cdot \beta)\), \(\alpha^*\), \(\alpha \cup \beta\) ก็เป็น RE<br>
+โดย \(L(\alpha \cdot \beta) = L(\alpha) \cdot L(\beta)\), \(L(\alpha^*) = L(\alpha)^*\), \(L(\alpha \cup \beta) = L(\alpha) \cup L(\beta)\)
+</div>
+
+<div class="thm-box">
+ภาษา \(A\) เป็น regular iff มี regular expression \(\alpha\) ที่ \(A = L(\alpha)\)
+</div>
+
+<h2>ข้อสอบ Regular Expression ยอดฮิต</h2>
+
+<div class="quiz-q" data-correct="0">
+<p class="q-text">\(L((a \cup b)^*) = \{a,b\}^*\)?</p>
+<label class="quiz-option" data-idx="0">True ✅ — \((a \cup b)^*\) สร้างทุกสตริงจาก a, b</label>
+<label class="quiz-option" data-idx="1">False</label>
+</div>
+
+<div class="quiz-q" data-correct="1">
+<p class="q-text">\(L(\emptyset^*) = ?\)</p>
+<label class="quiz-option" data-idx="0">\(\emptyset\)</label>
+<label class="quiz-option" data-idx="1">\(\{e\}\) ✅ — \(\emptyset^* = \emptyset^0 = \{e\}\)</label>
+</div>
+
+<div class="quiz-q" data-correct="1">
+<p class="q-text">\(L(\emptyset^{**} \cdot \emptyset) = ?\)</p>
+<label class="quiz-option" data-idx="0">\(\{e\}\)</label>
+<label class="quiz-option" data-idx="1">\(\emptyset\) ✅ — สำหรับทุก \(L\): \(L \cdot \emptyset = \emptyset\)</label>
+</div>
+
+<div class="warn-box">
+\(L(\emptyset) = \emptyset\) (เซตว่าง — ไม่มีสตริง) ≠ \(L(\emptyset^*) = \{e\}\) (มีสตริงว่าง 1 ตัว!)
+</div>
+
+<h2>Finite Representation of Languages</h2>
+<p>มีภาษาเหนือ \(\Sigma\) จำนวน uncountably infinite (เพราะ \(2^{\Sigma^*}\) uncountable)</p>
+<p>แต่ representation ทุกชนิดเป็น string → countably infinite เท่านั้น</p>
+<p>ดังนั้น <strong>ไม่สามารถหา representation จำกัดสำหรับทุกภาษาได้</strong></p>
+
+<div class="thm-box">
+<strong>ข้อสอบ (proof):</strong> เซตของ regular languages \(R\) เป็น <strong>countably infinite</strong><br>
+เพราะ regular expression เป็น string ใน \(\Sigma'^*\) โดย \(\Sigma' = \Sigma \cup \{\emptyset, \cup, \cdot, *, (, )\}\)<br>
+และ \(\Sigma'^*\) เป็น countably infinite → \(R\) ก็ countably infinite
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 2: FINITE AUTOMATA                                     -->
+<!-- ============================================================ -->
+
+<!-- Slide 23: Chapter 2 Cover -->
+<section class="slide" data-chapter="2" data-title="บทที่ 2: ออโตมาตาจำกัด">
+<div class="chapter-cover">
+  <div class="ch-num">02</div>
+  <h1>Finite Automata</h1>
+  <p style="font-size:18px;color:var(--text3);">ออโตมาตาจำกัด</p>
+  <ul class="ch-topics">
+    <li>🔹 DFA (Deterministic Finite Automata)</li>
+    <li>🔹 NFA (Nondeterministic Finite Automata)</li>
+    <li>🔹 DFA ↔ NFA Equivalence</li>
+    <li>🔹 Properties of FA Languages</li>
+    <li>🔹 Pumping Theorem</li>
+    <li>🔹 State Minimization</li>
+  </ul>
+</div>
+</section>
+
+<!-- Slide 24: DFA — Concept & Example -->
+<section class="slide" data-chapter="2" data-title="DFA — แนวคิดและตัวอย่าง">
+<h1>DFA — Deterministic Finite Automaton <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<h2>ปัญหาการรับรอง (Acceptance Problem)</h2>
+<p>กำหนดภาษา regular \(L\) และสตริง \(\omega\) → ตรวจว่า \(\omega \in L\) หรือไม่?</p>
+
+<div class="def-box">
+<strong>DFA</strong> คือ 5-tuple \(M = (K, \Sigma, \delta, s, F)\) โดย:<br>
+• \(K\) = เซตจำกัดของ <strong>states</strong> (สถานะ)<br>
+• \(\Sigma\) = <strong>alphabet</strong> (ตัวอักษร input)<br>
+• \(s \in K\) = <strong>initial state</strong> (สถานะเริ่มต้น)<br>
+• \(F \subseteq K\) = <strong>final states</strong> (สถานะยอมรับ)<br>
+• \(\delta: K \times \Sigma \to K\) = <strong>transition function</strong> (ฟังก์ชันเปลี่ยนสถานะ)
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> "Deterministic" = กำหนดได้แน่นอน — กำหนด state ปัจจุบัน + input symbol → มีทางไปได้<strong>ทางเดียว</strong>เท่านั้น<br>
+\(\delta\) เป็น <strong>function</strong> (ไม่ใช่ relation) → ทุก \((q, a)\) มีคำตอบเดียว
+</div>
+
+<div class="example-box">
+<strong>ตัวอย่าง:</strong> DFA สำหรับ \(L = (a \cup b^*a)^*\)<br>
+\(M = (\{s,q\}, \{a,b\}, \delta, s, \{s\})\)<br>
+\(\delta = \{(s,a,s), (s,b,q), (q,a,s), (q,b,q)\}\)<br><br>
+<div class="diagram-container">
+<svg width="300" height="120" viewBox="0 0 300 120">
+<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--text2)"/></marker></defs>
+<circle cx="80" cy="60" r="28" class="state"/><circle cx="80" cy="60" r="23" class="final-state"/>
+<text x="80" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--text)">s</text>
+<circle cx="220" cy="60" r="28" class="state"/>
+<text x="220" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--text)">q</text>
+<!-- Arrow: start -->
+<line x1="20" y1="60" x2="50" y2="60" class="arrow"/>
+<!-- s → q (b) -->
+<path d="M 108 50 Q 150 10 192 50" class="arrow"/>
+<text x="150" y="22" text-anchor="middle" font-size="13" fill="var(--text)">b</text>
+<!-- q → s (a) -->
+<path d="M 192 70 Q 150 110 108 70" class="arrow"/>
+<text x="150" y="105" text-anchor="middle" font-size="13" fill="var(--text)">a</text>
+<!-- s self-loop (a) -->
+<path d="M 66 35 Q 40 0 80 32" class="arrow"/>
+<text x="50" y="18" text-anchor="middle" font-size="13" fill="var(--text)">a</text>
+<!-- q self-loop (b) -->
+<path d="M 234 35 Q 260 0 220 32" class="arrow"/>
+<text x="252" y="18" text-anchor="middle" font-size="13" fill="var(--text)">b</text>
+</svg>
+</div>
+<em>วงกลมคู่ = final state, ลูกศรเข้า = initial state</em>
+</div>
+</section>
+
+<!-- Slide 25: DFA — Computation -->
+<section class="slide" data-chapter="2" data-title="DFA — Configuration และ Computation">
+<h1>DFA — การคำนวณ (Computation) <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<div class="def-box">
+<strong>Configuration (การกำหนดค่า):</strong> คู่ \((q, \omega)\) โดย \(q \in K\) (state ปัจจุบัน) และ \(\omega \in \Sigma^*\) (input ที่เหลือ)
+</div>
+
+<div class="def-box">
+<strong>Yields in one step (\(\vdash_M\)):</strong><br>
+\((q, \omega) \vdash_M (q', \omega')\) iff มี \(\sigma \in \Sigma\) ที่ \(\omega = \sigma\omega'\) และ \(q' = \delta(q, \sigma)\)<br>
+<em>— อ่านตัวอักษรหน้าสุด แล้วเปลี่ยน state ตาม \(\delta\)</em>
+</div>
+
+<div class="def-box">
+<strong>\(\vdash_M^*\)</strong> = reflexive transitive closure ของ \(\vdash_M\) (ศูนย์หรือหลาย steps)
+</div>
+
+<div class="def-box">
+<strong>Acceptance:</strong> สตริง \(\omega\) <strong>accepted</strong> โดย \(M\) iff มี \(q \in F\) ที่ \((s, \omega) \vdash_M^* (q, e)\)<br>
+\(L(M) = \{\omega \mid M \text{ accepts } \omega\}\) = ภาษาที่ \(M\) รับรอง
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ: Trace computation ของ \(\omega = aababa\)</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">\((s, aababa)\) — start config, อ่าน a, \(\delta(s,a)=s\)</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">\(\vdash (s, ababa)\) — อ่าน a, \(\delta(s,a)=s\)</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">\(\vdash (s, baba)\) — อ่าน b, \(\delta(s,b)=q\)</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">\(\vdash (q, aba)\) — อ่าน a, \(\delta(q,a)=s\)</div></div>
+<div class="step"><div class="step-num">5</div><div class="step-content">\(\vdash (s, ba)\) — อ่าน b, \(\delta(s,b)=q\)</div></div>
+<div class="step"><div class="step-num">6</div><div class="step-content">\(\vdash (q, a)\) — อ่าน a, \(\delta(q,a)=s\)</div></div>
+<div class="step"><div class="step-num">7</div><div class="step-content">\(\vdash (s, e)\) — input หมด, state \(s \in F\) → <strong>ACCEPTED ✅</strong></div></div>
+</div>
+</div>
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ Practice 4:</strong> ระวังเขียน \(F\) ต้องเป็น<strong>เซต</strong> ไม่ใช่ element!<br>
+\(F = q_0\) ❌ → \(F = \{q_0\}\) ✅
+</div>
+</section>
+
+<!-- Slide 26: NFA — Definition & Example -->
+<section class="slide" data-chapter="2" data-title="NFA — นิยามและตัวอย่าง">
+<h1>NFA — Nondeterministic Finite Automaton <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>NFA</strong> คือ 5-tuple \(M = (K, \Sigma, \Delta, s, F)\) โดย:<br>
+• \(K, \Sigma, s, F\) — เหมือน DFA<br>
+• \(\Delta \subseteq K \times (\Sigma \cup \{e\}) \times K\) = <strong>transition relation</strong> (ไม่ใช่ function!)<br>
+<em>— แต่ละ state + input อาจมีหลายทางเลือก หรือไม่มีเลย</em>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน — ความแตกต่าง DFA vs NFA:</strong><br>
+• DFA: \(\delta\) เป็น <strong>function</strong> (one-to-one mapping) → กำหนดผลลัพธ์ได้แน่นอน<br>
+• NFA: \(\Delta\) เป็น <strong>relation</strong> (one-to-many / many-to-many) → ต้อง "เดาทุกทาง"<br>
+• NFA มี <strong>e-transition</strong> (เปลี่ยน state โดยไม่อ่าน input)<br><br>
+สรุป: NFA ยอมรับสตริง iff <strong>มีอย่างน้อยหนึ่งเส้นทาง</strong>ที่ไปถึง final state
+</div>
+
+<div class="example-box">
+<strong>NFA สำหรับ \((a \cup ab)^*\):</strong><br>
+\(M = (\{s,q\}, \{a,b\}, \Delta, s, \{s\})\)<br>
+\(\Delta = \{(s,a,q), (q,e,s), (q,b,s)\}\)<br><br>
+<div class="diagram-container">
+<svg width="300" height="120" viewBox="0 0 300 120">
+<defs><marker id="ah2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="var(--text2)"/></marker></defs>
+<circle cx="80" cy="60" r="28" class="state"/><circle cx="80" cy="60" r="23" class="final-state"/>
+<text x="80" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--text)">s</text>
+<circle cx="220" cy="60" r="28" class="state"/>
+<text x="220" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--text)">q</text>
+<line x1="20" y1="60" x2="50" y2="60" stroke="var(--text2)" stroke-width="1.5" marker-end="url(#ah2)"/>
+<path d="M 108 50 Q 150 10 192 50" stroke="var(--text2)" fill="none" stroke-width="1.5" marker-end="url(#ah2)"/>
+<text x="150" y="22" text-anchor="middle" font-size="13" fill="var(--text)">a</text>
+<path d="M 192 70 Q 150 110 108 70" stroke="var(--text2)" fill="none" stroke-width="1.5" marker-end="url(#ah2)"/>
+<text x="150" y="105" text-anchor="middle" font-size="13" fill="var(--text)">e, b</text>
+</svg>
+</div>
+สังเกต: มี <strong>e-transition</strong> จาก \(q\) กลับ \(s\) (ไม่ต้องอ่าน input)
+</div>
+</section>
+
+<!-- Continue with remaining slides... -->
+<!-- Due to length, I'll include the key remaining content sections -->
+
+<!-- Slide 27: NFA to DFA — Powerset Construction -->
+<section class="slide" data-chapter="2" data-title="NFA → DFA — Powerset Construction">
+<h1>NFA → DFA: Powerset Construction <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<div class="thm-box">
+สำหรับทุก NFA มี DFA ที่เท่าเทียมกัน (equivalent) — คือรับภาษาเดียวกัน
+</div>
+
+<h2>E-Closure (การปิดแบบ epsilon)</h2>
+<div class="def-box">
+\(E(q) = \{p \mid p \in K \text{ and } (q, e) \vdash_M^* (p, e)\}\)<br>
+<em>— เซตของ state ทั้งหมดที่ไปถึงจาก \(q\) ผ่าน e-transition เท่านั้น (รวม \(q\) เอง)</em>
+</div>
+
+<h2>การสร้าง DFA \(M' = (K', \Sigma, \delta, s', F')\)</h2>
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+\(K' = 2^K\) — แต่ละ state ของ DFA ใหม่เป็น<strong>เซตของ states</strong> (superstate)
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+\(s' = E(s)\) — initial state ใหม่ = E-closure ของ initial state เดิม
+</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">
+\(\delta(Q, \sigma) = \bigcup_{q \in Q} \{E(p) \mid (q, \sigma, p) \in \Delta\}\) — transition: รวม E-closure ของทุกปลายทาง
+</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">
+\(F' = \{Q \subseteq K \mid Q \cap F \neq \emptyset\}\) — final state = superstate ที่มี final state เดิมอยู่ข้างใน
+</div></div>
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 1, Q14:</strong> แปลง NFA ที่มี \(E(q_0) = \{q_0, q_1\}\)<br>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Step 1:</strong> \(q'_0 = E(q_0) = \{q_0, q_1\}\)<br><br>
+<strong>Step 2:</strong> หา \(\delta'(q'_0, a)\):<br>
+จาก \(q_0\) อ่าน \(a\) ไปได้ \(q_0\) → \(E(q_0) = \{q_0, q_1\}\)<br>
+จาก \(q_1\) อ่าน \(a\) ไปได้ ... (ดูจาก NFA)<br>
+รวม E-closure ทั้งหมด → ได้ superstate ใหม่<br><br>
+<strong>Step 3:</strong> \(\delta'(\delta'(q'_0, a), b) = \delta'(\{q_0, q_1\}, b)\)<br>
+จาก \(q_0\) อ่าน \(b\) → \(q_0\) → \(E(q_0) = \{q_0, q_1\}\)<br>
+จาก \(q_1\) อ่าน \(b\) → \(q_2, q_4\) → \(E(q_2) \cup E(q_4)\)<br>
+ผลลัพธ์: \(\{q_0, q_1, q_2, q_4\}\)
+</div>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน (Powerset Construction ตั้งชื่อโดย Scott and Dana, 1958):</strong><br>
+• แต่ละ state ของ DFA ใหม่เรียกว่า <strong>"superstate"</strong><br>
+• E-Closure คำนวณโดย iterate จนไม่เปลี่ยนแปลง (convergence)
+</div>
+</section>
+
+<!-- Slide: DFA Design Examples -->
+<section class="slide" data-chapter="2" data-title="DFA Design — ตัวอย่างออกแบบ FA">
+<h1>DFA Design — ตัวอย่างออกแบบ FA <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<h2>ตัวอย่าง 1: FA สำหรับ \(\{aba\}\)</h2>
+<div class="example-box">
+ต้องการ FA ที่รับเฉพาะสตริง "aba"<br>
+States: \(q_0 \xrightarrow{a} q_1 \xrightarrow{b} q_2 \xrightarrow{a} q_3\) (accept)<br>
+ทุก input อื่นไปสู่ <strong>dead state</strong> \(q_d\) (ค้างอยู่ตลอด)
+</div>
+
+<h2>ตัวอย่าง 2: FA สำหรับ \(a\Sigma^*\) (เริ่มด้วย a)</h2>
+<div class="example-box">
+States: \(q_0 \xrightarrow{a} q_1\), \(q_0 \xrightarrow{b} q_d\)<br>
+\(q_1\) = final state, self-loop ทั้ง a และ b<br>
+\(q_d\) = dead state, self-loop ทั้ง a และ b
+</div>
+
+<h2>ตัวอย่าง 3: FA สำหรับ \(\{\omega \mid \text{len}(\omega) \bmod 3 = 0\}\)</h2>
+<div class="example-box">
+States: \(q_0, q_1, q_2\) — นับ mod 3<br>
+\(q_0 \xrightarrow{a,b} q_1 \xrightarrow{a,b} q_2 \xrightarrow{a,b} q_0\)<br>
+\(F = \{q_0\}\) — accept เมื่อเหลือ 0 mod 3
+</div>
+
+<h2>ตัวอย่าง 4: FA สำหรับ \(\{ab\}\{a\}^*\) (Practice 2)</h2>
+<div class="example-box">
+อ่าน a → อ่าน b → แล้วอ่าน a กี่ตัวก็ได้<br>
+\(q_0 \xrightarrow{a} q_1 \xrightarrow{b} q_2\), \(q_2\) self-loop a, \(F = \{q_2\}\)
+</div>
+
+<h2>ตัวอย่าง 5: FA สำหรับ divisible by 4 (Practice 3)</h2>
+<div class="example-box">
+ค่า decimal ของ bit sequence \(b_n...b_0 = \sum b_i 2^i\) หาร 4 ลงตัว<br>
+<strong>Key insight:</strong> ตัวเลข÷4 ดูแค่ 2 bits สุดท้าย!<br>
+ต้องลงท้ายด้วย 00 → States ติดตาม "last 2 bits"
+</div>
+
+<div class="tip-box">
+<strong>เทคนิคจากห้องเรียน (fa-annotated):</strong><br>
+<strong>RL → FSA (Regex → FA):</strong><br>
+1. Decompose junction states (จุดที่มี incoming edge มากกว่า 1)<br>
+2. Unroll all loops (แปลง * เป็น loop structure)<br>
+3. Linearize unions (แยก ∪ เป็นหลาย path)
+</div>
+</section>
+
+<!-- Slide: E-closure Computation -->
+<section class="slide" data-chapter="2" data-title="E-closure — การคำนวณ Convergence Table">
+<h1>E-closure — วิธีคำนวณ <span class="exam-badge">ออกสอบ NFA→DFA</span></h1>
+
+<div class="def-box">
+\(E(q)\) = เซตของทุก state ที่ไปถึงจาก \(q\) ผ่าน <strong>e-transition เท่านั้น</strong> (รวม \(q\) เอง)
+</div>
+
+<h2>วิธีคำนวณ: Convergence Table (จากห้องเรียน)</h2>
+<div class="example-box">
+<strong>ตัวอย่าง:</strong> NFA มี e-transitions: \(q_0 \xrightarrow{e} q_1\), \(q_1 \xrightarrow{e} q_2, q_3\), \(q_4 \xrightarrow{e} q_3\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงตาราง Convergence</button>
+<div class="solution-content">
+<table>
+<tr><th>State</th><th>Iter 1</th><th>Iter 2</th><th>Iter 3</th></tr>
+<tr><td>\(q_0\)</td><td>\(\{q_0, q_1\}\)</td><td>\(\{q_0, q_1, q_2, q_3\}\)</td><td>\(\{q_0, q_1, q_2, q_3\}\) ✓</td></tr>
+<tr><td>\(q_1\)</td><td>\(\{q_1, q_2, q_3\}\)</td><td>\(\{q_1, q_2, q_3\}\) ✓</td><td>—</td></tr>
+<tr><td>\(q_2\)</td><td>\(\{q_2\}\) ✓</td><td>—</td><td>—</td></tr>
+<tr><td>\(q_3\)</td><td>\(\{q_3\}\) ✓</td><td>—</td><td>—</td></tr>
+<tr><td>\(q_4\)</td><td>\(\{q_4, q_3\}\) ✓</td><td>—</td><td>—</td></tr>
+</table>
+<strong>Convergence:</strong> เมื่อ iteration ไม่เปลี่ยนแปลง → หยุด!<br>
+ผลลัพธ์: \(E(q_0) = \{q_0, q_1, q_2, q_3\}\), \(E(q_4) = \{q_4, q_3\}\)
+</div>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> คำนวณ iterate จนได้ "CONVERGENCE" — ค่าไม่เปลี่ยน = เสร็จ<br>
+\(E(q) = \{q\} \cup \bigcup\{E(p) \mid (q, e, p) \in \Delta\}\) → ทำซ้ำจน stable
+</div>
+</section>
+
+<!-- Slide: NFA→DFA Full Worked Example -->
+<section class="slide" data-chapter="2" data-title="NFA→DFA — ตัวอย่างเต็ม Powerset Construction">
+<h1>NFA→DFA — ตัวอย่างเต็ม <span class="exam-badge">ออกสอบทุกชุด</span></h1>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 3, Q9:</strong> แปลง NFA เป็น DFA
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลยละเอียด</button>
+<div class="solution-content">
+<strong>Step 1: คำนวณ E-closure</strong><br>
+\(E(q_0) = \{q_0, q_1\}\), \(E(q_1) = \{q_1\}\), \(E(q_2) = \{q_2\}\), \(E(q_3) = \{q_3, q_4\}\), \(E(q_4) = \{q_4\}\)<br><br>
+
+<strong>Step 2: Initial superstate</strong><br>
+\(s' = E(q_0) = \{q_0, q_1\}\)<br><br>
+
+<strong>Step 3: สร้าง transition table</strong><br>
+<table>
+<tr><th>Superstate</th><th>a</th><th>b</th></tr>
+<tr><td>\(\{q_0, q_1\}\) ★</td><td>\(\{q_0, q_1, q_2, q_4\}\)</td><td>\(\{q_0, q_1, q_3, q_4\}\)</td></tr>
+<tr><td>\(\{q_0, q_1, q_2, q_4\}\)</td><td>...</td><td>...</td></tr>
+<tr><td>\(\{q_0, q_1, q_3, q_4\}\)</td><td>...</td><td>...</td></tr>
+</table>
+
+<strong>วิธีคำนวณ \(\delta'(\{q_0,q_1\}, a)\):</strong><br>
+• จาก \(q_0\) อ่าน \(a\): ไปได้ \(q_0\) → \(E(q_0) = \{q_0, q_1\}\)<br>
+• จาก \(q_1\) อ่าน \(a\): ไปได้ \(q_2\) → \(E(q_2) = \{q_2\}\)<br>
+→ รวม: \(\{q_0, q_1\} \cup \{q_2\} = \{q_0, q_1, q_2\}\)<br>
+(เพิ่ม \(q_4\) ถ้ามี e-transition จาก states ที่ได้)<br><br>
+
+<strong>Step 4: Final superstates</strong><br>
+Superstate ที่มี original final state อยู่ข้างใน = final
+</div>
+</div>
+
+<div class="warn-box">
+<strong>ระวัง:</strong> ใน powerset construction ต้องคำนวณ E-closure <strong>หลัง</strong>ทุก transition ด้วย!<br>
+\(\delta'(Q, \sigma) = \bigcup_{q \in Q} E(\text{targets from } (q, \sigma))\)
+</div>
+</section>
+
+<!-- Slide: NFA Computation Tree -->
+<section class="slide" data-chapter="2" data-title="NFA Computation Tree">
+<h1>NFA Computation Tree <span class="exam-badge">ออกสอบ</span></h1>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> NFA "ลองทุกทาง" — วาดเป็น computation tree<br>
+ถ้ามีอย่างน้อย 1 ใบ (leaf) ที่อยู่ใน final state + input หมด → <strong>ACCEPTED</strong>
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 3, Q7:</strong> NFA \(M\), ตรวจ \(\omega = ab\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง Computation Tree</button>
+<div class="solution-content">
+<pre style="font-family:var(--mono);font-size:13px;background:var(--bg2);padding:16px;border-radius:var(--radius-sm);overflow-x:auto;">
+              (q₀, ab)
+              /       \
+         (q₀, b)    (q₁, ab)
+         /    \         |
+    (q₀, e) (q₂, e)  (q₁, b)
+      ↓        ↓      /    \
+   HANG!    ACCEPT!  (q₂,e)  (q₄, e)
+                       ↓       ↓
+                     ACCEPT! HANG!
+</pre>
+<strong>มี path ที่ถึง final state + input หมด → ACCEPTED ✅</strong><br>
+(แม้บาง path จะ hang ก็ไม่เป็นไร — ขอแค่มี 1 path สำเร็จ)
+</div>
+</div>
+
+<div class="warn-box">
+<strong>DFA vs NFA acceptance:</strong><br>
+• DFA: มีเส้นทาง<strong>เดียว</strong>เท่านั้น → ตรวจปลายทาง<br>
+• NFA: มี<strong>หลายเส้นทาง</strong> → accept ถ้า<strong>มีอย่างน้อย 1 เส้นทาง</strong>ที่ถึง final state
+</div>
+</section>
+
+<!-- Slide: DFA Complement -->
+<section class="slide" data-chapter="2" data-title="DFA Complement — สลับ Final States">
+<h1>DFA Complement — สลับ Final States <span class="exam-badge">ออกสอบ</span></h1>
+
+<div class="def-box">
+ให้ DFA \(M = (K, \Sigma, \delta, s, F)\)<br>
+สร้าง \(M' = (K, \Sigma, \delta, s, K - F)\) — สลับ final กับ non-final<br>
+แล้ว \(L(M') = \Sigma^* - L(M)\) = complement ของ L(M)
+</div>
+
+<div class="example-box">
+<strong>ข้อสอบ Practice 1, Q12:</strong> ให้ DFA \(M\) มี \(F = \{q_0, q_1, q_2\}\)<br>
+สร้าง \(M'\) ที่ \(L(M') = \Sigma^* - L(M)\)<br>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+เปลี่ยน final states เป็น \(F' = K - F = \{q_3\}\)<br>
+DFA \(M'\) เหมือน \(M\) ทุกอย่าง ยกเว้น final state เปลี่ยนเป็น \(\{q_3\}\)<br>
+→ \(L(M')\) = ทุกสตริงที่ \(M\) <strong>ไม่</strong>ยอมรับ
+</div>
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ Practice 4, Q13 — กรณีพิเศษ:</strong><br>
+ถ้า \(M' = (K, \Sigma, \delta, s, K-F \cup \{s\})\) (complement + เพิ่ม s เป็น final)<br>
+จะได้ \(L(M) \cup L(M') = \Sigma^*\) ✅<br>
+แต่ \(L(M') \neq \overline{L(M)}\)! เพราะ s อาจเป็น final ทั้งใน M และ M'<br>
+→ ทำให้ \(L(M) \cap L(M') \neq \emptyset\) (ไม่ disjoint)
+</div>
+
+<div class="tip-box">
+<strong>ใช้ Complement พิสูจน์ว่าภาษาไม่ regular:</strong><br>
+ถ้า \(L\) regular → \(\overline{L}\) regular (closure)<br>
+ดังนั้นถ้า \(\overline{L}\) ไม่ regular → \(L\) ก็ไม่ regular! (contrapositive)
+</div>
+</section>
+
+<!-- Slide: FA ↔ RL Equivalence -->
+<section class="slide" data-chapter="2" data-title="FA ↔ Regular Language — Kleene's Theorem">
+<h1>FA ↔ Regular Language — Kleene's Theorem</h1>
+
+<div class="thm-box">
+<strong>Kleene's Theorem:</strong> ภาษา \(L\) เป็น regular iff \(L\) ถูกรับรองโดย finite automaton
+</div>
+
+<h2>ทิศทาง 1: Regular → FA</h2>
+<p>ทุก regular language มี regular expression → สร้าง NFA จาก regex ได้:</p>
+<ul>
+<li>\(\emptyset\) → NFA ที่ไม่มี final state</li>
+<li>\(\{a\}\) → NFA: \(q_0 \xrightarrow{a} q_1\) (final)</li>
+<li>\(L_1 \cup L_2\) → NFA ใหม่: e-transition ไปยัง NFA ของ \(L_1\) และ \(L_2\)</li>
+<li>\(L_1 \cdot L_2\) → NFA ของ \(L_1\) ต่อด้วย \(L_2\) ผ่าน e-transitions</li>
+<li>\(L^*\) → เพิ่ม e-transition loop กลับ initial state</li>
+</ul>
+
+<h2>ทิศทาง 2: FA → Regular</h2>
+<div class="tip-box">
+<strong>จากห้องเรียน (FSA → RL):</strong><br>
+ใช้ <strong>State Elimination</strong>:<br>
+1. Eliminate states ทีละตัว<br>
+2. แทนที่ด้วย regex บน edges<br>
+3. จนเหลือ start state กับ final state → regex บน edge = คำตอบ<br><br>
+หรือใช้สูตร \(R(i,j,k)\):<br>
+\(R(i,j,k) = R(i,j,k-1) \cup R(i,k,k-1) \cdot R(k,k,k-1)^* \cdot R(k,j,k-1)\)
+</div>
+</section>
+
+<!-- Slide: Pumping Theorem — More Examples -->
+<section class="slide" data-chapter="2" data-title="Pumping Theorem — ตัวอย่างเพิ่มเติม">
+<h1>Pumping Theorem — ตัวอย่างเพิ่มเติม</h1>
+
+<div class="example-box">
+<strong>พิสูจน์: \(\{\omega \in \{a,b\}^* \mid \omega \text{ มี a กับ b จำนวนเท่ากัน}\}\) ไม่เป็น regular</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+สมมติ \(L\) เป็น regular → มี pumping length \(n\)<br>
+เลือก \(\omega = a^n b^n \in L\) (มี a, b จำนวนเท่ากัน, ความยาว \(2n \geq n\))<br>
+เขียน \(\omega = xyz\) ที่ \(|xy| \leq n\) → \(xy\) อยู่ในส่วน \(a^n\) → \(y = a^j, j \geq 1\)<br>
+Pump \(k=2\): \(xy^2z = a^{n+j}b^n\) แต่ \(n+j \neq n\) → จำนวน a ≠ จำนวน b → \(xy^2z \notin L\)<br>
+ขัดแย้ง! ∴ \(L\) ไม่เป็น regular ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>พิสูจน์: \(\{a^nb^nc^n \mid n \geq 0\}\) ไม่เป็น regular</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+เหมือนกับ \(\{a^nb^n\}\) เพราะ \(|xy| \leq n\) → \(y\) อยู่ในส่วน \(a^n\) ทั้งหมด<br>
+Pump \(k=0\): \(xz = a^{n-j}b^nc^n\) แต่ \(n-j < n\) → จำนวน a < b = c → ไม่อยู่ใน L<br>
+∴ ไม่เป็น regular ∎
+</div>
+</div>
+
+<div class="tip-box">
+<strong>Pumping Theorem ใช้พิสูจน์อะไร?</strong><br>
+• ✅ ใช้พิสูจน์ว่าภาษา<strong>ไม่เป็น</strong> regular (proof by contradiction)<br>
+• ❌ <strong>ไม่สามารถ</strong>ใช้พิสูจน์ว่าภาษา<strong>เป็น</strong> regular!<br>
+(มีภาษาที่ไม่ regular แต่ผ่าน pumping condition ได้)
+</div>
+</section>
+
+<!-- Slide: State Minimization — Detail -->
+<section class="slide" data-chapter="2" data-title="State Minimization — วิธีละเอียด">
+<h1>State Minimization — วิธีละเอียด</h1>
+
+<h2>Equivalence Relation ระหว่าง States</h2>
+<div class="def-box">
+\(L'_p = \{\omega \mid \exists f \in F: (p, \omega) \vdash^* (f, e)\}\) — ภาษาที่ state \(p\) ยอมรับ<br>
+\(p \equiv q\) iff \(L'_p = L'_q\) — "p กับ q ทำหน้าที่เหมือนกัน"<br>
+\(p \equiv_n q\) iff \(L'_{p,n} = L'_{q,n}\) — "เหมือนกันสำหรับ strings ยาวไม่เกิน n"
+</div>
+
+<h2>Lemma สำคัญ</h2>
+<div class="thm-box">
+\(p \equiv_{n+1} q\) iff:<br>
+1. \(p \equiv_n q\) (เหมือนกันในระดับ n)<br>
+2. สำหรับทุก \(a \in \Sigma\): \(\delta(p,a) \equiv_n \delta(q,a)\) (successor ก็เหมือนกัน)
+</div>
+
+<div class="example-box">
+<strong>ตัวอย่างจากห้องเรียน (fa-annotated):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงขั้นตอนละเอียด</button>
+<div class="solution-content">
+<table>
+<tr><th>State</th><th>0</th><th>1</th><th>Final?</th></tr>
+<tr><td>→ q₀</td><td>q₁</td><td>q₃</td><td>❌</td></tr>
+<tr><td>q₁</td><td>q₀</td><td>q₃</td><td>❌</td></tr>
+<tr><td>q₂</td><td>q₁</td><td>q₄</td><td>❌</td></tr>
+<tr><td>★ q₃</td><td>q₅</td><td>q₅</td><td>✅</td></tr>
+<tr><td>q₄</td><td>q₃</td><td>q₃</td><td>❌</td></tr>
+<tr><td>★ q₅</td><td>q₅</td><td>q₅</td><td>✅</td></tr>
+</table>
+<strong>Step 1:</strong> ลบ unreachable: q₂, q₄ ไม่ reachable จาก q₀ → ลบ<br>
+<strong>Step 2:</strong> \(\equiv_0\): {q₀, q₁} vs {q₃, q₅}<br>
+<strong>Step 3:</strong> \(\equiv_1\): q₀, q₁ ทั้งคู่ transition ไปที่: 0→{q₀,q₁}, 1→{q₃,q₅} → เหมือนกัน ✅<br>
+q₃, q₅ ทั้งคู่ transition ไปที่: 0→{q₃,q₅}, 1→{q₃,q₅} → เหมือนกัน ✅<br>
+<strong>Step 4:</strong> Convergence! → merge → <strong>DFA ใหม่มีแค่ 2 states!</strong>
+</div>
+</div>
+</section>
+
+<!-- Original Slide 28: Properties of FA Languages -->
+<section class="slide" data-chapter="2" data-title="คุณสมบัติ Closure ของ FA Languages">
+<h1>คุณสมบัติ Closure ของ Regular Languages <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="thm-box">
+ภาษาที่ FA รับรองได้ (= regular languages) <strong>ปิดภายใต้ (closed under):</strong><br>
+1. ✅ <strong>Union</strong> — \(L(M_1) \cup L(M_2)\) ก็ regular<br>
+2. ✅ <strong>Concatenation</strong> — \(L(M_1) \cdot L(M_2)\) ก็ regular<br>
+3. ✅ <strong>Kleene star</strong> — \(L(M_1)^*\) ก็ regular<br>
+4. ✅ <strong>Complementation</strong> — \(\overline{L(M_1)}\) ก็ regular (สลับ final/non-final ใน DFA)<br>
+5. ✅ <strong>Intersection</strong> — \(L(M_1) \cap L(M_2)\) ก็ regular (ใช้ DeMorgan หรือ product construction)
+</div>
+
+<div class="thm-box">
+ภาษา \(L\) เป็น regular iff \(L\) ถูกรับรองโดย finite automaton
+</div>
+
+<div class="tip-box">
+<strong>DFA Complement:</strong> ให้ DFA \(M\) → สร้าง \(M'\) โดยสลับ final states กับ non-final states<br>
+\(L(M') = \Sigma^* - L(M)\)
+</div>
+
+<div class="warn-box">
+<strong>ข้อสอบ Practice 4, Q13:</strong> ให้ \(M' = (K, \Sigma, \delta, s, K - F \cup \{s\})\) คือ DFA complement + เพิ่ม \(s\) เป็น final<br>
+\(L(M) \cup L(M') = \Sigma^*\) ✅ แต่ \(L(M') \neq \Sigma^* - L(M)\) (เพราะ \(s\) อาจเป็น final ทั้งสองที่!)
+</div>
+</section>
+
+<!-- Slide 29: Pumping Theorem -->
+<section class="slide" data-chapter="2" data-title="Pumping Theorem สำหรับ Regular Languages">
+<h1>Pumping Theorem <span class="exam-badge">ออกสอบเป็นข้อพิสูจน์</span></h1>
+
+<div class="thm-box">
+ให้ \(L\) เป็น regular language มีจำนวนเต็ม \(n > 0\) ที่ทุกสตริง \(\omega \in L\) ที่ \(|\omega| \geq n\) สามารถเขียนเป็น \(\omega = xyz\) โดย:<br>
+1. \(y \neq e\) (ส่วน y ต้องมีอักษรอย่างน้อย 1 ตัว)<br>
+2. \(|xy| \leq n\) (ส่วน xy อยู่ใน n ตัวแรก)<br>
+3. \(xy^kz \in L\) สำหรับทุก \(k \geq 0\) (ปั๊ม y กี่รอบก็ยังอยู่ใน L)
+</div>
+
+<h2>การใช้ Pumping Theorem พิสูจน์ว่าภาษาไม่ regular</h2>
+<div class="example-box">
+<strong>พิสูจน์:</strong> \(L = \{a^i b^i \mid i \geq 0\}\) ไม่เป็น regular
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+สมมติ (ขัดแย้ง) ว่า \(L\) เป็น regular → มี pumping length \(n\)
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+เลือก \(\omega = a^n b^n \in L\) (ความยาว \(2n \geq n\) ✓)
+</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">
+ต้องเขียน \(\omega = xyz\) ที่ \(|xy| \leq n\) → ดังนั้น \(xy\) อยู่ในส่วน \(a^n\) ทั้งหมด<br>
+→ \(y = a^j\) สำหรับบาง \(j \geq 1\)
+</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">
+ปั๊ม \(k = 0\): \(xz = a^{n-j}b^n\) แต่ \(n-j \neq n\) → \(xz \notin L\) ← <strong>ขัดแย้ง!</strong>
+</div></div>
+<div class="step"><div class="step-num">5</div><div class="step-content">
+ดังนั้น \(L\) ไม่เป็น regular ∎
+</div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Slide 30: State Minimization -->
+<section class="slide" data-chapter="2" data-title="State Minimization">
+<h1>State Minimization — ลดจำนวน State ของ DFA <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>ปัญหา</h2>
+<p>ให้ DFA \(M\) → สร้าง DFA \(M'\) ที่ \(L(M) = L(M')\) และ \(M'\) มี<strong>จำนวน state น้อยที่สุด</strong></p>
+
+<h2>อัลกอริทึม (4 ขั้นตอน)</h2>
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+<strong>Eliminate unreachable states:</strong> ลบ state ที่ไม่สามารถไปถึงจาก initial state
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+<strong>Split finals / non-finals:</strong> แบ่ง states เป็น 2 กลุ่ม: final states กับ non-final states
+</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">
+<strong>Recursively split:</strong> ในแต่ละกลุ่ม ถ้ามี state ที่ transition ไปคนละกลุ่ม → แยกออก (ทำซ้ำจนไม่เปลี่ยน)
+</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">
+<strong>Redraw DFA:</strong> รวม state ที่อยู่กลุ่มเดียวกันเป็น state เดียว
+</div></div>
+</div>
+
+<div class="example-box">
+<strong>จากห้องเรียน (fa-annotated):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงตัวอย่างละเอียด</button>
+<div class="solution-content">
+<strong>State Transition Table เดิม:</strong><br>
+<table>
+<tr><th>State</th><th>0</th><th>1</th></tr>
+<tr><td>> q₀</td><td>q₁</td><td>q₃</td></tr>
+<tr><td>q₁</td><td>q₀</td><td>q₃</td></tr>
+<tr><td>q₂</td><td>q₁</td><td>q₄</td></tr>
+<tr><td>* q₃</td><td>q₅</td><td>q₅</td></tr>
+<tr><td>q₄</td><td>q₃</td><td>q₃</td></tr>
+<tr><td>* q₅</td><td>q₅</td><td>q₅</td></tr>
+</table>
+<strong>Step 1:</strong> q₂, q₄ unreachable → ลบ → เหลือ q₀, q₁, q₃, q₅<br>
+<strong>Step 2:</strong> Non-final: {q₀, q₁}, Final: {q₃, q₅}<br>
+<strong>Step 3:</strong> q₀ กับ q₁ transition เหมือนกัน → ไม่แยก, q₃ กับ q₅ transition เหมือนกัน → ไม่แยก<br>
+<strong>Step 4:</strong> G₁={q₀,q₁}, G₂={q₃,q₅} → DFA ใหม่มีแค่ 2 states!
+</div>
+</div>
+
+<h2>สรุป Complexity ของ Finite Automata</h2>
+<table>
+<tr><th>ปัญหา</th><th>Complexity</th></tr>
+<tr><td>NFA → DFA</td><td>Exponential (ในกรณีเลวร้าย)</td></tr>
+<tr><td>DFA Minimization</td><td>Polynomial</td></tr>
+<tr><td>DFA equivalence check</td><td>Polynomial</td></tr>
+<tr><td>\(\omega \in L(M)\) สำหรับ DFA</td><td>\(O(|\omega|)\)</td></tr>
+<tr><td>\(\omega \in L(M)\) สำหรับ NFA</td><td>Polynomial</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 3: CONTEXT-FREE LANGUAGES                              -->
+<!-- ============================================================ -->
+
+<section class="slide" data-chapter="3" data-title="บทที่ 3: ภาษาไม่ขึ้นบริบท">
+<div class="chapter-cover">
+  <div class="ch-num">03</div>
+  <h1>Context-Free Languages</h1>
+  <p style="font-size:18px;color:var(--text3);">ภาษาไม่ขึ้นบริบท</p>
+  <ul class="ch-topics">
+    <li>🔹 Context-Free Grammar (CFG)</li>
+    <li>🔹 Regular ⊂ Context-Free</li>
+    <li>🔹 Parse Trees & Ambiguity</li>
+    <li>🔹 Pushdown Automata (PDA)</li>
+    <li>🔹 Chomsky Normal Form & CYK</li>
+  </ul>
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="CFG — นิยามและ Derivation">
+<h1>Context-Free Grammar (CFG) — นิยาม</h1>
+<div class="def-box">
+<strong>CFG</strong> คือ 4-tuple \(G = (V, \Sigma, R, S)\) โดย:<br>
+• \(V\) = alphabet (สัญลักษณ์ทั้งหมด)<br>
+• \(\Sigma \subset V\) = <strong>terminals</strong> (สัญลักษณ์ปลายทาง — ตัวอักษรจริง)<br>
+• \(V - \Sigma\) = <strong>nonterminals</strong> (สัญลักษณ์กลาง — ตัวแปร)<br>
+• \(R \subseteq (V - \Sigma) \times V^*\) = <strong>rules</strong> (กฎการผลิต)<br>
+• \(S \in V - \Sigma\) = <strong>start symbol</strong>
+</div>
+<p>เขียน \(A \to u\) สำหรับกฎ \((A, u) \in R\)</p>
+<p>\(\omega \Rightarrow_G \upsilon\) iff มีกฎ \(A \to u\) ที่ \(\omega = xAy\) และ \(\upsilon = xuy\)</p>
+<p><strong>Derivation:</strong> \(\omega_0 \Rightarrow \omega_1 \Rightarrow ... \Rightarrow \omega_n\)</p>
+<p>\(L(G) = \{\omega \in \Sigma^* \mid S \Rightarrow^* \omega\}\) = ภาษาที่ \(G\) สร้าง</p>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> CFG "ไม่ขึ้นบริบท" หมายถึง กฎ \(A \to u\) ใช้ได้ทุกที่ที่พบ \(A\) โดยไม่ต้องดูว่ามีอะไรล้อมรอบ (context ไม่สำคัญ)
+</div>
+
+<div class="example-box">
+<strong>Grammar สำหรับ arithmetic expressions:</strong><br>
+\(\Sigma = \{x, +, *, (, )\}\), \(V = \Sigma \cup \{E, T, F\}\)<br>
+\(R = \{E \to E+T, \; E \to T, \; T \to T*F, \; T \to F, \; F \to (E), \; F \to x\}\)<br><br>
+<strong>Derivation ของ (x):</strong><br>
+\(E \Rightarrow T \Rightarrow F \Rightarrow (E) \Rightarrow (T) \Rightarrow (F) \Rightarrow (x)\)
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="Regular ⊂ CFL & CFG Design">
+<h1>Regular ⊂ Context-Free & CFG Design</h1>
+
+<div class="thm-box">ทุก regular language เป็น context-free language (แต่กลับกันไม่จริง!)</div>
+
+<div class="proof-box">
+<strong>Proof:</strong> ให้ DFA \(M = (K, \Sigma, \delta, s, F)\) สร้าง CFG \(G = (V, \Sigma, R, S)\):<br>
+• \(V = K \cup \Sigma\), \(S = s\)<br>
+• กฎ: \(P \to aQ\) เมื่อ \(\delta(P, a) = Q\), และ \(P \to e\) เมื่อ \(P \in F\)<br>
+ทุก accepted computation ของ DFA สามารถจำลองเป็น leftmost derivation ใน \(G\) ∎
+</div>
+
+<h2>ตัวอย่าง CFL ที่ไม่ใช่ Regular (สำคัญมาก)</h2>
+<div class="example-box">
+<table>
+<tr><th>ภาษา</th><th>Grammar</th><th>ทำไมไม่ regular</th></tr>
+<tr><td>\(\{a^n b^n \mid n \geq 0\}\)</td><td>\(S \to aSb \mid e\)</td><td>ต้อง "จำ" จำนวน a เพื่อจับคู่ b</td></tr>
+<tr><td>\(\{a^n b^{2n} \mid n \geq 0\}\)</td><td>\(S \to aSbb \mid e\)</td><td>ต้อง "จำ" จำนวน a → ผลิต b สองเท่า</td></tr>
+<tr><td>\(\{\omega\omega^R \mid \omega \in \{a,b\}^*\}\)</td><td>\(S \to aSa \mid bSb \mid e\)</td><td>ต้อง "จำ" ลำดับตัวอักษร</td></tr>
+<tr><td>Balanced parentheses</td><td>\(S \to (S) \mid SS \mid e\)</td><td>ต้อง "นับ" ว่าเปิดวงเล็บกี่ตัว</td></tr>
+</table>
+</div>
+
+<h2>เทคนิคออกแบบ CFG (จากห้องเรียน)</h2>
+<div class="tip-box">
+<strong>1. Recursive structure:</strong> หารูปแบบ recursive เช่น \(a^nb^n\) = a + (ตรงกลาง) + b<br>
+<strong>2. Union decomposition:</strong> ถ้า \(L = L_1 \cup L_2\) ให้ \(S \to S_1 \mid S_2\)<br>
+<strong>3. Concatenation:</strong> ถ้า \(L = L_1 \cdot L_2\) ให้ \(S \to S_1 S_2\)<br>
+<strong>4. Kleene star:</strong> ถ้า \(L = L_1^*\) ให้ \(S \to S_1 S \mid e\)
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="Derivation Types — Leftmost, Rightmost">
+<h1>ประเภทของ Derivation</h1>
+
+<h2>Leftmost Derivation (\(\Rightarrow_L\))</h2>
+<div class="def-box">
+แทนที่ nonterminal ตัว<strong>ซ้ายสุด</strong>ก่อนเสมอ<br>
+\(E \Rightarrow_L E + T \Rightarrow_L T + T \Rightarrow_L F + T \Rightarrow_L x + T \Rightarrow_L x + F \Rightarrow_L x + x\)
+</div>
+
+<h2>Rightmost Derivation (\(\Rightarrow_R\))</h2>
+<div class="def-box">
+แทนที่ nonterminal ตัว<strong>ขวาสุด</strong>ก่อนเสมอ<br>
+\(E \Rightarrow_R E + T \Rightarrow_R E + F \Rightarrow_R E + x \Rightarrow_R T + x \Rightarrow_R F + x \Rightarrow_R x + x\)
+</div>
+
+<div class="thm-box">
+ข้อความต่อไปนี้เทียบเท่ากัน:<br>
+1. \(A \Rightarrow^* \omega\)<br>
+2. มี parse tree ที่มี root \(A\) และ yield \(\omega\)<br>
+3. \(A \Rightarrow_L^* \omega\) (leftmost derivation)<br>
+4. \(A \Rightarrow_R^* \omega\) (rightmost derivation)
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> "S = sentence" — start symbol เหมือน "ประโยค" ที่จะถูก "แจกแจง" ออกเป็นส่วนย่อยๆ (mother → daughter nodes)
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="Parse Trees & Ambiguity">
+<h1>Parse Trees & Ambiguity <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>Parse Tree (ต้นไม้การแจกแจง)</h2>
+<p>แสดง derivation เป็นโครงสร้างต้นไม้:</p>
+<ul>
+<li><strong>Root:</strong> start symbol (หรือ nonterminal ที่เริ่มต้น)</li>
+<li><strong>Internal nodes:</strong> nonterminals — เรียกว่า <strong>mother</strong></li>
+<li><strong>Children:</strong> ลูกของ mother — เรียกว่า <strong>daughter</strong></li>
+<li><strong>Leaves (yield):</strong> terminals ที่เรียงจากซ้ายไปขวา = สตริงผลลัพธ์</li>
+</ul>
+
+<h2>Ambiguity (ความกำกวม)</h2>
+<div class="def-box">
+Grammar \(G\) เป็น <strong>ambiguous</strong> iff มีสตริง \(\omega \in L(G)\) ที่มี parse tree <strong>มากกว่า 1 ต้น</strong> (หรือ leftmost derivation มากกว่า 1 แบบ)
+</div>
+
+<div class="example-box">
+<strong>G₁ (unambiguous):</strong> \(E \to E+T \mid T\), \(T \to T*F \mid F\), \(F \to (E) \mid x\)<br>
+<strong>G₂ (ambiguous):</strong> \(E \to E+E \mid E*E \mid (E) \mid x\)<br><br>
+สตริง \(x + x * x\) :<br>
+• ใน G₁: parse tree เดียว (precedence: * > + ถูกบังคับโดยโครงสร้าง)<br>
+• ใน G₂: มี <strong>2 parse trees</strong> — \((x+x)*x\) หรือ \(x+(x*x)\) — กำกวม!
+</div>
+
+<div class="warn-box">
+<strong>Ambiguity เป็นคุณสมบัติของ Grammar ไม่ใช่ Language!</strong><br>
+ภาษาเดียวกันอาจมี grammar ที่ ambiguous และ unambiguous ได้<br>
+แต่ถ้าทุก grammar สำหรับภาษา L เป็น ambiguous → L เรียกว่า <strong>inherently ambiguous</strong>
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="Pushdown Automata (PDA) — นิยาม">
+<h1>Pushdown Automata (PDA) — นิยาม <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>PDA</strong> = NFA + Stack! — 6-tuple \(M = (K, \Sigma, \Gamma, \Delta, s, F)\)<br>
+• \(K\) = เซตจำกัดของ states<br>
+• \(\Sigma\) = input alphabet<br>
+• \(\Gamma\) = <strong>stack alphabet</strong> (สัญลักษณ์ที่ใช้ใน stack)<br>
+• \(s \in K\) = initial state<br>
+• \(F \subseteq K\) = final states<br>
+• \(\Delta \subseteq (K \times (\Sigma \cup \{e\}) \times \Gamma^*) \times (K \times \Gamma^*)\) = transition relation
+</div>
+
+<h2>การอ่าน Transition</h2>
+<p>transition \(((p, a, \alpha), (q, \beta))\) หมายถึง:</p>
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">อยู่ที่ state \(p\)</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">อ่าน input \(a\) (หรือ \(e\) = ไม่อ่าน)</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">Pop \(\alpha\) ออกจาก top ของ stack (ต้อง match!)</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">เปลี่ยนเป็น state \(q\)</div></div>
+<div class="step"><div class="step-num">5</div><div class="step-content">Push \(\beta\) ลง stack</div></div>
+</div>
+
+<h2>Configuration & Acceptance</h2>
+<p><strong>Configuration:</strong> \((q, \omega, \upsilon)\) = (state ปัจจุบัน, input ที่เหลือ, stack contents)</p>
+<p><strong>Acceptance:</strong> \((s, \omega, e) \vdash^* (q, e, e)\) โดย \(q \in F\)</p>
+<p><em>— input หมด + stack ว่าง + อยู่ที่ final state = accepted!</em></p>
+</section>
+
+<section class="slide" data-chapter="3" data-title="PDA — ตัวอย่างและ Computation Trace">
+<h1>PDA — ตัวอย่างพร้อม Computation Trace</h1>
+
+<div class="example-box">
+<strong>PDA สำหรับ \(L = \{\omega c \omega^R \mid \omega \in \{a,b\}^*\}\):</strong><br>
+\(M = (\{s, f\}, \{a,b,c\}, \{a,b\}, \Delta, s, \{f\})\)<br>
+\(\Delta = \{ ((s,a,e),(s,a)), ((s,b,e),(s,b)), ((s,c,e),(f,e)), ((f,a,a),(f,e)), ((f,b,b),(f,e)) \}\)<br><br>
+<strong>หลักการ:</strong><br>
+• Phase 1 (state s): อ่าน input → push ลง stack<br>
+• เจอ c: เปลี่ยนเป็น state f (ไม่อ่านจาก stack)<br>
+• Phase 2 (state f): pop จาก stack เทียบกับ input
+</div>
+
+<div class="example-box">
+<strong>Trace สำหรับ input "abcba":</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<table>
+<tr><th>Step</th><th>Configuration (state, input, stack)</th><th>Action</th></tr>
+<tr><td>0</td><td>\((s, abcba, e)\)</td><td>อ่าน a, push a</td></tr>
+<tr><td>1</td><td>\((s, bcba, a)\)</td><td>อ่าน b, push b</td></tr>
+<tr><td>2</td><td>\((s, cba, ba)\)</td><td>อ่าน c, เปลี่ยน state</td></tr>
+<tr><td>3</td><td>\((f, ba, ba)\)</td><td>อ่าน b, pop b (match!)</td></tr>
+<tr><td>4</td><td>\((f, a, a)\)</td><td>อ่าน a, pop a (match!)</td></tr>
+<tr><td>5</td><td>\((f, e, e)\)</td><td>input หมด, stack ว่าง, \(f \in F\) → <strong>ACCEPTED ✅</strong></td></tr>
+</table>
+</div>
+</div>
+
+<div class="thm-box">
+ภาษา \(L\) เป็น context-free iff มี PDA รับรอง \(L\)
+</div>
+
+<h2>CFG → PDA Construction</h2>
+<div class="tip-box">
+ให้ CFG \(G = (V, \Sigma, R, S)\) สร้าง PDA ที่จำลอง leftmost derivation:<br>
+• Stack เก็บ sentential form ที่เหลือ<br>
+• ถ้า top = nonterminal \(A\): เลือกกฎ \(A \to \alpha\) แทนที่ (nondeterministic)<br>
+• ถ้า top = terminal \(a\): match กับ input (pop + อ่าน)<br>
+• Accept เมื่อ stack ว่างและ input หมด
+</div>
+</section>
+
+<!-- Extra Ch.3: PDA for a^n b^n -->
+<section class="slide" data-chapter="3" data-title="PDA — ตัวอย่าง aⁿbⁿ และ balanced parentheses">
+<h1>PDA — ตัวอย่างเพิ่มเติม</h1>
+
+<div class="example-box">
+<strong>PDA สำหรับ \(L = \{a^n b^n \mid n \geq 1\}\):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง PDA</button>
+<div class="solution-content">
+\(M = (\{q_0, q_1, q_2\}, \{a,b\}, \{a\}, \Delta, q_0, \{q_2\})\)<br>
+\(\Delta = \{((q_0, a, e), (q_0, a)), ((q_0, b, a), (q_1, e)), ((q_1, b, a), (q_1, e)), ((q_1, e, e), (q_2, e))\}\)<br><br>
+<strong>Trace สำหรับ aabb:</strong><br>
+\((q_0, aabb, e) \vdash (q_0, abb, a) \vdash (q_0, bb, aa)\)<br>
+\(\vdash (q_1, b, a) \vdash (q_1, e, e) \vdash (q_2, e, e)\) → ACCEPT ✅
+</div>
+</div>
+
+<div class="example-box">
+<strong>PDA สำหรับ balanced parentheses \(L = \{w \mid w \text{ has matching parens}\}\):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง PDA</button>
+<div class="solution-content">
+<strong>Grammar:</strong> \(S \to (S) \mid SS \mid e\)<br>
+<strong>PDA idea:</strong><br>
+• เจอ '(' → push '(' ลง stack<br>
+• เจอ ')' → pop '(' จาก stack (ถ้า stack ว่าง → reject)<br>
+• input หมด + stack ว่าง → accept<br>
+• input หมด + stack ไม่ว่าง → reject
+</div>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน (cfg-annotated):</strong> PDA = NFA + Stack<br>
+Stack ทำให้ PDA "จำ" ได้มากกว่า FA — สามารถนับจำนวน, จับคู่ brackets, ตรวจ palindrome ได้
+</div>
+</section>
+
+<!-- Extra Ch.3: CFG More Examples -->
+<section class="slide" data-chapter="3" data-title="CFG — ตัวอย่างออกแบบเพิ่มเติม">
+<h1>CFG — ตัวอย่างออกแบบ</h1>
+
+<div class="example-box">
+<strong>\(L = \{a^i b^j \mid i \neq j\}\):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง Grammar</button>
+<div class="solution-content">
+แยกเป็น \(L = \{a^i b^j \mid i > j\} \cup \{a^i b^j \mid i < j\}\)<br>
+\(S \to S_1 \mid S_2\)<br>
+\(S_1 \to aS_1b \mid aA\), \(A \to aA \mid a\) (i > j: a เหลือ)<br>
+\(S_2 \to aS_2b \mid bB\), \(B \to bB \mid b\) (i < j: b เหลือ)
+</div>
+</div>
+
+<div class="example-box">
+<strong>\(L = \{a^i b^j c^k \mid i = j \text{ or } j = k\}\):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง Grammar</button>
+<div class="solution-content">
+\(S \to S_1 \mid S_2\)<br>
+\(S_1 \to AB\) โดย \(A \to aAb \mid e\) (a=b), \(B \to cB \mid e\) (c อะไรก็ได้)<br>
+\(S_2 \to CD\) โดย \(C \to aC \mid e\) (a อะไรก็ได้), \(D \to bDc \mid e\) (b=c)
+</div>
+</div>
+
+<div class="warn-box">
+<strong>ข้อระวัง:</strong> \(\{a^i b^j c^k \mid i = j \text{ and } j = k\} = \{a^n b^n c^n\}\) ← ภาษานี้<strong>ไม่ใช่</strong> CFL!<br>
+"or" → CFG ทำได้ (Union), "and" → CFG อาจทำไม่ได้!
+</div>
+</section>
+
+<!-- Extra Ch.3: Inherent Ambiguity & Language Hierarchy -->
+<section class="slide" data-chapter="3" data-title="Inherent Ambiguity & Chomsky Hierarchy">
+<h1>Inherent Ambiguity & Chomsky Hierarchy</h1>
+
+<h2>Inherently Ambiguous Languages</h2>
+<div class="def-box">
+ภาษา \(L\) เป็น <strong>inherently ambiguous</strong> iff ทุก grammar ที่ generate \(L\) เป็น ambiguous<br>
+ตัวอย่าง: \(\{a^i b^j c^k \mid i = j \text{ or } j = k\}\) เป็น inherently ambiguous<br>
+(เพราะ string \(a^n b^n c^n\) ต้องอยู่ใน union ทั้งสองฝั่ง → parse tree ซ้อน)
+</div>
+
+<h2>Chomsky Hierarchy (ลำดับชั้น Chomsky)</h2>
+<table>
+<tr><th>Type</th><th>Grammar</th><th>Automaton</th><th>ตัวอย่าง</th></tr>
+<tr><td>Type 3: Regular</td><td>\(A \to aB\) หรือ \(A \to a\)</td><td>DFA/NFA</td><td>\(a^*b^*\)</td></tr>
+<tr><td>Type 2: Context-Free</td><td>\(A \to \alpha\)</td><td>PDA</td><td>\(a^nb^n\)</td></tr>
+<tr><td>Type 1: Context-Sensitive</td><td>\(\alpha A \beta \to \alpha \gamma \beta\)</td><td>Linear-bounded</td><td>\(a^nb^nc^n\)</td></tr>
+<tr><td>Type 0: Unrestricted</td><td>ไม่มีจำกัด</td><td>Turing Machine</td><td>RE languages</td></tr>
+</table>
+
+<div class="tip-box">
+Regular ⊂ CFL ⊂ CSL ⊂ RE ⊂ All Languages<br>
+ทุก inclusion เป็น <strong>proper</strong> (strict subset)
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="Chomsky Normal Form — ขั้นตอนละเอียด">
+<h1>Chomsky Normal Form (CNF) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>Chomsky Normal Form (CNF):</strong> CFG ที่ทุกกฎมีรูปแบบ:<br>
+• \(A \to BC\) (สอง nonterminals) หรือ<br>
+• \(A \to a\) (terminal ตัวเดียว)<br>
+<em>ไม่มี e-rules, ไม่มี unit rules, ไม่มีกฎที่มีมากกว่า 2 ตัวทางขวา</em>
+</div>
+
+<h2>ขั้นตอนแปลงเป็น CNF (4 steps)</h2>
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+<strong>Binarize:</strong> แปลงกฎยาว \(A \to B_1B_2...B_n\) (n > 2) เป็นกฎคู่:<br>
+\(A \to B_1 A_1\), \(A_1 \to B_2 A_2\), ..., \(A_{n-2} \to B_{n-1} B_n\)
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+<strong>Find nullable:</strong> หา \(E = \{A \mid A \Rightarrow^* e\}\) — nonterminals ที่ derive ไปเป็น empty string ได้<br>
+คำนวณ iteratively: ถ้า \(A \to B_1...B_n\) และทุก \(B_i \in E\) แล้ว \(A \in E\)
+</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content">
+<strong>Remove e-rules:</strong> ลบกฎ \(A \to e\) ทุกตัว แล้วเพิ่มกฎทดแทน:<br>
+ถ้า \(B \to \alpha A \beta\) และ \(A \in E\) → เพิ่ม \(B \to \alpha \beta\)
+</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-content">
+<strong>Remove unit rules:</strong> ลบกฎ \(A \to B\) (unit rule) แล้ว:<br>
+ถ้า \(B \to \alpha\) → เพิ่ม \(A \to \alpha\) (bypass ตัวกลาง)
+</div></div>
+</div>
+
+<div class="example-box">
+<strong>ตัวอย่าง: แปลง Grammar เป็น CNF (จากห้องเรียน cfg-annotated)</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Grammar เดิม:</strong> \(S \to aSb \mid e\)<br><br>
+<strong>Step 1 (Binarize):</strong> \(S \to aSb\) มี 3 ตัว → \(S \to aT, T \to Sb\)<br>
+ยังมี terminal ผสม → แทน \(a\) ด้วย \(A\), \(b\) ด้วย \(B\):<br>
+\(S \to AT, T \to SB, A \to a, B \to b\)<br>
+<strong>Step 2 (Nullable):</strong> \(E = \{S\}\) (เพราะ \(S \to e\))<br>
+<strong>Step 3 (Remove e):</strong> \(T \to SB\), S nullable → เพิ่ม \(T \to B\)<br>
+\(S \to AT\), — ลบ \(S \to e\)<br>
+<strong>Step 4 (Remove unit):</strong> \(T \to B\) เป็น unit rule → แทนด้วย \(T \to b\)<br><br>
+<strong>CNF สุดท้าย:</strong><br>
+\(S \to AT, T \to SB, T \to b, A \to a, B \to b\)<br>
+(Note: ภาษาเปลี่ยนจาก \(\{a^nb^n \mid n \geq 0\}\) เป็น \(\{a^nb^n \mid n \geq 1\}\) เพราะตัด e-rule)
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="CYK Parsing Algorithm">
+<h1>CYK Parsing Algorithm <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>CYK (Cocke-Younger-Kasami):</strong> ให้ CNF grammar \(G\) และ string \(\omega = x_1...x_n\)<br>
+คำนวณ \(N[i,j] = \{A \mid A \Rightarrow^* x_i...x_j\}\) — "nonterminals ที่ derive ได้ substring จากตำแหน่ง i ถึง j"<br>
+\(\omega \in L(G)\) iff \(S \in N[1,n]\)
+</div>
+
+<h2>วิธีคำนวณ (Bottom-up)</h2>
+<div class="step-container">
+<div class="step"><div class="step-num">1</div><div class="step-content">
+<strong>Base case:</strong> \(N[i,i] = \{A \mid A \to x_i \in R\}\) — หา nonterminal ที่ produce terminal ตัวนั้น
+</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content">
+<strong>Recursive case:</strong> \(N[i,j] = \{A \mid A \to BC, B \in N[i,s], C \in N[s+1,j]\}\) สำหรับบาง \(i \leq s < j\)<br>
+— ลองแบ่ง substring ทุกจุด แล้วหา nonterminal ที่ produce ส่วนซ้าย + ส่วนขวา
+</div></div>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน (bottom-up parsing):</strong><br>
+เริ่มจากฐาน (single characters) แล้วค่อยๆ สร้างขึ้นไป — "อิฐก่อจากพื้น"<br>
+ตารางสามเหลี่ยม: แถวล่างสุด = ตัวอักษรทีละตัว, แถวบนสุด = สตริงทั้งหมด
+</div>
+
+<div class="example-box">
+<strong>ตัวอย่าง CYK:</strong> \(G: S \to AB, A \to a, B \to b\), ตรวจ \(\omega = ab\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+\(N[1,1] = \{A\}\) (เพราะ \(A \to a\))<br>
+\(N[2,2] = \{B\}\) (เพราะ \(B \to b\))<br>
+\(N[1,2]\): ลองแบ่งที่ \(s=1\): \(B \in N[1,1] = \{A\}\), \(C \in N[2,2] = \{B\}\)<br>
+มีกฎ \(S \to AB\)? ✅ → \(N[1,2] = \{S\}\)<br>
+\(S \in N[1,2]\) → \(ab \in L(G)\) ✅
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="3" data-title="คุณสมบัติ CFL & Pumping Theorem">
+<h1>คุณสมบัติของ Context-Free Languages <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<h2>Closure Properties</h2>
+<table>
+<tr><th>Operation</th><th>CFL ปิด?</th><th>วิธีพิสูจน์</th></tr>
+<tr><td>Union</td><td>✅</td><td>\(S \to S_1 \mid S_2\)</td></tr>
+<tr><td>Concatenation</td><td>✅</td><td>\(S \to S_1 S_2\)</td></tr>
+<tr><td>Kleene Star</td><td>✅</td><td>\(S \to S_1 S \mid e\)</td></tr>
+<tr><td>CFL ∩ Regular</td><td>✅</td><td>Product PDA × DFA</td></tr>
+<tr><td>CFL ∩ CFL</td><td>❌</td><td>\(\{a^nb^nc^n\}\) = \(\{a^nb^n\} \cap \{b^nc^n\}\)</td></tr>
+<tr><td>Complementation</td><td>❌</td><td>ถ้าปิดภายใต้ complement + union → ปิดภายใต้ ∩ (ขัดแย้ง)</td></tr>
+</table>
+
+<div class="warn-box">
+<strong>ข้อสอบ:</strong> CFL ∩ Regular = CFL ✅ แต่ CFL ∩ CFL ≠ CFL เสมอ!<br>
+Counter-example: \(\{a^nb^nc^m\}\) เป็น CFL, \(\{a^mb^nc^n\}\) เป็น CFL<br>
+แต่ intersection \(\{a^nb^nc^n\}\) <strong>ไม่ใช่</strong> CFL
+</div>
+
+<h2>Pumping Theorem สำหรับ CFL</h2>
+<div class="thm-box">
+ให้ \(G\) เป็น CFG มีจำนวน \(n\) ที่ทุก \(\omega \in L(G)\) ที่ \(|\omega| > n\) เขียนเป็น \(\omega = uvxyz\) โดย:<br>
+• \(v \neq e\) หรือ \(y \neq e\) (อย่างน้อยหนึ่งตัวไม่ว่าง)<br>
+• \(uv^kxy^kz \in L(G)\) สำหรับทุก \(k \geq 0\)
+</div>
+
+<div class="example-box">
+<strong>พิสูจน์ \(\{a^nb^nc^n\}\) ไม่เป็น CFL:</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+สมมติ CFL → มี pumping length \(n\)<br>
+เลือก \(\omega = a^nb^nc^n\), เขียน \(\omega = uvxyz\) โดย \(vy \neq e\)<br>
+<strong>Case 1:</strong> ถ้า \(v\) หรือ \(y\) มีตัวอักษรมากกว่า 1 ชนิด → pump แล้วลำดับเสีย → ไม่อยู่ใน L<br>
+<strong>Case 2:</strong> ถ้า \(v, y\) มีตัวอักษรชนิดเดียว → pump แล้วจำนวนบางตัวเพิ่มแต่บางตัวไม่เพิ่ม → ไม่เท่ากัน → ไม่อยู่ใน L<br>
+ทั้งสองกรณีขัดแย้ง! ∎
+</div>
+</div>
+
+<div class="tip-box">
+<strong>Hierarchy สรุป:</strong> Regular ⊂ Context-Free ⊂ Recursive ⊂ RE ⊂ All Languages<br>
+• Regular: FA, regex<br>
+• CFL: CFG, PDA<br>
+• Recursive: TM ที่หยุดเสมอ<br>
+• RE: TM ทั่วไป
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CHAPTER 4: TURING MACHINES                                     -->
+<!-- ============================================================ -->
+
+<section class="slide" data-chapter="4" data-title="บทที่ 4: เครื่องจักรทัวริง">
+<div class="chapter-cover">
+  <div class="ch-num">04</div>
+  <h1>Turing Machines</h1>
+  <p style="font-size:18px;color:var(--text3);">เครื่องจักรทัวริง</p>
+  <ul class="ch-topics">
+    <li>🔹 Turing Machine — นิยามและการทำงาน</li>
+    <li>🔹 Combining TMs</li>
+    <li>🔹 Recursive Languages</li>
+    <li>🔹 Recursive Functions</li>
+    <li>🔹 Recursively Enumerable Languages</li>
+    <li>🔹 Multi-tape TM Extensions</li>
+  </ul>
+</div>
+</section>
+
+<section class="slide" data-chapter="4" data-title="TM — นิยามเชิงทางการ">
+<h1>Turing Machine — นิยาม</h1>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> TM = "Assembler ยุค 1930s" — memory = tape, program = instruction set, state register = finite control
+</div>
+
+<div class="def-box">
+<strong>TM</strong> = 5-tuple \(M = (K, \Sigma, \delta, s, H)\)<br>
+• \(K\) = เซตจำกัดของ states<br>
+• \(\Sigma\) = alphabet (มี blank \(\sqcup\) และ left-end \(\triangleright\) แต่ไม่มี \(\leftarrow, \rightarrow\))<br>
+• \(s \in K\) = initial state<br>
+• \(H \subseteq K\) = <strong>halting states</strong> (ไม่ใช่ final states แต่เป็น "หยุดทำงาน")<br>
+• \(\delta: (K-H) \times \Sigma \to K \times (\Sigma \cup \{\leftarrow, \rightarrow\})\) = transition function<br><br>
+<strong>ข้อจำกัด:</strong><br>
+• \(\delta(q, \triangleright) = (p, \rightarrow)\) — เจอ left-end ต้องเลื่อนขวาเสมอ<br>
+• ห้ามเขียนทับ \(\triangleright\)
+</div>
+
+<p>Configuration: \((q, \omega_1 a \omega_2)\) = state q, tape content, head อยู่ที่ a</p>
+<p>\(\delta(q, a) = (p, b)\): ถ้า \(b \in \Sigma\) → เขียน b ทับ a; ถ้า \(b = \leftarrow\) → เลื่อนซ้าย; ถ้า \(b = \rightarrow\) → เลื่อนขวา</p>
+</section>
+
+<section class="slide" data-chapter="4" data-title="TM — ตัวอย่างพื้นฐาน">
+<h1>TM — ตัวอย่างพื้นฐาน</h1>
+
+<h2>ตัวอย่าง 1: \(L = \{\omega \mid |\omega| \text{ is even}\}\)</h2>
+<div class="example-box">
+\(M = (\{s, q_0, q_1, y, n\}, \Sigma, \delta, s, \{y, n\})\)<br>
+<table>
+<tr><th>State</th><th>Symbol</th><th>\(\delta\)</th><th>อธิบาย</th></tr>
+<tr><td>s</td><td>\(\triangleright\)</td><td>\((q_0, \rightarrow)\)</td><td>ข้าม left-end marker</td></tr>
+<tr><td>\(q_0\)</td><td>\(\sqcup\)</td><td>\((y, \sqcup)\)</td><td>input หมด, จำนวนคู่ → accept</td></tr>
+<tr><td>\(q_0\)</td><td>a หรือ b</td><td>\((q_1, \rightarrow)\)</td><td>อ่าน 1 ตัว, สลับเป็น q₁ (คี่)</td></tr>
+<tr><td>\(q_1\)</td><td>\(\sqcup\)</td><td>\((n, \sqcup)\)</td><td>input หมด, จำนวนคี่ → reject</td></tr>
+<tr><td>\(q_1\)</td><td>a หรือ b</td><td>\((q_0, \rightarrow)\)</td><td>อ่าน 1 ตัว, สลับกลับ q₀ (คู่)</td></tr>
+</table>
+</div>
+
+<h2>ตัวอย่าง 2: \(L = \{a^nb^n \mid n \geq 0\}\)</h2>
+<div class="example-box">
+<strong>อัลกอริทึม:</strong> "mark and match"
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง TM Trace</button>
+<div class="solution-content">
+<strong>วิธี:</strong><br>
+1. ข้าม \(\triangleright\) → ไปขวา<br>
+2. หา \(a\) ตัวแรกที่ยังไม่ถูก mark → เขียน \(d\) ทับ<br>
+3. เลื่อนขวาข้ามทุก \(a\) ที่เหลือ จนเจอ \(b\) หรือ \(d_b\)<br>
+4. หา \(b\) ตัวแรกที่ยังไม่ถูก mark → เขียน \(d\) ทับ<br>
+5. เลื่อนกลับซ้ายจนถึง \(\triangleright\) → ทำซ้ำจาก step 2<br>
+6. ถ้าไม่มี \(a\) เหลือ: ตรวจว่ามี \(b\) เหลือไหม → ถ้าไม่มี → accept, ถ้ามี → reject<br><br>
+
+<strong>Trace สำหรับ \(\omega = aabb\):</strong><br>
+\((s, \triangleright aabb\sqcup)\) → \((q_0, \triangleright \underline{a}abb\sqcup)\) → mark a → \((seek_b, \triangleright d\underline{a}bb\sqcup)\)<br>
+→ ข้าม a → \((seek_b, \triangleright da\underline{b}b\sqcup)\) → mark b → \((back, \triangleright da\underline{d}b\sqcup)\)<br>
+→ กลับซ้าย... → mark a ตัวที่ 2 → mark b ตัวที่ 2<br>
+→ ไม่มี a เหลือ, ไม่มี b เหลือ → <strong>accept ✅</strong>
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="4" data-title="TM — Combining Machines">
+<h1>TM — Combining Machines (เทคนิคการรวม TM) <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="tip-box">
+<strong>จากห้องเรียน — Mnemonics (ตัวย่อ) สำหรับ Basic TMs:</strong><br>
+<table>
+<tr><th>ตัวย่อ</th><th>ชื่อ</th><th>การทำงาน</th></tr>
+<tr><td>\(R\)</td><td>Right</td><td>เลื่อนขวา 1 ช่อง</td></tr>
+<tr><td>\(L\)</td><td>Left</td><td>เลื่อนซ้าย 1 ช่อง</td></tr>
+<tr><td>\(R_\sqcup\)</td><td>Right-to-blank</td><td>เลื่อนขวาจนเจอ blank</td></tr>
+<tr><td>\(L_\sqcup\)</td><td>Left-to-blank</td><td>เลื่อนซ้ายจนเจอ blank</td></tr>
+<tr><td>\(S_\rightarrow\)</td><td>Shift Right</td><td>เลื่อน content ทั้งหมดขวา 1 ช่อง</td></tr>
+<tr><td>\(S_\leftarrow\)</td><td>Shift Left</td><td>เลื่อน content ทั้งหมดซ้าย 1 ช่อง</td></tr>
+<tr><td>\(Copy\)</td><td>Copy</td><td>คัดลอก content ไปต่อท้าย</td></tr>
+</table>
+</div>
+
+<h2>การต่อ TM เข้าด้วยกัน</h2>
+<p>เมื่อ \(M_1\) halt → เริ่ม \(M_2\) ต่อ (ใช้ output ของ \(M_1\) เป็น input ของ \(M_2\))</p>
+<p>เขียนเป็น diagram: \(M_1 \xrightarrow{\text{halt}} M_2\)</p>
+<p>ถ้า halt state มีหลายตัว: \(M_1 \xrightarrow{y} M_2\) (ถ้า accept), \(M_1 \xrightarrow{n} M_3\) (ถ้า reject)</p>
+
+<div class="example-box">
+<strong>ตัวอย่าง: \(a^nb^nc^n\) TM (จากห้องเรียน tm-annotated)</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>วิธี:</strong> ทำซ้ำจนหมด:<br>
+1. หา \(a\) ตัวแรก → mark เป็น \(d\)<br>
+2. เลื่อนขวาข้าม \(a\), \(d\) จนเจอ \(b\) → mark เป็น \(d\)<br>
+3. เลื่อนขวาข้าม \(b\), \(d\) จนเจอ \(c\) → mark เป็น \(d\)<br>
+4. เลื่อนกลับซ้ายจนถึง \(\triangleright\)<br>
+5. ทำซ้ำ: ถ้ายังมี \(a\) ที่ไม่ถูก mark → ไป step 1<br>
+6. ถ้าไม่มี \(a\) → ตรวจว่าไม่มี \(b\) และ \(c\) เหลือ → accept
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="4" data-title="Recursive & RE Languages">
+<h1>ภาษา Recursive & Recursively Enumerable <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="def-box">
+<strong>Recursive language (decidable):</strong> \(L\) ถูก <strong>decide</strong> โดย TM \(M\) iff:<br>
+• \(\omega \in L\) → \(M\) <strong>accepts</strong> \(\omega\) (halt ที่ state \(y\))<br>
+• \(\omega \notin L\) → \(M\) <strong>rejects</strong> \(\omega\) (halt ที่ state \(n\))<br>
+<em>— M หยุดเสมอ ไม่ว่า input จะเป็นอะไร! (total function)</em>
+</div>
+
+<div class="def-box">
+<strong>Recursively Enumerable (RE / semidecidable):</strong> \(L\) ถูก <strong>semidecide</strong> โดย TM \(M\) iff:<br>
+• \(\omega \in L\) → \(M\) <strong>halts</strong> บน \(\omega\)<br>
+• \(\omega \notin L\) → \(M\) อาจ <strong>loop ตลอดกาล!</strong> (ไม่หยุด)<br>
+<em>— M อาจไม่หยุดสำหรับ input ที่ไม่อยู่ในภาษา</em>
+</div>
+
+<h2>ความสัมพันธ์ระหว่าง Recursive, RE, และ non-RE</h2>
+<div class="thm-box">
+<strong>ข้อเท็จจริงสำคัญ:</strong><br>
+1. Recursive ⊂ RE ⊂ All Languages<br>
+2. ถ้า \(L\) recursive → \(\overline{L}\) ก็ recursive<br>
+3. ถ้า \(L\) และ \(\overline{L}\) เป็น RE ทั้งคู่ → \(L\) เป็น recursive<br>
+4. ทุก regular language เป็น recursive<br>
+5. ทุก context-free language เป็น recursive<br>
+6. มีภาษาที่ไม่เป็น RE (เพราะมีภาษา uncountably many แต่ TM มี countably many)
+</div>
+
+<div class="warn-box">
+<strong>ข้อระวัง:</strong><br>
+• RE ≠ Recursive! RE อาจ loop ไม่หยุดสำหรับ input ที่ reject<br>
+• Recursive = "safe" (หยุดเสมอ), RE = "risky" (อาจไม่หยุด)
+</div>
+</section>
+
+<section class="slide" data-chapter="4" data-title="Recursive Functions">
+<h1>Recursive Functions (ฟังก์ชันเรียกซ้ำ)</h1>
+
+<div class="def-box">
+ฟังก์ชัน \(f: \Sigma^* \to \Sigma^*\) เป็น <strong>recursive</strong> iff มี TM \(M\) ที่ <strong>compute</strong> \(f\):<br>
+\((s, \triangleright\sqcup\omega) \vdash^* (h, \triangleright\sqcup f(\omega))\)<br>
+<em>— เริ่มจาก input \(\omega\), หยุดพร้อม output \(f(\omega)\) บน tape</em>
+</div>
+
+<h2>ตัวอย่าง: succ(n) — Successor Function</h2>
+<div class="example-box">
+<strong>succ(n) = n+1</strong> ใน binary representation:
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง TM design</button>
+<div class="solution-content">
+<strong>อัลกอริทึม:</strong><br>
+1. ไปขวาจนเจอ blank (หาตัวท้ายสุด)<br>
+2. เลื่อนซ้าย 1 ช่อง (อยู่ที่ bit สุดท้าย)<br>
+3. ถ้าเป็น 0 → เขียน 1, halt (ไม่มี carry)<br>
+4. ถ้าเป็น 1 → เขียน 0, เลื่อนซ้าย (carry!)<br>
+5. ทำซ้ำ step 3-4 จน carry หมด<br>
+6. ถ้า carry ถึง \(\triangleright\) → shift right ทั้งหมด + เขียน 1<br><br>
+<strong>ตัวอย่าง:</strong> succ(011) = 100<br>
+\(\triangleright\sqcup 011\sqcup\) → ไปขวาสุด → bit สุดท้าย 1 → เขียน 0, carry<br>
+→ bit ถัดไป 1 → เขียน 0, carry → bit ถัดไป 0 → เขียน 1<br>
+→ \(\triangleright\sqcup 100\sqcup\) ✅
+</div>
+</div>
+
+<h2>ตัวอย่าง: d(n) = 2n — Double Function</h2>
+<div class="example-box">
+<strong>d(n) = 2n</strong> ใน unary:
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง TM design</button>
+<div class="solution-content">
+<strong>วิธีที่ 1 (Composition):</strong> \(d = succ \circ succ \circ ... \circ succ\) (n ครั้ง) — ช้า!<br><br>
+<strong>วิธีที่ 2 (Direct):</strong> สำหรับ unary \(1^n\):<br>
+1. หา 1 ตัวแรก → mark เป็น X<br>
+2. ไปขวาจนเจอ blank → เขียน 1 (เพิ่ม 1 ตัว)<br>
+3. กลับซ้ายหา X → ไปขวาหา 1 ที่ยังไม่ mark → ทำซ้ำ<br>
+4. เมื่อ mark หมดแล้ว → เปลี่ยน X กลับเป็น 1 → halt<br>
+ผลลัพธ์: \(1^n → 1^{2n}\) ✅
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="4" data-title="Multi-tape TM & Church-Turing Thesis">
+<h1>Multi-tape TM & Church-Turing Thesis</h1>
+
+<h2>Multi-tape Turing Machine</h2>
+<div class="def-box">
+k-tape TM: \(\delta: (K-H) \times \Sigma^k \to K \times (\Sigma \cup \{\leftarrow, \rightarrow\})^k\)<br>
+<em>— อ่าน k tapes พร้อมกัน, เปลี่ยน state, เขียน/เลื่อนบนแต่ละ tape อิสระ</em>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong><br>
+• Tape 0 = main tape (input/output)<br>
+• Tape 1, 2, ... = extra tapes = "ตัวแปรชั่วคราว" (temporary variables)<br>
+• เหมือนมี scratch paper ให้คำนวณ!
+</div>
+
+<div class="example-box">
+<strong>2-tape TM สำหรับ \(\{\omega c \omega \mid \omega \in \{a,b\}^*\}\):</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Tape 0:</strong> input \(\omega c \omega\)<br>
+<strong>Tape 1:</strong> temporary storage<br><br>
+<strong>Phase 1:</strong> คัดลอกส่วนก่อน c จาก Tape 0 ไป Tape 1<br>
+<strong>Phase 2:</strong> เจอ c → เลื่อนข้าม<br>
+<strong>Phase 3:</strong> เปรียบเทียบส่วนหลัง c (Tape 0) กับ Tape 1 ทีละตัว<br>
+ถ้า match ทุกตัว + ทั้งสอง tape หมดพร้อมกัน → accept
+</div>
+</div>
+
+<div class="thm-box">
+<strong>Theorem:</strong> Multi-tape TM <strong>ไม่ทรงพลังกว่า</strong> standard (1-tape) TM<br>
+จำลอง k-tape TM ด้วย 1-tape TM ได้ (polynomial overhead)<br>
+<em>วิธี: เก็บ k tracks บน tape เดียว คั่นด้วย # และใช้ marker สำหรับ head position</em>
+</div>
+
+<h2>Church-Turing Thesis</h2>
+<div class="thm-box">
+<strong>Church-Turing Thesis:</strong> ฟังก์ชันที่คำนวณได้โดยอัลกอริทึม (เชิงสัญชาตญาณ) = ฟังก์ชันที่คำนวณได้โดย Turing Machine<br>
+<em>— ไม่ใช่ theorem (พิสูจน์ไม่ได้) แต่เป็น hypothesis ที่ยอมรับกันทั่วไป</em>
+</div>
+
+<h2>Hierarchy สรุป</h2>
+<table>
+<tr><th>ระดับ</th><th>รับรองโดย</th><th>ตัวอย่าง</th></tr>
+<tr><td>Regular</td><td>DFA/NFA</td><td>\(a^*b^*\)</td></tr>
+<tr><td>Context-Free</td><td>PDA/CFG</td><td>\(a^nb^n\)</td></tr>
+<tr><td>Recursive (Decidable)</td><td>TM ที่หยุดเสมอ</td><td>\(a^nb^nc^n\)</td></tr>
+<tr><td>RE (Semidecidable)</td><td>TM ทั่วไป</td><td>Halting problem</td></tr>
+<tr><td>Not RE</td><td>ไม่มี TM</td><td>Complement of Halting</td></tr>
+</table>
+</section>
+
+<!-- Extra Ch.4: TM Trace for aⁿbⁿcⁿ detail -->
+<section class="slide" data-chapter="4" data-title="TM Trace — aⁿbⁿcⁿ ละเอียด">
+<h1>TM Trace — \(a^nb^nc^n\) ละเอียด <span class="exam-badge">ออกสอบ</span></h1>
+
+<div class="example-box">
+<strong>TM สำหรับ \(L = \{a^nb^nc^n \mid n \geq 0\}\)</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง Trace สำหรับ aabbcc</button>
+<div class="solution-content">
+<strong>อัลกอริทึม:</strong> ทำรอบละ 1 ชุด (a,b,c) — mark ทีละตัว<br><br>
+<table>
+<tr><th>รอบ</th><th>Tape</th><th>Action</th></tr>
+<tr><td>เริ่ม</td><td>\(\triangleright\sqcup \underline{a}abbcc\)</td><td>หา a ตัวแรก</td></tr>
+<tr><td>1.1</td><td>\(\triangleright\sqcup \underline{d}abbcc\)</td><td>mark a → d, เลื่อนขวาข้าม a ทั้งหมด</td></tr>
+<tr><td>1.2</td><td>\(\triangleright\sqcup da\underline{b}bcc\)</td><td>เจอ b → mark เป็น d</td></tr>
+<tr><td>1.3</td><td>\(\triangleright\sqcup dad\underline{b}cc\)</td><td>เลื่อนขวาข้าม b ที่เหลือ</td></tr>
+<tr><td>1.4</td><td>\(\triangleright\sqcup dadb\underline{c}c\)</td><td>เจอ c → mark เป็น d</td></tr>
+<tr><td>1.5</td><td>\(\triangleright\sqcup \underline{d}adbdc\)</td><td>กลับซ้ายจนถึง \(\triangleright\) เริ่มรอบใหม่</td></tr>
+<tr><td>2.1</td><td>\(\triangleright\sqcup d\underline{a}dbdc\)</td><td>ข้าม d, หา a → mark เป็น d</td></tr>
+<tr><td>2.2</td><td>\(\triangleright\sqcup dd\underline{d}bdc\)</td><td>ข้าม d, เจอ b → mark เป็น d</td></tr>
+<tr><td>2.3</td><td>\(\triangleright\sqcup dddd\underline{d}c\)</td><td>ข้าม d, เจอ c → mark เป็น d</td></tr>
+<tr><td>2.4</td><td>\(\triangleright\sqcup \underline{d}ddddd\)</td><td>กลับซ้าย</td></tr>
+<tr><td>3</td><td>\(\triangleright\sqcup dddddd\underline{\sqcup}\)</td><td>ไม่มี a เหลือ, ไม่มี b,c เหลือ → <strong>ACCEPT ✅</strong></td></tr>
+</table>
+</div>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน (tm-annotated):</strong> \(a^nb^nc^n\) ต้องใช้ TM เพราะ PDA มี stack เดียว — จำ a กับ b ได้แต่จับคู่ b กับ c พร้อมกันไม่ได้<br>
+TM ใช้ tape เป็น "กระดาษทด" mark ได้ไม่จำกัด
+</div>
+</section>
+
+<!-- Extra Ch.4: TM Copy Machine -->
+<section class="slide" data-chapter="4" data-title="TM — Copy, Shift, และ Basic Machines">
+<h1>TM — Copy, Shift, และ Basic Machines</h1>
+
+<h2>Basic Machines (จากห้องเรียน tm-annotated)</h2>
+<div class="example-box">
+<table>
+<tr><th>Machine</th><th>การทำงาน</th><th>ผลลัพธ์</th></tr>
+<tr><td>\(R\)</td><td>เลื่อนขวา 1 ช่อง</td><td>Head ขยับขวา</td></tr>
+<tr><td>\(L\)</td><td>เลื่อนซ้าย 1 ช่อง</td><td>Head ขยับซ้าย</td></tr>
+<tr><td>\(R_\sigma\)</td><td>เลื่อนขวาจนเจอ \(\sigma\)</td><td>Head อยู่ที่ \(\sigma\) ตัวแรก</td></tr>
+<tr><td>\(L_\sigma\)</td><td>เลื่อนซ้ายจนเจอ \(\sigma\)</td><td>Head อยู่ที่ \(\sigma\) ตัวแรก</td></tr>
+<tr><td>\(R_\sqcup\)</td><td>เลื่อนขวาจนเจอ blank</td><td>Head อยู่ที่ blank ถัดไป</td></tr>
+<tr><td>\(S_\rightarrow\)</td><td>Shift content ขวา 1 ช่อง</td><td>เปิดช่องว่าง 1 ช่อง</td></tr>
+<tr><td>\(Copy\)</td><td>คัดลอก content ไปต่อท้าย</td><td>\(\omega \to \omega\sqcup\omega\)</td></tr>
+</table>
+</div>
+
+<h2>Copy Machine — ทำงานอย่างไร?</h2>
+<div class="example-box">
+<strong>Input:</strong> \(\triangleright\sqcup abc\sqcup\) → <strong>Output:</strong> \(\triangleright\sqcup abc\sqcup abc\sqcup\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงอัลกอริทึม</button>
+<div class="solution-content">
+1. อ่านตัวอักษรตัวแรก (เช่น a) → จำไว้ใน state → mark เป็น X<br>
+2. เลื่อนขวาจนถึงท้ายสุด (blank) → เขียน a<br>
+3. กลับซ้ายหา X → เลื่อนขวา 1 ช่อง → อ่านตัวถัดไป → ทำซ้ำ<br>
+4. เมื่อ mark หมด → เปลี่ยน X กลับเป็นตัวเดิม → halt
+</div>
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> "จำ" ไว้ใน state หมายถึง มี state แยกสำหรับแต่ละตัวอักษร<br>
+เช่น state \(q_a\) = "กำลังจำว่าอ่าน a มา", \(q_b\) = "กำลังจำว่าอ่าน b มา"
+</div>
+</section>
+
+<!-- Extra Ch.4: Undecidability -->
+<section class="slide" data-chapter="4" data-title="Undecidability & Halting Problem">
+<h1>Undecidability & Halting Problem</h1>
+
+<h2>ปัญหาที่ TM ตัดสินใจไม่ได้ (Undecidable)</h2>
+<div class="def-box">
+ภาษา \(L\) เป็น <strong>undecidable</strong> iff ไม่มี TM ที่ decide \(L\) (ไม่มี TM ที่หยุดเสมอ + ให้คำตอบถูก)
+</div>
+
+<h2>Halting Problem</h2>
+<div class="thm-box">
+<strong>Halting Problem:</strong> กำหนด TM \(M\) และ input \(\omega\) → ตรวจว่า \(M\) จะหยุดบน \(\omega\) หรือไม่?<br><br>
+<strong>Theorem:</strong> Halting Problem เป็น <strong>undecidable</strong> — ไม่มีโปรแกรม (TM) ที่ตอบคำถามนี้ได้ทุกกรณี!
+</div>
+
+<div class="proof-box">
+<strong>Proof sketch (Diagonalization):</strong><br>
+สมมติมี TM \(H\) ที่ decide halting problem<br>
+→ \(H(M, \omega)\) = yes ถ้า M halt บน ω, no ถ้าไม่<br>
+สร้าง TM \(D\): เมื่อได้รับ input \(M\):<br>
+→ ถ้า \(H(M, M)\) = yes → \(D\) loop ตลอดกาล<br>
+→ ถ้า \(H(M, M)\) = no → \(D\) halt<br><br>
+ถามว่า: \(D(D)\) จะ halt หรือไม่?<br>
+• ถ้า \(D(D)\) halt → \(H(D,D)\) = yes → \(D\) loop ← ขัดแย้ง!<br>
+• ถ้า \(D(D)\) loop → \(H(D,D)\) = no → \(D\) halt ← ขัดแย้ง!<br>
+∴ TM \(H\) ไม่มีจริง ∎
+</div>
+
+<div class="tip-box">
+<strong>สังเกต:</strong> Proof นี้ใช้ <strong>Diagonalization</strong> เหมือนกับที่พิสูจน์ \(2^{\mathbb{N}}\) uncountable!<br>
+→ เทคนิค Diagonalization ใช้ได้ทั้ง "เซต" (Ch.1) และ "ภาษา" (Ch.4)
+</div>
+</section>
+
+<!-- Extra Ch.4: Universal TM & RE vs Recursive -->
+<section class="slide" data-chapter="4" data-title="Universal TM & สรุป Language Classes">
+<h1>Universal TM & สรุป Language Classes</h1>
+
+<h2>Universal Turing Machine</h2>
+<div class="def-box">
+<strong>Universal TM \(U\):</strong> TM ที่รับ input = (description ของ TM \(M\), input \(\omega\)) แล้ว<strong>จำลอง</strong>การทำงานของ \(M\) บน \(\omega\)<br>
+→ \(U\) เป็น "interpreter" หรือ "computer" ที่รันโปรแกรมอะไรก็ได้!
+</div>
+
+<div class="tip-box">
+<strong>จากห้องเรียน:</strong> Universal TM = แนวคิดของ "stored-program computer"<br>
+→ ทุกคอมพิวเตอร์ในปัจจุบันเป็น Universal TM (modulo memory จำกัด)
+</div>
+
+<h2>สรุป Language Classes</h2>
+<div class="thm-box">
+<table>
+<tr><th>Class</th><th>Decidable?</th><th>Complement</th><th>ตัวอย่าง</th></tr>
+<tr><td>Regular</td><td>✅ ใช่</td><td>Regular</td><td>\(a^*b^*\)</td></tr>
+<tr><td>CFL</td><td>✅ ใช่</td><td>อาจไม่ CFL</td><td>\(a^nb^n\)</td></tr>
+<tr><td>Recursive</td><td>✅ ใช่ (นิยาม)</td><td>Recursive</td><td>\(a^nb^nc^n\)</td></tr>
+<tr><td>RE</td><td>❌ อาจไม่</td><td>อาจไม่ RE</td><td>\(H = \{(M,\omega) \mid M \text{ halts on } \omega\}\)</td></tr>
+<tr><td>Not RE</td><td>❌ ไม่</td><td>RE</td><td>\(\overline{H}\)</td></tr>
+</table>
+</div>
+
+<h2>ข้อเท็จจริงสำคัญ</h2>
+<ul>
+<li>\(L\) recursive iff \(L\) <strong>และ</strong> \(\overline{L}\) เป็น RE ทั้งคู่</li>
+<li>มีภาษา uncountably many แต่ TM มี countably many → ภาษาส่วนใหญ่ไม่มี TM!</li>
+<li>ทุกปัญหาที่ computer แก้ได้ = recursive language</li>
+</ul>
+</section>
+
+<!-- Extra Ch.4: TM Design Patterns & Recursive Functions -->
+<section class="slide" data-chapter="4" data-title="TM Design Patterns & Recursive Functions">
+<h1>TM Design Patterns & Recursive Functions <span class="exam-badge">ออกสอบ</span></h1>
+
+<h2>ประเภทโจทย์ TM ในข้อสอบ (จาก tm-annotated)</h2>
+<div class="thm-box">
+<table>
+<tr><th>ประเภท</th><th>ตัวอย่าง</th><th>เทคนิค</th></tr>
+<tr><td>①Arithmetic</td><td>\(f(n) = 2n+1\)</td><td>ใช้ succ, double, shift</td></tr>
+<tr><td>②Condition</td><td>\(f(n) = \begin{cases}3n & n \text{ odd} \\ 2n & \text{else}\end{cases}\)</td><td>Branch on last bit</td></tr>
+<tr><td>③Language</td><td>\(L = \{a^nb^n\}\)</td><td>Mark & sweep</td></tr>
+</table>
+</div>
+
+<h2>Recursive Functions ที่สำคัญ</h2>
+<div class="example-box">
+<strong>succ(n) = n+1</strong> (binary)<br>
+อัลกอริทึม: ไปท้ายสุด → ถ้า 0 → เปลี่ยนเป็น 1 → halt / ถ้า 1 → เปลี่ยนเป็น 0 → carry ไปซ้าย<br>
+<code>succ(101₂) = 110₂, succ(111₂) = 1000₂</code>
+
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดง double(n) = 2n</button>
+<div class="solution-content">
+<strong>double(n) = 2n</strong> (binary) = shift left + ใส่ 0 ท้าย<br>
+อัลกอริทึม: \(R_\sqcup\) → เขียน 0 → halt<br>
+<code>double(101₂) = 1010₂ = 10</code><br><br>
+
+<strong>f(n) = 2n+1</strong> = double แล้ว succ<br>
+ใช้ combining: \(\text{double} \to \text{succ}\)<br><br>
+
+<strong>f(n) = 2n+2 = 2(n+1)</strong><br>
+Decompose: succ → double → จัดลำดับ subroutines
+</div>
+</div>
+
+<div class="tip-box">
+<strong>หลักการ Decompose:</strong> ทุกฟังก์ชันซับซ้อน = ประกอบจาก basic machines<br>
+เช่น \(f(n) = 2n+3 = \text{succ} \circ \text{succ} \circ \text{succ} \circ \text{double}(n)\)
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- PRACTICE EXAM SECTION                                          -->
+<!-- ============================================================ -->
+
+<section class="slide" data-chapter="5" data-title="แบบฝึกหัด Midterm — Set Theory">
+<div class="chapter-cover">
+  <div class="ch-num">📝</div>
+  <h1>แบบฝึกหัด Midterm Practice</h1>
+  <p style="font-size:18px;color:var(--text3);">รวมโจทย์จาก Practice 1-4 + โจทย์เพิ่มเติม พร้อมเฉลยละเอียด</p>
+  <ul class="ch-topics">
+    <li>🔸 Set Theory (ข้อ 1-10)</li>
+    <li>🔸 Regular Languages & FA (ข้อ 11-15)</li>
+    <li>🔸 True/False & Multiple Choice (ข้อ 16-43)</li>
+    <li>🔸 ข้อพิสูจน์ & Composition (ข้อ 44-49)</li>
+    <li>🔸 Cheat Sheet สรุปสูตรสำหรับสอบ</li>
+  </ul>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — Set Theory Q1-5">
+<h1>📝 แบบฝึกหัด: Set Theory (ข้อ 1-5)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q1.</strong> \(\emptyset \in \{\{\emptyset\}\}\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(\\{\\{\\emptyset\\}\\}\\) มีสมาชิก 1 ตัวคือ \\(\\{\\emptyset\\}\\) ซึ่ง \\(\\emptyset \\neq \\{\\emptyset\\}\\) ดังนั้น \\(\\emptyset\\) ไม่ใช่สมาชิก')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q2.</strong> \(A - (B \cup C) = (A - B) - C\) สำหรับทุกเซต A, B, C?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! \\(A-(B\\cup C) = A \\cap \\overline{B\\cup C} = A \\cap \\overline{B} \\cap \\overline{C} = (A-B) \\cap \\overline{C} = (A-B)-C\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q3.</strong> มีเซต \(X\) ที่ \(X = 2^X\) หรือไม่?</p>
+<label class="quiz-option">True — มี</label>
+<label class="quiz-option">False — ไม่มี</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'ไม่มี! เพราะ \\(|2^X| = 2^{|X|} > |X|\\) สำหรับทุก \\(X\\) (Cantor\\'s theorem)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q4.</strong> ให้ \(R = \{(a,b),(b,c),(a,d),(b,b)\}\) บน \(\{a,b,c,d\}\) จงหาจำนวนสมาชิกของ \(R \circ R\)</p>
+<label class="quiz-option">3</label>
+<label class="quiz-option">4</label>
+<label class="quiz-option">5</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, '\\(R \\circ R\\): (a,b)+(b,c)→(a,c), (a,b)+(b,b)→(a,b), (b,b)+(b,c)→(b,c) = \\{(a,c),(a,b),(b,c)\\} = 3 สมาชิก')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q5.</strong> \(A = \{a,b\}\) มีกี่ partition?</p>
+<label class="quiz-option">1</label>
+<label class="quiz-option">2</label>
+<label class="quiz-option">3</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(\\Pi_1 = \\{\\{a\\},\\{b\\}\\}\\) และ \\(\\Pi_2 = \\{\\{a,b\\}\\}\\) → 2 partitions')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — Regular Languages & FA">
+<h1>📝 แบบฝึกหัด: Regular Languages & FA (ข้อ 6-10)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q6.</strong> \(L(\emptyset^* \cup a) = ?\)</p>
+<label class="quiz-option">\(\{a\}\)</label>
+<label class="quiz-option">\(\{e, a\}\)</label>
+<label class="quiz-option">\(\emptyset\)</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(L(\\emptyset^*) = \\{e\\}\\), \\(L(a) = \\{a\\}\\) → \\(L(\\emptyset^* \\cup a) = \\{e\\} \\cup \\{a\\} = \\{e, a\\}\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q7.</strong> \(L^* = (L^*)^*\) สำหรับทุกภาษา \(L\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! \\(L^*\\) มี closure property — ทำ Kleene star ซ้ำกี่รอบก็เหมือนเดิม')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q8.</strong> ถ้า \(L\) ไม่ใช่ regular language แล้ว \(L\) ต้องเป็นเซตอนันต์?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! ถ้า L เป็น finite set → L = {ω₁,...,ωₙ} → L = ω₁ ∪...∪ ωₙ ซึ่งเป็น regular → Contrapositive: ไม่ regular → ต้อง infinite')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q9.</strong> DFA สองตัวเท่าเทียมกัน (equivalent) เมื่อใด?</p>
+<label class="quiz-option">มี initial state เหมือนกัน</label>
+<label class="quiz-option">มีจำนวน state เท่ากัน</label>
+<label class="quiz-option">รับรองเซตของสตริงเดียวกัน (L(M₁) = L(M₂))</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 2, 'Equivalent iff L(M) = L(M\\') — รับภาษาเดียวกัน ไม่สนว่าโครงสร้างภายในจะต่างกัน')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q10.</strong> Regular languages ปิดภายใต้ operation ใดบ้าง?</p>
+<label class="quiz-option">Union, Concatenation เท่านั้น</label>
+<label class="quiz-option">Union, Concatenation, Kleene star เท่านั้น</label>
+<label class="quiz-option">Union, Concatenation, Kleene star, Complement, Intersection ทั้งหมด</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 2, 'ปิดทั้งหมด! Union ∪, Concatenation ·, Kleene star *, Complement, Intersection ∩ — ทุก operation ให้ผลลัพธ์เป็น regular')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — ข้อพิสูจน์">
+<h1>📝 ข้อพิสูจน์ยอดฮิต (Open Questions)</h1>
+
+<div class="example-box">
+<strong>Q11. พิสูจน์ว่า \(A - B\) เป็น uncountable ถ้า \(A\) uncountable และ \(B\) countable</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Proof by contradiction:</strong><br>
+สมมติ \(A - B\) เป็น countable<br>
+เนื่องจาก \(B\) countable → \((A - B) \cup B\) เป็น countable (union ของ countable sets)<br>
+แต่ \(A \subseteq (A - B) \cup B\) → \(A\) เป็น countable ← ขัดแย้งกับสมมติฐานว่า \(A\) uncountable!<br>
+∴ \(A - B\) ต้องเป็น uncountable ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q12. พิสูจน์ว่าเซตของ regular languages \(R\) เป็น countably infinite</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Part 1: R เป็น infinite</strong><br>
+สำหรับทุก \(n \in \mathbb{N}\), \(\{a^n\}\) เป็น regular language → \(R\) มีสมาชิกอนันต์ตัว<br><br>
+<strong>Part 2: R เป็น countable</strong><br>
+ทุก regular language สามารถแทนด้วย regular expression \(\alpha\)<br>
+regular expression เป็น string ใน \(\Sigma'^*\) โดย \(\Sigma' = \Sigma \cup \{(, ), \emptyset, \cup, \cdot, *\}\)<br>
+\(\Sigma'^*\) เป็น countably infinite (เพราะ \(\Sigma'\) เป็นเซตจำกัด)<br>
+ดังนั้น \(R = \{L(\alpha) \mid \alpha \in \Sigma'^*\}\) ก็ countable ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q13. พิสูจน์ว่า \(\{a^nb^n \mid n \geq 0\}\) ไม่เป็น regular</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>ใช้ Pumping Theorem:</strong><br>
+สมมติ \(L\) เป็น regular → มี pumping length \(n\)<br>
+เลือก \(\omega = a^nb^n \in L\) (ความยาว \(2n \geq n\))<br>
+เขียน \(\omega = xyz\) ที่ \(|xy| \leq n\) → \(xy\) อยู่ในส่วน \(a^n\) → \(y = a^j, j \geq 1\)<br>
+Pump \(k=0\): \(xz = a^{n-j}b^n\) แต่ \(n-j \neq n\) → \(xz \notin L\) ← ขัดแย้ง!<br>
+∴ \(L\) ไม่เป็น regular ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q14. ถ้า \(L\) เป็น finite set แล้ว \(L\) เป็น regular language — จงพิสูจน์</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+ถ้า \(L\) เป็น finite → \(L = \{\omega_1, \omega_2, ..., \omega_n\}\)<br>
+เขียน regular expression: \(\omega_1 \cup \omega_2 \cup ... \cup \omega_n\)<br>
+ดังนั้น \(L\) เป็น regular language ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q15. พิสูจน์ว่า DFA ทุกตัว state-transition diagram มี cycle เสมอ</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+ให้ \(M = (K, \Sigma, \delta, q, F)\) เป็น DFA เลือก \(a \in \Sigma\)<br>
+กำหนดฟังก์ชัน \(f: K \to K\) โดย \(f(q) = \delta(q, a)\)<br>
+เนื่องจาก \(K\) เป็นเซตจำกัด กราฟของ \(f\) ต้องมี cycle (ทุก finite function graph มี cycle)<br>
+กราฟนี้เป็นส่วนหนึ่งของ state-transition diagram<br>
+∴ state-transition diagram มี cycle เสมอ ∎
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — Set Theory T/F (Practice 1-3)">
+<h1>📝 ข้อสอบ True/False — Set Theory (รวม Practice 1-3)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q16.</strong> \(\emptyset = \{\emptyset\}\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(\\emptyset\\) มี 0 สมาชิก แต่ \\(\\{\\emptyset\\}\\) มี 1 สมาชิก → ไม่เท่ากัน')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q17.</strong> \(\{a, b, \{a,b\}\} - \{\{a\}\} = \{b, \{a,b\}\}\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(\\{a\\}\\) ไม่ใช่สมาชิกของเซตซ้าย (สมาชิกคือ a, b, \\{a,b\\}) ดังนั้นลบแล้วไม่เปลี่ยน → \\(\\{a,b,\\{a,b\\}\\}\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q18.</strong> \(2^{A \cup B} = 2^A \cup 2^B\) สำหรับทุกเซต A, B?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(2^{A\\cup B}\\) มี \\(A\\cup B\\) เป็นสมาชิก แต่ \\(2^A \\cup 2^B\\) อาจไม่มี (เช่น A=\\{a\\}, B=\\{b\\}, \\{a,b\\} \\in 2^{A\\cup B}\\) แต่ \\(\\{a,b\\} \\notin 2^A \\cup 2^B\\))')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q19.</strong> \(S \subseteq 2^S\) สำหรับทุกเซต S?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'ตัวอย่าง: \\(S = \\{a\\}\\), \\(2^S = \\{\\emptyset, \\{a\\}\\}\\). แต่ \\(a \\in S\\) แต่ \\(a \\notin 2^S\\) (เพราะ a ไม่ใช่เซต)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q20.</strong> ถ้า \(A \subseteq B\) และ B เป็น infinite แล้ว A ต้องเป็น infinite?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'False! \\(A = \\emptyset\\) เป็น finite แต่ \\(\\emptyset \\subseteq B\\) สำหรับทุก B')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — Relations & Functions (Practice 2-4)">
+<h1>📝 ข้อสอบ Relations & Functions (รวม Practice 2-4)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q21.</strong> ให้ \(R = \{(1,2),(2,5),(5,5),(3,3),(1,5)\}\) R เป็น transitive?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! ตรวจ: (1,2)+(2,5)→(1,5) ∈ R ✅, (1,5)+(5,5)→(1,5) ∈ R ✅, (2,5)+(5,5)→(2,5) ∈ R ✅')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q22.</strong> ให้ \(A=\{a,b\}\), \(R = A \times A\) R เป็น equivalence relation?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! R = {(a,a),(a,b),(b,a),(b,b)} — reflexive ✅ symmetric ✅ transitive ✅')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q23.</strong> ให้ \(A=\{a,b\}\), \(R = \{(a,a),(a,b)\}\) \(R^{-1}\) เป็นฟังก์ชันจาก A ไป A?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! \\(R^{-1} = \\{(a,a),(b,a)\\}\\) — ทุกตัวใน A มี output เดียว: a→a, b→a ✅')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q24.</strong> ให้ N เป็น natural numbers, R ⊆ N×N เป็น reflexive จำนวนสมาชิกน้อยสุดของ R?</p>
+<label class="quiz-option">0</label>
+<label class="quiz-option">1</label>
+<label class="quiz-option">Infinite</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 2, 'R ต้องมี (n,n) สำหรับทุก n ∈ N → ต้องมีสมาชิก infinite จำนวน!')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q25.</strong> ฟังก์ชัน \(L(.)\) ที่ map regular expression ไปเป็น regular language เป็น one-to-one?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'False! เพราะ \\(L(a^*) = L((a^*)^*)\\) — RE ต่างกันแต่ให้ภาษาเดียวกัน')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — Countability & Diagonalization">
+<h1>📝 ข้อสอบ Countability & Diagonalization (Practice 2-4)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q26.</strong> ให้ \(\Sigma = \{1\}\) แล้ว \(2^{\Sigma^*}\) เป็น?</p>
+<label class="quiz-option">Finite</label>
+<label class="quiz-option">Countably infinite</label>
+<label class="quiz-option">Uncountably infinite</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 2, '\\(\\Sigma^* = \\{1^n \\mid n \\in \\mathbb{N}\\}\\) equinumerous กับ N → \\(2^{\\Sigma^*}\\) equinumerous กับ \\(2^{\\mathbb{N}}\\) ซึ่ง uncountably infinite!')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q27.</strong> ให้ \(\Sigma_1 = \{0,1\}\), \(\Sigma_2 = \{0,1,2\}\) แล้ว \(\Sigma_1^* \subseteq \Sigma_2^*\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! ทุกสตริงจาก \\{0,1\\} ก็เป็นสตริงจาก \\{0,1,2\\} ด้วย')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q28.</strong> มี bijection จาก \(\mathbb{N}\) ไป \(\mathbb{N} \times \mathbb{N}\) หรือไม่?</p>
+<label class="quiz-option">True — มี</label>
+<label class="quiz-option">False — ไม่มี</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! ใช้ dovetailing: map (i,j) ไปตาม diagonal → N×N countably infinite → มี bijection กับ N')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q29.</strong> Diagonalization principle กล่าวว่าอะไร?</p>
+<label class="quiz-option">Diagonal set อาจเท่ากับ row set บางตัว</label>
+<label class="quiz-option">Diagonal set ต่างจาก row set ทุกตัวเสมอ</label>
+<label class="quiz-option">ไม่มี 1-1 function ถ้า |A| > |B|</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'Diagonal set \\(D = \\{a \\mid (a,a) \\notin R\\}\\) ไม่เท่ากับ row set \\(R_a\\) สำหรับทุก a ∈ A')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="Practice — เพิ่มเติม Open Questions">
+<h1>📝 ข้อพิสูจน์เพิ่มเติม (Open Questions)</h1>
+
+<div class="example-box">
+<strong>Q30. \(\{a,b\}^* - \{a^nb^{2n} \mid n \in \mathbb{N}\}\) เป็น regular language หรือไม่?</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>ไม่เป็น regular!</strong><br>
+สมมติ \(L = \{a,b\}^* - \{a^nb^{2n}\}\) เป็น regular<br>
+เนื่องจาก \(\{a,b\}^*\) เป็น regular และ regular ปิดภายใต้ complement:<br>
+\(\overline{L} = \{a,b\}^* - L = \{a^nb^{2n}\}\) ก็ต้องเป็น regular<br>
+แต่ \(\{a^nb^{2n}\}\) ไม่เป็น regular (Pumping Theorem) ← ขัดแย้ง!<br>
+∴ \(L\) ไม่เป็น regular ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q31. \(\{a^{p-2} \mid p \text{ is prime}\}\) เป็น regular language หรือไม่?</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>ไม่เป็น regular!</strong><br>
+สมมติ \(L = \{a^{p-2}\}\) เป็น regular<br>
+เนื่องจาก regular ปิดภายใต้ concatenation:<br>
+\(L \cdot \{a^2\} = \{a^{p-2} \cdot a^2 \mid p \text{ prime}\} = \{a^p \mid p \text{ prime}\}\) ก็ต้องเป็น regular<br>
+แต่ \(\{a^p \mid p \text{ prime}\}\) ไม่เป็น regular ← ขัดแย้ง!<br>
+∴ \(L\) ไม่เป็น regular ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q32. ให้ \(R \subseteq A \times A\) transitive แสดงว่า \(R' = \{(a,b) \in R \mid (b,a) \notin R\}\) เป็น antisymmetric</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Proof:</strong><br>
+สมมติ \((a,b) \in R'\)<br>
+จากนิยาม \(R'\): \((a,b) \in R\) และ \((b,a) \notin R\)<br>
+ดังนั้น \((b,a) \notin R'\) (เพราะ \((b,a) \notin R\) → ไม่เป็นสมาชิกของ subset ใดๆ ของ R)<br>
+∴ ถ้า \((a,b) \in R'\) แล้ว \((b,a) \notin R'\) → R' เป็น antisymmetric ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q33. จงพิสูจน์ \(L = \{a^nb^nc^n \mid n \geq 0\}\) ไม่เป็น regular language</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>ใช้ Pumping Theorem:</strong><br>
+สมมติ \(L\) เป็น regular → มี pumping length \(n\)<br>
+เลือก \(\omega = a^n b^n c^n \in L\) (ความยาว \(3n \geq n\))<br>
+เขียน \(\omega = xyz\) ที่ \(|xy| \leq n\) → \(xy\) อยู่ในส่วน \(a^n\) ทั้งหมด<br>
+→ \(y = a^j\) สำหรับบาง \(j \geq 1\)<br>
+Pump \(k=0\): \(xz = a^{n-j}b^nc^n\) แต่ \(n-j \neq n\) → จำนวน a ≠ b ≠ c → \(xz \notin L\)<br>
+ขัดแย้ง! ∴ \(L\) ไม่เป็น regular ∎
+</div>
+</div>
+</section>
+
+<!-- Practice: More RL/FA from Practice 3-4 -->
+<section class="slide" data-chapter="5" data-title="Practice — Regular Expressions & Languages">
+<h1>📝 ข้อสอบ Regular Expressions (รวม Practice 1-4)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q34.</strong> \(e \in L(\emptyset)\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(L(\\emptyset) = \\{\\}\\) ไม่มีสมาชิกเลย!')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q35.</strong> \(e \in L(\emptyset^*)\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! \\(L(\\emptyset^*) = \\{\\}^* = \\{e\\}\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q36.</strong> \(L(\emptyset^* \cup a) = \{a\}\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'False! \\(L(\\emptyset^* \\cup a) = \\{e\\} \\cup \\{a\\} = \\{e, a\\}\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q37.</strong> สำหรับภาษา L ใดๆ: \(L^* = LL^*\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, 'False! \\(e \\in L^*\\) เสมอ แต่ \\(e \\in LL^*\\) เฉพาะเมื่อ \\(e \\in L\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q38.</strong> สำหรับภาษา L ใดๆ: \(L^* = (L^*)^*\)?</p>
+<label class="quiz-option">True</label>
+<label class="quiz-option">False</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'True! \\((L^*)^* = L^*\\) เพราะ Kleene star ซ้อนกันไม่เพิ่มสมาชิก')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q39.</strong> \(\alpha = \emptyset^{**}\emptyset\) แล้ว \(L(\alpha) = ?\)</p>
+<label class="quiz-option">\(\emptyset\)</label>
+<label class="quiz-option">\(\{\emptyset\}\)</label>
+<label class="quiz-option">\(\{e\}\)</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, '\\(L \\cdot \\emptyset = \\emptyset\\) สำหรับทุกภาษา L → \\(L(\\alpha) = \\emptyset\\)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<!-- Practice: FA Questions from Practice 3-4 -->
+<section class="slide" data-chapter="5" data-title="Practice — FA & DFA Questions">
+<h1>📝 ข้อสอบ FA & DFA (Practice 3-4)</h1>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q40.</strong> DFA สองตัวจะเทียบเท่า (equivalent) เมื่อไหร่?</p>
+<label class="quiz-option">มี initial state เดียวกัน</label>
+<label class="quiz-option">มีจำนวน state เท่ากัน</label>
+<label class="quiz-option">Accept strings เซตเดียวกัน</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 2, 'DFA equivalent iff L(M₁) = L(M₂) — accept ภาษาเดียวกัน!')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q41.</strong> ถ้า A, B เป็น regular languages แล้วข้อใดถูก?</p>
+<label class="quiz-option">A·B regular, A∪B regular, A∩B regular, A\B regular — ทุกข้อ!</label>
+<label class="quiz-option">เฉพาะ A∪B regular</label>
+<label class="quiz-option">เฉพาะ A·B regular</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 0, 'Regular languages ปิดภายใต้ทุก operation! (union, concat, star, complement, intersection, difference)')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q42.</strong> ให้ DFA M, สร้าง \(M' = (K, \Sigma, \delta, s, K-F \cup \{s\})\). ข้อใดจริง?</p>
+<label class="quiz-option">\(L(M) = L(M')\)</label>
+<label class="quiz-option">\(L(M) \cup L(M') = \Sigma^*\)</label>
+<label class="quiz-option">\(L(M') = \Sigma^* - L(M)\)</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(L(M) \\cup L(M\\prime) = \\Sigma^*\\) ✅ เพราะ s เป็น final ใน M\\prime ดังนั้น e ∈ L(M\\prime) เสมอ + ส่วนที่เหลือถูก complement')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+
+<div class="quiz-q">
+<p class="q-text"><strong>Q43.</strong> ให้ \(\alpha = a^*\) ข้อใดจริงเกี่ยวกับ \(L(\alpha)\)?</p>
+<label class="quiz-option">\(L(\alpha) = \{a^i \mid i \in \mathbb{N}, i \geq 1\}\)</label>
+<label class="quiz-option">\(L(\alpha) = \{a^i \mid i \in \mathbb{N}\}\) (รวม \(a^0 = e\))</label>
+<label class="quiz-option">\(L(\alpha) = \{a\}^+\)</label>
+<button class="quiz-check-btn" onclick="checkQuiz(this, 1, '\\(a^* = \\{e, a, aa, aaa, ...\\} = \\{a^i \\mid i \\in \\mathbb{N}\\}\\) — \\(\\mathbb{N}\\) รวม 0!')">ตรวจคำตอบ</button>
+<div class="quiz-explain"></div>
+</div>
+</section>
+
+<!-- Practice: Composition & Relation Composition -->
+<section class="slide" data-chapter="5" data-title="Practice — Relation Composition (Practice 2-3)">
+<h1>📝 ข้อสอบ Relation Composition (Practice 2-3)</h1>
+
+<div class="example-box">
+<strong>Q44. (Practice 3, Q2)</strong> ให้ \(R = \{(a,b),(b,c),(a,d),(b,b)\}\) บนเซต \(A = \{a,b,c,d\}\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลยทุกข้อ</button>
+<div class="solution-content">
+<strong>(a) R∘R = ?</strong><br>
+ตรวจทุกคู่ \((x,z)\) ที่มี \(y\) ทำให้ \((x,y) \in R\) และ \((y,z) \in R\):<br>
+• (a,b)+(b,c) → <strong>(a,c)</strong> ✅<br>
+• (a,b)+(b,b) → <strong>(a,b)</strong> ✅<br>
+• (b,c) → ไม่มี (c,?) ใน R<br>
+• (b,b)+(b,c) → <strong>(b,c)</strong> ✅<br>
+• (b,b)+(b,b) → <strong>(b,b)</strong> ✅<br>
+• (a,d) → ไม่มี (d,?) ใน R<br>
+→ \(R \circ R = \{(a,c),(a,b),(b,c),(b,b)\}\) มี <strong>4 สมาชิก</strong> (ไม่ใช่ 3 ถ้านับ (b,b))<br>
+<em>หมายเหตุ: ข้อสอบอาจนับเป็น 3 เพราะ (a,b) ซ้ำ</em><br><br>
+
+<strong>(b) Diagonal set D = ?</strong><br>
+\(D = \{x \in A \mid (x,x) \notin R\}\)<br>
+ตรวจ: (a,a)∉R ✅, (b,b)∈R ❌, (c,c)∉R ✅, (d,d)∉R ✅<br>
+→ \(D = \{a, c, d\}\)<br><br>
+
+<strong>(c) R เป็น function A→A?</strong><br>
+ไม่! เพราะ (a,b) และ (a,d) → a มี output 2 ตัว
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q45. (Practice 2, Q2)</strong> ให้ \(R = \{(a,b),(b,c),(c,f),(b,a)\}\)
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลยทุกข้อ</button>
+<div class="solution-content">
+<strong>(a) \(|R^{-1}| = ?\)</strong> → \(R^{-1} = \{(b,a),(c,b),(f,c),(a,b)\}\) มี <strong>4</strong> สมาชิก<br><br>
+<strong>(b) \(|R \circ R| = ?\)</strong><br>
+• (a,b)+(b,c)→(a,c), (a,b)+(b,a)→(a,a)<br>
+• (b,c)+(c,f)→(b,f)<br>
+• (b,a)+(a,b)→(b,b)<br>
+• (c,f)→ ไม่มี (f,?)<br>
+→ \(R \circ R = \{(a,c),(a,a),(b,f),(b,b)\}\) มี <strong>4</strong> สมาชิก<br><br>
+<strong>(c) \(|R \circ R^{-1}| = ?\)</strong><br>
+\(((R^{-1})^{-1}) \circ R^{-1} = R \circ R^{-1} = \{(a,a),(b,b),(c,c)\}\) มี <strong>3</strong><br><br>
+<strong>(d) \(|2^R| = ?\)</strong> → \(2^4 = 16\)
+</div>
+</div>
+</section>
+
+<!-- Practice: Proofs (Countability, Regularity) -->
+<section class="slide" data-chapter="5" data-title="Practice — ข้อพิสูจน์เพิ่มเติม (Practice 2-4)">
+<h1>📝 ข้อพิสูจน์ — Countability & Regularity (Practice 2-4)</h1>
+
+<div class="example-box">
+<strong>Q46. (Practice 2, Q6) จงพิสูจน์ A−B uncountable ถ้า A uncountable, B countable</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Proof by contradiction:</strong><br>
+สมมติ \(A - B\) countable<br>
+เนื่องจาก B countable: \((A-B) \cup B\) countable (countable ∪ countable = countable)<br>
+แต่ \(A \subseteq (A-B) \cup B\) → A countable ← <strong>ขัดแย้ง!</strong> (A uncountable)<br>
+∴ \(A - B\) uncountable ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q47. (Practice 2, Q7) R = เซตของ regular languages ทั้งหมดบน Σ เป็น countably infinite</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Proof:</strong><br>
+\(R = \{L(\alpha) \mid \alpha \text{ เป็น regular expression}\}\)<br>
+เซตของ RE ทั้งหมด ⊆ \(\Sigma'^*\) โดย \(\Sigma' = \Sigma \cup \{\emptyset, \circ, *, \cup, (, )\}\)<br>
+\(\Sigma'^*\) เป็น countably infinite (เซตของสตริงทั้งหมดบน finite alphabet)<br>
+→ เซตของ RE ทั้งหมดเป็น countably infinite<br>
+→ \(R\) เป็น countably infinite ∎<br><br>
+<strong>มีภาษาที่ไม่ regular:</strong> \(\{a^p \mid p \text{ prime}\}\) ไม่ใช่ regular → \(\notin R\)
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q48. (Practice 3, Q6) ถ้า L ไม่เป็น regular แล้ว L เป็น infinite set</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+<strong>Proof (contrapositive):</strong><br>
+พิสูจน์ contrapositive: ถ้า L finite → L regular<br>
+ถ้า \(L = \{\omega_1, \omega_2, \ldots, \omega_n\}\) เป็น finite<br>
+→ \(\omega_1 \cup \omega_2 \cup \cdots \cup \omega_n\) เป็น regular expression ที่ generate L<br>
+∴ L เป็น regular<br><br>
+ดังนั้น contrapositive: L ไม่ regular → L ไม่ finite → L เป็น infinite ∎
+</div>
+</div>
+
+<div class="example-box">
+<strong>Q49. (Practice 1, Q6) ให้ bijection จาก \(A = \{a_i \mid i \in \mathbb{N}\}\), \(B = \{b_j \mid j \in \mathbb{N}\}\) ไป \(\mathbb{N}\)</strong>
+<button class="solution-toggle" onclick="toggleSolution(this)">แสดงเฉลย</button>
+<div class="solution-content">
+\(f(a_i) = 2i\) และ \(f(b_j) = 2j + 1\)<br>
+→ a's ไปเลขคู่, b's ไปเลขคี่ → bijection ✅<br>
+สรุป: \(A \cup B\) equinumerous กับ \(\mathbb{N}\) → countably infinite
+</div>
+</div>
+</section>
+
+<section class="slide" data-chapter="5" data-title="สรุปรวม — Cheat Sheet สำหรับสอบ">
+<h1>📋 สรุปรวม — Cheat Sheet สำหรับสอบ Midterm</h1>
+
+<h2>🔑 สูตรนับที่ต้องจำ</h2>
+<table>
+<tr><th>สิ่งที่นับ</th><th>สูตร</th><th>ตัวอย่าง |A|=3</th></tr>
+<tr><td>Subsets ของ A</td><td>\(2^{|A|}\)</td><td>8</td></tr>
+<tr><td>Proper subsets ของ A</td><td>\(2^{|A|} - 1\)</td><td>7</td></tr>
+<tr><td>Functions A → B</td><td>\(|B|^{|A|}\)</td><td>—</td></tr>
+<tr><td>Relations on A</td><td>\(2^{|A|^2}\)</td><td>512</td></tr>
+<tr><td>Partitions of {a,b,c}</td><td>Bell number</td><td>5</td></tr>
+</table>
+
+<h2>🔑 Vacuous Truth ที่ต้องรู้</h2>
+<ul>
+<li>\(\emptyset \subseteq A\) สำหรับทุก A ✅</li>
+<li>\(R = \emptyset\) → symmetric ✅, antisymmetric ✅, transitive ✅, reflexive ❌ (ยกเว้น \(A = \emptyset\))</li>
+<li>\(L(\emptyset^*) = \{e\}\), \(L(\emptyset) = \emptyset\)</li>
+</ul>
+
+<h2>🔑 Closure Properties</h2>
+<table>
+<tr><th>Operation</th><th>Regular</th><th>CFL</th></tr>
+<tr><td>Union</td><td>✅</td><td>✅</td></tr>
+<tr><td>Concatenation</td><td>✅</td><td>✅</td></tr>
+<tr><td>Kleene Star</td><td>✅</td><td>✅</td></tr>
+<tr><td>Complement</td><td>✅</td><td>❌</td></tr>
+<tr><td>Intersection</td><td>✅</td><td>❌</td></tr>
+<tr><td>CFL ∩ Regular</td><td>—</td><td>✅</td></tr>
+</table>
+
+<h2>🔑 Hierarchy</h2>
+<p><strong>Regular ⊂ CFL ⊂ Recursive ⊂ RE ⊂ All Languages</strong></p>
+
+<h2>🔑 เทคนิคพิสูจน์สำคัญ</h2>
+<ol>
+<li><strong>เซตเท่ากัน:</strong> พิสูจน์ ⊆ สองทาง</li>
+<li><strong>ไม่ regular:</strong> Pumping Theorem หรือ Closure property</li>
+<li><strong>Uncountable:</strong> Diagonalization</li>
+<li><strong>A-B uncountable:</strong> Proof by contradiction (ถ้า countable → A countable → ขัดแย้ง)</li>
+<li><strong>R countably infinite:</strong> RE เป็น string → countable</li>
+</ol>
+</section>
+
+</div> <!-- end #main -->
+
+<script>
+// ===== SLIDE SYSTEM =====
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+const total = slides.length;
+
+function showSlide(idx) {
+  if (idx < 0 || idx >= total) return;
+  slides[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+  updateUI();
+  renderMath();
+  document.getElementById('main').scrollTop = 0;
+}
+function nextSlide() { showSlide(current + 1); }
+function prevSlide() { showSlide(current - 1); }
+
+function updateUI() {
+  document.getElementById('slide-info').textContent = `${current+1} / ${total}`;
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === total - 1;
+  document.getElementById('progress-bar').style.width = ((current+1)/total*100) + '%';
+  // Update TOC active
+  document.querySelectorAll('.toc-item').forEach((el, i) => {
+    el.classList.toggle('active', parseInt(el.dataset.slide) === current);
+  });
+}
+
+// ===== KEYBOARD NAV =====
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+});
+
+// ===== TOC =====
+function buildTOC() {
+  const toc = document.getElementById('toc-list');
+  let html = '';
+  let lastChapter = '';
+  const chapterNames = {'1':'Ch.1: Sets, Relations & Languages','2':'Ch.2: Finite Automata','3':'Ch.3: Context-Free Languages','4':'Ch.4: Turing Machines','5':'📝 แบบฝึกหัด Midterm'};
+  slides.forEach((s, i) => {
+    const ch = s.dataset.chapter || '';
+    if (ch && ch !== lastChapter) {
+      html += `<div class="toc-chapter" onclick="showSlide(${i})">${chapterNames[ch] || 'Chapter '+ch}</div>`;
+      lastChapter = ch;
+    }
+    const title = s.dataset.title || `Slide ${i+1}`;
+    html += `<div class="toc-item" data-slide="${i}" onclick="showSlide(${i});closeSidebar()">${title}</div>`;
+  });
+  toc.innerHTML = html;
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const m = document.getElementById('main');
+  sb.classList.toggle('open');
+  m.classList.toggle('sidebar-open');
+}
+function closeSidebar() {
+  if (window.innerWidth < 900) {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('main').classList.remove('sidebar-open');
+  }
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  const html = document.documentElement;
+  const cur = html.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-toggle').textContent = next === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('toc-theme', next); } catch(e) {}
+}
+(function() {
+  try {
+    const saved = localStorage.getItem('toc-theme');
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved);
+      if (saved === 'dark') document.getElementById('theme-toggle').textContent = '☀️';
+    }
+  } catch(e) {}
+})();
+
+// ===== SEARCH =====
+function doSearch(query) {
+  const box = document.getElementById('search-results');
+  if (!query || query.length < 2) { box.classList.remove('show'); return; }
+  const q = query.toLowerCase();
+  let results = [];
+  slides.forEach((s, i) => {
+    const text = s.textContent.toLowerCase();
+    const title = s.dataset.title || '';
+    if (text.includes(q) || title.toLowerCase().includes(q)) {
+      const idx = text.indexOf(q);
+      const snippet = s.textContent.substring(Math.max(0,idx-30), idx+50).trim();
+      results.push({i, title, snippet});
+    }
+  });
+  if (results.length === 0) { box.innerHTML = '<div class="search-item">ไม่พบผลลัพธ์</div>'; }
+  else {
+    box.innerHTML = results.slice(0,10).map(r =>
+      `<div class="search-item" onclick="showSlide(${r.i});document.getElementById('search-results').classList.remove('show');document.getElementById('search-box').value=''">
+        <strong>${r.title}</strong><br><small>...${r.snippet}...</small>
+      </div>`
+    ).join('');
+  }
+  box.classList.add('show');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#search-box') && !e.target.closest('#search-results'))
+    document.getElementById('search-results').classList.remove('show');
+});
+
+// ===== SOLUTION TOGGLE =====
+function toggleSolution(btn) {
+  const content = btn.nextElementSibling;
+  content.classList.toggle('show');
+  btn.textContent = content.classList.contains('show') ? 'ซ่อนเฉลย' : 'แสดงเฉลย';
+}
+
+// ===== QUIZ =====
+function checkQuiz(btn, correctIdx, explanation) {
+  const qq = btn.closest('.quiz-q');
+  const options = qq.querySelectorAll('.quiz-option');
+  const selected = qq.querySelector('.quiz-option.selected');
+  if (!selected) { alert('กรุณาเลือกคำตอบก่อน'); return; }
+  const selIdx = parseInt(selected.dataset?.idx ?? Array.from(options).indexOf(selected));
+  options.forEach((o, i) => {
+    o.classList.remove('correct','wrong');
+    if (i === correctIdx) o.classList.add('correct');
+    else if (i === selIdx && selIdx !== correctIdx) o.classList.add('wrong');
+  });
+  const explDiv = qq.querySelector('.quiz-explain');
+  if (explDiv) { explDiv.innerHTML = explanation; explDiv.classList.add('show'); }
+}
+document.addEventListener('click', e => {
+  const opt = e.target.closest('.quiz-option');
+  if (!opt) return;
+  const qq = opt.closest('.quiz-q');
+  qq.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+});
+
+// ===== KATEX RENDER =====
+function renderMath() {
+  try {
+    renderMathInElement(slides[current], {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\[', right: '\\]', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\(', right: '\\)', display: false}
+      ],
+      throwOnError: false
+    });
+  } catch(e) {}
+}
+
+// ===== INIT =====
+buildTOC();
+slides[0].classList.add('active');
+updateUI();
+setTimeout(renderMath, 100);
+// Render math for all slides on load
+setTimeout(() => {
+  slides.forEach((s,i) => {
+    try {
+      renderMathInElement(s, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '\\[', right: '\\]', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false}
+        ],
+        throwOnError: false
+      });
+    } catch(e) {}
+  });
+}, 300);
+</script>
+</body>
+</html>
