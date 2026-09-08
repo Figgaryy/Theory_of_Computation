@@ -167,6 +167,30 @@ body {
 .example-box::before { content:'✏️ ตัวอย่าง (Example)'; font-weight:700; font-size:13px; color:var(--text3); display:block; margin-bottom:6px; }
 .proof-box { background:var(--bg2); border-color:var(--primary); }
 .proof-box::before { content:'📝 การพิสูจน์ (Proof)'; font-weight:700; font-size:13px; color:var(--primary); display:block; margin-bottom:6px; }
+/* ===== NEW PEDAGOGY BOXES ===== */
+.intuition-box, .analogy-box, .worked-box, .mistake-box, .quickcheck-box {
+  border-radius:var(--radius); padding:18px 22px; margin:16px 0;
+  border-left:4px solid; position:relative;
+}
+.intuition-box { background:var(--warning-light); border-color:var(--warning); }
+.intuition-box::before { content:'🌟 เข้าใจก่อน (Intuition)'; font-weight:700; font-size:13px; color:var(--warning); display:block; margin-bottom:6px; }
+.analogy-box { background:linear-gradient(135deg, #fce7f3, #fbcfe8); border-color:#ec4899; }
+[data-theme="dark"] .analogy-box { background:linear-gradient(135deg, #500724, #831843); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .analogy-box { background:linear-gradient(135deg, #500724, #831843); } }
+.analogy-box::before { content:'🎭 เปรียบเทียบ (Analogy)'; font-weight:700; font-size:13px; color:#ec4899; display:block; margin-bottom:6px; }
+[data-theme="dark"] .analogy-box::before { color:#f9a8d4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .analogy-box::before { color:#f9a8d4; } }
+.worked-box { background:var(--accent-light); border-color:var(--accent); }
+.worked-box::before { content:'📝 ตัวอย่างละเอียด (Worked Example)'; font-weight:700; font-size:13px; color:var(--accent); display:block; margin-bottom:6px; }
+.worked-box .step-line { margin:6px 0; padding-left:12px; border-left:2px solid var(--accent); font-family:var(--mono); font-size:13px; }
+.mistake-box { background:var(--danger-light); border-color:var(--danger); }
+.mistake-box::before { content:'⚠️ ระวัง! ผิดบ่อย'; font-weight:700; font-size:13px; color:var(--danger); display:block; margin-bottom:6px; }
+.quickcheck-box { background:var(--success-light); border-color:var(--success); }
+.quickcheck-box::before { content:'🧠 ลองคิดเอง (Quick Check)'; font-weight:700; font-size:13px; color:var(--success); display:block; margin-bottom:6px; }
+.quickcheck-box .qc-answer { display:none; margin-top:8px; padding:10px 12px; background:var(--card); border-radius:var(--radius-sm); border:1px dashed var(--success); font-size:14px; color:var(--text); }
+.quickcheck-box .qc-answer.show { display:block; }
+.quickcheck-box .qc-btn { background:var(--success); color:#fff; border:none; border-radius:var(--radius-sm); padding:6px 14px; font-size:13px; cursor:pointer; font-family:var(--font); margin-top:8px; }
+.quickcheck-box .qc-btn:hover { opacity:.9; }
 .exam-badge {
   display:inline-block; background:var(--danger); color:#fff; font-size:11px;
   padding:2px 8px; border-radius:10px; font-weight:600; margin-left:6px; vertical-align:middle;
@@ -341,6 +365,22 @@ body {
 <strong>เซต (Set)</strong> คือ กลุ่มของวัตถุ (collection of <em>distinct</em> objects) ที่ไม่ซ้ำกัน<br>
 วัตถุแต่ละชิ้นในเซตเรียกว่า <strong>สมาชิก (element / member)</strong><br>
 ถ้า \(b\) เป็นสมาชิกของเซต \(L\) เขียนว่า \(b \in L\)
+</div>
+
+<div class="intuition-box">
+<strong>เซตคืออะไรง่ายๆ?</strong> เซตก็เหมือน "ถุงของขวัญ" — ในถุงจะมีของอะไรบ้างก็ได้ แต่ต้องไม่มีของซ้ำกัน<br>
+คำสำคัญคือ <strong>"distinct"</strong> = ไม่ซ้ำ! ถ้าเขียน \(\{1, 2, 2, 3\}\) → จริงๆ แล้วเซตนี้คือ \(\{1, 2, 3\}\) เพราะเลข 2 ที่ซ้ำถือเป็นตัวเดียวกัน<br>
+และ <strong>ลำดับไม่สำคัญ</strong> — \(\{1, 2, 3\} = \{3, 1, 2\}\) เป็นเซตเดียวกัน
+</div>
+
+<div class="analogy-box">
+<strong>🎒 อุปมา: กระเป๋านักเรียน</strong><br>
+คิดว่าเซตคือ "กระเป๋านักเรียน" — ในกระเป๋าจะมีดินสอ ยางลบ ไม้บรรทัด<br>
+• คุณไม่เอาดินสอ 2 แท่งเหมือนกันมาใส่ซ้ำ (distinct) ✅<br>
+• ดินสอจะอยู่บนสุดหรือล่างสุดก็ไม่ต่างกัน (order ไม่สำคัญ) ✅<br>
+• จะเปิดกระเป๋ามาถามว่า "มียางลบไหม?" = \(\text{ยางลบ} \in \text{กระเป๋า}\)
+<br><br>
+<strong>🎮 อุปมา: Inventory ในเกม RPG</strong> — ช่อง inventory เก็บ item ได้หลายอย่าง แต่ในเซตจะไม่ซ้อน stack — potion 1 ขวดก็คือ potion เท่านั้น
 </div>
 
 <h2>ตัวอย่างเซตที่สำคัญ</h2>
@@ -617,10 +657,49 @@ Proper subsets (ไม่นับตัว \(A\) เอง): \(\emptyset, \{a\}
 \(2^S\) = เซตของ<strong>ทุก subset</strong> ของ \(S\) (รวม \(\emptyset\) และ \(S\) เอง)
 </div>
 
+<div class="intuition-box">
+<strong>คิดง่ายๆ:</strong> Power Set = "รายการทั้งหมดที่เป็นไปได้" ในการเลือกของจาก \(S\)<br>
+ถ้ามีของ \(n\) ชิ้น → แต่ละชิ้นคุณเลือก "เอา" หรือ "ไม่เอา" ก็ 2 ทางเลือก → รวม \(2 \times 2 \times ... \times 2 = 2^n\) วิธี → เลยได้ชื่อ \(2^S\)!
+</div>
+
+<div class="analogy-box">
+<strong>🍕 อุปมา: หน้าพิซซ่า</strong><br>
+สมมติร้านมีหน้าให้เลือก 3 อย่าง: {🧀 ชีส, 🍄 เห็ด, 🌶️ พริก}<br>
+คุณจะสั่งพิซซ่าได้กี่แบบ? — ทุกแบบที่เป็นไปได้:<br>
+• ไม่ใส่อะไรเลย = \(\emptyset\) (พิซซ่าเปล่า)<br>
+• ใส่แค่ชีส = {🧀}<br>
+• ใส่ชีสกับเห็ด = {🧀, 🍄}<br>
+• ... รวมทั้งหมด \(2^3 = 8\) แบบ!<br>
+<strong>Power Set = เมนูพิซซ่าทุกหน้าที่เป็นไปได้</strong>
+<br><br>
+<strong>🎮 อุปมา: การเลือก character skill</strong><br>
+มี skill 4 อย่าง เลือกจะติดตั้งแบบไหน = \(2^4 = 16\) build เป็นไปได้ (รวม "ไม่ติดตั้งอะไรเลย")
+</div>
+
 <div class="example-box">
 \(S = \{a\}\) → \(2^S = \{\emptyset, \{a\}\}\) (มี \(2^1 = 2\) สมาชิก)<br>
 \(S = \{a,b\}\) → \(2^S = \{\emptyset, \{a\}, \{b\}, \{a,b\}\}\) (มี \(2^2 = 4\) สมาชิก)<br>
 <strong>สูตร: \(|2^S| = 2^{|S|}\)</strong>
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่างละเอียด: หา \(2^S\) เมื่อ \(S = \{a, b, c\}\)</strong>
+<div class="step-line">ขั้น 1: นับ → \(|S| = 3\) → \(|2^S| = 2^3 = 8\) สมาชิก</div>
+<div class="step-line">ขั้น 2: ใช้ตารางเลข binary (000 → 111) แต่ละ bit แทน "เอา/ไม่เอา"</div>
+<div class="step-line">000 → \(\emptyset\) &nbsp;&nbsp; 001 → \(\{c\}\) &nbsp;&nbsp; 010 → \(\{b\}\) &nbsp;&nbsp; 011 → \(\{b,c\}\)</div>
+<div class="step-line">100 → \(\{a\}\) &nbsp;&nbsp; 101 → \(\{a,c\}\) &nbsp;&nbsp; 110 → \(\{a,b\}\) &nbsp;&nbsp; 111 → \(\{a,b,c\}\)</div>
+<div class="step-line"><strong>ผลลัพธ์:</strong> \(2^S = \{\emptyset, \{a\}, \{b\}, \{c\}, \{a,b\}, \{a,c\}, \{b,c\}, \{a,b,c\}\}\)</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> ลืมนับ \(\emptyset\) กับ \(S\) เอง! ทั้งสองเป็นสมาชิกของ \(2^S\) เสมอ<br>
+เช่น ถ้าถามว่า \(\{a,b\}\) มีกี่ subsets → ต้องตอบ 4 ไม่ใช่ 2
+</div>
+
+<div class="quickcheck-box">
+<strong>ถามตัวเอง:</strong> ถ้า \(S = \{1, 2, 3, 4\}\) → \(|2^S| = ?\)
+<button class="qc-btn" onclick="toggleQuickCheck(this)">💡 ดูคำตอบ</button>
+<div class="qc-answer">\(2^4 = 16\) subsets — คิดง่ายๆ: 4 items แต่ละ item เลือก "เอา/ไม่เอา" = \(2 \times 2 \times 2 \times 2 = 16\)</div>
 </div>
 
 <div class="warn-box">
@@ -929,6 +1008,32 @@ Partial order \(R \subseteq A \times A\) เป็น <strong>total order</stron
 <strong>Uncountably infinite:</strong> infinite แต่ไม่ equinumerous กับ \(\mathbb{N}\)
 </div>
 
+<div class="intuition-box">
+<strong>Countable = "สามารถ list ทีละตัวได้ครบ (ในเวลาไม่จำกัด)"</strong><br>
+คิดว่าคุณกำลังเรียกชื่อทีละคนใน list — ถ้าเรียกไปเรื่อยๆ<strong>ตัวสุดท้าย</strong>ทุกตัวจะได้รับการเรียกในสักตอนหนึ่ง → countable<br>
+Uncountable = "list ต่อให้เรียกไม่ครบชาติเลย" — มีตัวที่ไม่มีทางถึงในลำดับใดก็ตาม (จำนวนจริง \(\mathbb{R}\) เป็นตัวอย่าง)
+</div>
+
+<div class="analogy-box">
+<strong>🏨 อุปมา: โรงแรม Infinite Hilbert Hotel</strong><br>
+โรงแรมมีห้อง \(\infty\) ห้อง หมายเลข 1, 2, 3, ...  ทุกห้องเต็ม!<br>
+• <strong>แขกใหม่ 1 คนมา:</strong> ทุกคนย้ายจากห้อง n → ห้อง n+1 → ห้อง 1 ว่าง! (\(\mathbb{N}\) ยัง countable)<br>
+• <strong>รถบัส \(\infty\) คนมา:</strong> ทุกคนย้ายจาก n → 2n → ห้องเลขคี่ว่างหมด → รับได้! (union countable)<br>
+• <strong>รถบัส \(\infty\) คัน คันละ \(\infty\) คนมา:</strong> ใช้ dovetailing! → ยังรับได้! (\(\mathbb{N} \times \mathbb{N}\) countable)<br>
+• แต่ถ้าเป็น <strong>รถบัสของจำนวนจริง \(\mathbb{R}\)</strong> → รับไม่ได้! (uncountable)
+<br><br>
+<strong>🎮 อุปมา: การเข้าคิวใน MMO</strong><br>
+Countable = คิวที่มีเลขต่อคน (server เรียกทีละคนได้ครบ) — Uncountable = คิวที่ไม่มีเลข ต่อให้เรียกไปนานแค่ไหนก็ยังมีคนเหลือ
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง: พิสูจน์ว่า "จำนวนคี่บวก" เป็น countably infinite</strong>
+<div class="step-line">ขั้น 1: ตั้ง \(A = \{1, 3, 5, 7, ...\}\)</div>
+<div class="step-line">ขั้น 2: หา bijection \(f: \mathbb{N} \to A\) — สูตร \(f(n) = 2n + 1\)</div>
+<div class="step-line">ขั้น 3: ตรวจ — \(f(0) = 1, f(1) = 3, f(2) = 5, ...\) → 1-1 และ onto ✓</div>
+<div class="step-line"><strong>สรุป:</strong> A equinumerous กับ \(\mathbb{N}\) → countably infinite ✓</div>
+</div>
+
 <h2>ข้อเท็จจริงสำคัญ (ข้อสอบ!)</h2>
 <ul>
 <li>ทุก subset ของ finite set เป็น finite ✓</li>
@@ -1020,6 +1125,43 @@ Inductive case = ถ้ารู้ว่าจริงถึง n แล้ว
 • <strong>Diagonal set:</strong> \(D = \{a \in A \mid (a,a) \notin R\}\) — "สมาชิกที่ไม่ชี้ไปหาตัวเอง"<br>
 • <strong>Row set:</strong> \(R_a = \{b \in A \mid (a,b) \in R\}\) — "สมาชิกที่ a ชี้ไป"<br><br>
 แล้วสำหรับทุก \(a \in A\): \(R_a \neq D\) — <strong>Diagonal set ไม่เท่ากับ row set ใดๆ ทั้งสิ้น!</strong>
+</div>
+
+<div class="intuition-box">
+<strong>ทำไมเรียก "ทแยงมุม"?</strong> ถ้าเขียน relation \(R\) เป็นตาราง (แถว = a, คอลัมน์ = b) ตำแหน่ง \((a,a)\) จะอยู่บนเส้น<strong>ทแยง</strong>พอดี!<br>
+เทคนิคนี้คือ "สร้างเซตพิเศษที่<strong>ตรงข้าม</strong>กับทุกแถว โดยดูจากตำแหน่งทแยง" → รับรองว่ามันไม่เหมือนแถวไหนเลย
+</div>
+
+<div class="analogy-box">
+<strong>🎓 อุปมา: เกม "ตอบไม่เหมือนใคร"</strong><br>
+สมมติในห้องเรียน 5 คน ครูให้ทุกคนเขียนรายการอาหารโปรด<br>
+• คนที่ 1 เขียน: 🍕🍔🍜<br>
+• คนที่ 2 เขียน: 🍕🍟<br>
+• คนที่ 3 เขียน: 🍜<br>
+คุณอยากเขียนรายการที่ <strong>ไม่ตรงกับใครเลย</strong> ทำยังไง?<br>
+👉 <strong>สร้าง diagonal:</strong> ดูตำแหน่งทแยง — คนที่ i ชอบอาหารตัวที่ i ไหม? ถ้าชอบ → ฉันไม่ใส่ ถ้าไม่ชอบ → ฉันใส่<br>
+ผลลัพธ์: รายการของคุณ<strong>ต่างจากทุกคน</strong>อย่างน้อย 1 ตำแหน่ง (ตำแหน่งทแยง)!<br><br>
+<strong>🎮 อุปมา: เจ้าของหมีเทดดี้</strong><br>
+Barber's paradox ในเวอร์ชันคณิตศาสตร์ — "ฉันคือคนที่ตัดผมให้คนที่ไม่ตัดผมให้ตัวเอง" แล้วใครตัดให้ฉัน?
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่างละเอียด:</strong> \(A = \{1,2,3,4,5\}\), \(R = \{(1,3),(2,4),(3,5),(5,1),(2,3),(1,1),(4,2),(4,4)\}\)
+<div class="step-line">ขั้น 1: เขียนตาราง (แถว a, คอลัมน์ b) — ใส่ 1 ถ้า \((a,b) \in R\)</div>
+<div class="step-line">แถว 1: (1,1)=1, (1,3)=1 → \(R_1 = \{1,3\}\)</div>
+<div class="step-line">แถว 2: (2,3)=1, (2,4)=1 → \(R_2 = \{3,4\}\)</div>
+<div class="step-line">แถว 3: (3,5)=1 → \(R_3 = \{5\}\)</div>
+<div class="step-line">แถว 4: (4,2)=1, (4,4)=1 → \(R_4 = \{2,4\}\)</div>
+<div class="step-line">แถว 5: (5,1)=1 → \(R_5 = \{1\}\)</div>
+<div class="step-line">ขั้น 2: หา diagonal \(D\) — ดูตำแหน่ง \((a,a)\): \((1,1) \in R\) ✗, \((2,2) \notin R\) ✓, \((3,3) \notin R\) ✓, \((4,4) \in R\) ✗, \((5,5) \notin R\) ✓</div>
+<div class="step-line"><strong>\(D = \{2, 3, 5\}\)</strong> ← เลขที่ (a,a) ไม่อยู่ใน R</div>
+<div class="step-line">ขั้น 3: ยืนยัน — \(D \neq R_1, R_2, R_3, R_4, R_5\) ทุกตัว ✓</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> สับสนระหว่าง \(D\) กับ \(D'\)!<br>
+• \(D = \{a \mid (a,a) \notin R\}\) — <strong>ใช้ได้เสมอ</strong> ทำ diagonal principle ได้<br>
+• \(D' = \{a \mid (a,a) \in R\}\) — <strong>ใช้ไม่ได้</strong>! อาจเท่ากับ row set บางแถว
 </div>
 
 <div class="example-box">
@@ -1118,6 +1260,46 @@ Regular expression เหนือ \(\Sigma\) สร้างจาก:<br>
 โดย \(L(\alpha \cdot \beta) = L(\alpha) \cdot L(\beta)\), \(L(\alpha^*) = L(\alpha)^*\), \(L(\alpha \cup \beta) = L(\alpha) \cup L(\beta)\)
 </div>
 
+<div class="intuition-box">
+<strong>Regex = สูตรอธิบาย pattern</strong><br>
+คิดว่า regex เป็น "สูตรทำอาหาร" — บอกวิธีสร้างสตริงที่ยอมรับได้<br>
+• \(a\) = "ต้องมีตัว a"<br>
+• \(a \cup b\) = "เอา a หรือ b ก็ได้" (choice)<br>
+• \(ab\) = "a ก่อน แล้วตามด้วย b" (sequence)<br>
+• \(a^*\) = "a กี่ตัวก็ได้ รวมถึง 0 ตัว" (repeat, รวมว่างเปล่าได้)
+</div>
+
+<div class="analogy-box">
+<strong>🎮 อุปมา: Cheat code ในเกม</strong><br>
+Regex เป็นเหมือน pattern ของ cheat code:<br>
+• \(a^*bc\) = "กด a กี่ครั้งก็ได้ แล้วกด b, c" → \(bc, abc, aabc, aaabc, ...\) ผ่านหมด<br>
+• \((a \cup b)c\) = "กด a หรือ b ก่อน แล้วกด c" → \(ac\) หรือ \(bc\)<br><br>
+<strong>📱 อุปมา: การ search ไฟล์</strong><br>
+เหมือน wildcard บนคอมพิวเตอร์ — <code>*.txt</code> = ไฟล์ที่มีนามสกุล .txt แต่ชื่ออะไรก็ได้
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่างเยอะๆ: แปล regex → ภาษา</strong>
+<div class="step-line">🔹 \(ab^*\) → \(\{a, ab, abb, abbb, ...\}\) (a ตัวเดียว แล้ว b กี่ตัวก็ได้)</div>
+<div class="step-line">🔹 \((ab)^*\) → \(\{e, ab, abab, ababab, ...\}\) (ab เป็นก้อน ทำซ้ำ)</div>
+<div class="step-line">🔹 \(a^*b^*\) → \(\{e, a, b, ab, aab, abb, ...\}\) (a หลายตัวแล้วตามด้วย b หลายตัว — <strong>ไม่ต้องเท่ากัน</strong>)</div>
+<div class="step-line">🔹 \((a \cup b)^*\) → ทุกสตริงที่มีเฉพาะ a และ b — เท่ากับ \(\{a,b\}^*\)</div>
+<div class="step-line">🔹 \(a(b \cup c)^*a\) → เริ่มด้วย a จบด้วย a ตรงกลางมีแค่ b, c</div>
+<div class="step-line">🔹 \(a^*ba^*\) → มี b เพียงตัวเดียว (นอกนั้นเป็น a)</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> เข้าใจว่า \(a^*b^*\) = สตริงที่มี a เท่ากับ b! ❌<br>
+จริงๆ แล้วภาษานี้คือ "a หลายตัวตามด้วย b หลายตัว จำนวนไม่ต้องเท่ากัน" เช่น \(aab, aaabb\) ก็ยอมรับ<br>
+ภาษา \(\{a^n b^n\}\) ที่ต้องเท่ากัน<strong>ไม่ใช่ regular!</strong> (Pumping Theorem บทที่ 2 พิสูจน์ได้)
+</div>
+
+<div class="quickcheck-box">
+<strong>ถามตัวเอง:</strong> regex ของภาษา "สตริงที่มี ab เป็น substring" คืออะไร?
+<button class="qc-btn" onclick="toggleQuickCheck(this)">💡 ดูคำตอบ</button>
+<div class="qc-answer">\((a \cup b)^* \cdot ab \cdot (a \cup b)^*\) — อะไรก็ได้ก่อน แล้ว ab แล้วอะไรก็ได้ต่อ</div>
+</div>
+
 <div class="thm-box">
 ภาษา \(A\) เป็น regular iff มี regular expression \(\alpha\) ที่ \(A = L(\alpha)\)
 </div>
@@ -1195,9 +1377,50 @@ Regular expression เหนือ \(\Sigma\) สร้างจาก:<br>
 • \(\delta: K \times \Sigma \to K\) = <strong>transition function</strong> (ฟังก์ชันเปลี่ยนสถานะ)
 </div>
 
+<div class="intuition-box">
+<strong>DFA = "หุ่นยนต์อ่านตัวอักษร"</strong><br>
+คิดว่ามีหุ่นยนต์ตัวหนึ่ง เดิน<strong>ไปตามลูกศร</strong>บนแผนที่ทีละก้าว โดยดูจากตัวอักษรที่อ่านได้:<br>
+• เริ่มยืนที่ \(s\) (initial state)<br>
+• อ่านตัวอักษรทีละตัวจาก input<br>
+• ตัวอักษรบอก "ไปทางไหน" — เดินตามลูกศรทันที<br>
+• อ่านครบ → ยืนอยู่ในวงกลมคู่ (\(F\)) ไหม? ถ้าใช่ = ยอมรับ ถ้าไม่ใช่ = ปฏิเสธ<br>
+"Deterministic" = แต่ละท่าไม่มีเสี่ยงดวง! อยู่ที่ state ไหน อ่าน symbol อะไร → ไปที่ไหน มีคำตอบเดียวเท่านั้น
+</div>
+
+<div class="analogy-box">
+<strong>🚦 อุปมา: ไฟจราจร (State Machine ตัวจริง!)</strong><br>
+ไฟจราจรมี 3 state: 🟢 เขียว, 🟡 เหลือง, 🔴 แดง<br>
+Input = "หมดเวลา 30 วิ" — transition ตายตัว:<br>
+เขียว → หมดเวลา → เหลือง → หมดเวลา → แดง → หมดเวลา → เขียว (loop)<br>
+ไม่มีการ "เดา" — deterministic 100%!<br><br>
+<strong>🎮 อุปมา: Boss battle ใน Pokemon</strong><br>
+• States = HP ของ Pokemon (Full, Low, Fainted)<br>
+• Input = "ท่าที่โจมตี"<br>
+• Transition = HP ลด เปลี่ยน state<br>
+• Final state = "ชนะ" (Boss Fainted) → accept<br><br>
+<strong>🏧 อุปมา: ตู้ ATM</strong><br>
+States = "รอ PIN", "รอเลือกเมนู", "รอจำนวนเงิน", "จ่ายเงินแล้ว"<br>
+Input = ปุ่มที่กด → transition ตายตัวไปยัง state ถัดไป
+</div>
+
 <div class="tip-box">
 <strong>จากห้องเรียน:</strong> "Deterministic" = กำหนดได้แน่นอน — กำหนด state ปัจจุบัน + input symbol → มีทางไปได้<strong>ทางเดียว</strong>เท่านั้น<br>
 \(\delta\) เป็น <strong>function</strong> (ไม่ใช่ relation) → ทุก \((q, a)\) มีคำตอบเดียว
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง: DFA รับสตริงที่มีจำนวน 'a' คู่</strong>
+<div class="step-line">แนวคิด: ต้องจำ "จำนวน a จนถึงตอนนี้ เป็นคู่หรือคี่" → พอ! ใช้ 2 states</div>
+<div class="step-line">\(q_0\) = "a คู่" (final) &nbsp; \(q_1\) = "a คี่"</div>
+<div class="step-line">Transitions: \(q_0 \xrightarrow{a} q_1\), \(q_1 \xrightarrow{a} q_0\), \(q_0 \xrightarrow{b} q_0\), \(q_1 \xrightarrow{b} q_1\)</div>
+<div class="step-line">ทดสอบ "abba": \(q_0 \xrightarrow{a} q_1 \xrightarrow{b} q_1 \xrightarrow{b} q_1 \xrightarrow{a} q_0\) → ยอมรับ ✓ (a คู่)</div>
+<div class="step-line">ทดสอบ "aab": \(q_0 \xrightarrow{a} q_1 \xrightarrow{a} q_0 \xrightarrow{b} q_0\) → ยอมรับ ✓</div>
+<div class="step-line">ทดสอบ "aba": \(q_0 \xrightarrow{a} q_1 \xrightarrow{b} q_1 \xrightarrow{a} q_0\) → ยอมรับ (a มี 2 ตัว = คู่)</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> ลืมใส่ transition ครบทุก \((q, a)\) คู่! DFA <strong>ต้อง</strong> มี transition สำหรับทุก symbol ทุก state<br>
+ถ้าลืม 1 คู่ → ไม่ใช่ DFA ที่ถูกต้อง (จะเป็น partial DFA เท่านั้น)
 </div>
 
 <div class="example-box">
@@ -1287,6 +1510,50 @@ Regular expression เหนือ \(\Sigma\) สร้างจาก:<br>
 <em>— แต่ละ state + input อาจมีหลายทางเลือก หรือไม่มีเลย</em>
 </div>
 
+<div class="intuition-box">
+<strong>NFA = "หุ่นยนต์ที่โคลนตัวเองได้"</strong><br>
+ต่างจาก DFA (ไปทางเดียว) — NFA สามารถ:<br>
+1. 🌟 <strong>"เดา" หลายทางพร้อมกัน</strong> — เจอทางแยกก็ไปทุกทางในเวลาเดียว (parallel universes!)<br>
+2. 🌟 <strong>ε-transition</strong> — เปลี่ยน state โดย<strong>ไม่อ่าน</strong> input (เดินฟรี)<br>
+3. 🌟 <strong>ทางไปได้ 0 ทาง</strong> ก็ได้ (dead-end → สาย universe นั้นตาย)<br><br>
+<strong>ยอมรับ:</strong> ถ้ามี<strong>อย่างน้อย 1 universe</strong> ไปถึง final state → accepted!
+</div>
+
+<div class="analogy-box">
+<strong>🎮 อุปมา: RPG กับ Save Point</strong><br>
+คิดว่าคุณเล่น RPG ที่:<br>
+• เจอทางแยก → คุณ "save" แล้วลองไปทุกทาง (โคลนตัวเอง)<br>
+• ถ้าทางไหนตัน → ปิดสาย นั้นซะ<br>
+• ถ้าทางไหน<strong>ชนะ boss</strong> (ไปถึง final state) → คุณชนะเกม!<br><br>
+<strong>🚪 อุปมา: Door of Destiny</strong><br>
+ประตูหลายบานจากห้องเดียว — DFA บอกให้เข้าบานที่กำหนดตายตัว, NFA เข้าทุกบานพร้อมกัน<br><br>
+<strong>🕸️ อุปมา: Doctor Strange &amp; Multiverse</strong><br>
+NFA คือ "สำรวจ multiverse" — ทุกความเป็นไปได้ดำเนินคู่ขนาน<br><br>
+<strong>👻 ε-transition = "teleport ฟรี"</strong><br>
+เดินทะลุกำแพงโดยไม่ต้องใช้พลัง (input) — ไม่กิน turn
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง: NFA รับ \((ab \cup aba)\)</strong>
+<div class="step-line">แนวคิด: DFA ต้อง "ตัดสินใจ" ก่อนว่าจะรับ ab หรือ aba — แต่ NFA เดาได้!</div>
+<div class="step-line">3 states: \(s\) (start), \(q_1\) (หลัง ab), \(q_2\) (หลัง aba, final)</div>
+<div class="step-line">Transitions: \(s \xrightarrow{a} q_1\), \(q_1 \xrightarrow{b} q_2\), \(q_2 \xrightarrow{a} q_3\) (final ที่ \(q_2\) และ \(q_3\))</div>
+<div class="step-line">ทดสอบ "ab": \((s,ab) \vdash (q_1,b) \vdash (q_2,e)\) → accept ✓</div>
+<div class="step-line">ทดสอบ "aba": \((s,aba) \vdash (q_1,ba) \vdash (q_2,a) \vdash (q_3,e)\) → accept ✓</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย 1:</strong> เข้าใจว่า NFA "ต้องเลือก" ทางที่ถูก — จริงๆ NFA <strong>ลองทุกทางพร้อมกัน</strong>!<br>
+<strong>ผิดบ่อย 2:</strong> ในการ trace ต้องเขียนทุก config ที่เป็นไปได้ ไม่ใช่แค่ 1 path — ใช้ \(\vdash^*\) เชื่อมทุกสาย<br>
+<strong>ผิดบ่อย 3:</strong> ลืมว่า \(\varepsilon\)-transition ไม่กิน symbol — สายเดินได้แม้ input ยังไม่เดิน
+</div>
+
+<div class="quickcheck-box">
+<strong>ถามตัวเอง:</strong> ทุก DFA เป็น NFA ด้วยหรือไม่?
+<button class="qc-btn" onclick="toggleQuickCheck(this)">💡 ดูคำตอบ</button>
+<div class="qc-answer">✅ ใช่! DFA เป็น NFA ชนิดพิเศษ (transition function เป็น subset ของ transition relation แบบ deterministic ทุกคู่มี transition เดียว)</div>
+</div>
+
 <div class="tip-box">
 <strong>จากห้องเรียน — ความแตกต่าง DFA vs NFA:</strong><br>
 • DFA: \(\delta\) เป็น <strong>function</strong> (one-to-one mapping) → กำหนดผลลัพธ์ได้แน่นอน<br>
@@ -1328,10 +1595,39 @@ Regular expression เหนือ \(\Sigma\) สร้างจาก:<br>
 สำหรับทุก NFA มี DFA ที่เท่าเทียมกัน (equivalent) — คือรับภาษาเดียวกัน
 </div>
 
+<div class="intuition-box">
+<strong>ไอเดียหลัก: "รวม universe หลายๆ อันเป็น universe เดียว"</strong><br>
+NFA อยู่หลาย state พร้อมกันได้ → DFA ใหม่แต่ละ state ก็คือ<strong>เซตของ state NFA ที่เป็นไปได้ทั้งหมด</strong> ในเวลานั้น!<br>
+เรียกว่า <strong>"superstate"</strong> — 1 superstate = 1 ชุดของ NFA states<br>
+ถ้า NFA มี \(n\) states → DFA อาจมีถึง \(2^n\) states (เลยชื่อ "power<em>set</em> construction")
+</div>
+
+<div class="analogy-box">
+<strong>🎬 อุปมา: หนัง Avengers</strong><br>
+NFA = ทีม Avengers หลายคน กระจายไปสู้ในหลายพื้นที่พร้อมกัน<br>
+DFA = จับกล้องถ่ายรวม — "ตอนนี้ Avengers อยู่ที่ไหนบ้าง?" → เก็บเป็น 1 snapshot ({Iron Man, Thor, Hulk})<br>
+แต่ละ snapshot = 1 superstate — เดินหน้าตาม input พร้อมกันทุกคน<br><br>
+<strong>👥 อุปมา: กลุ่มไลน์</strong><br>
+NFA state = คนแต่ละคน — DFA state = "กลุ่มไลน์" ที่รวมทุกคนที่ active ตอนนั้น
+</div>
+
 <h2>E-Closure (การปิดแบบ epsilon)</h2>
 <div class="def-box">
 \(E(q) = \{p \mid p \in K \text{ and } (q, e) \vdash_M^* (p, e)\}\)<br>
 <em>— เซตของ state ทั้งหมดที่ไปถึงจาก \(q\) ผ่าน e-transition เท่านั้น (รวม \(q\) เอง)</em>
+</div>
+
+<div class="intuition-box">
+<strong>E-Closure = "ทุกที่ที่เดินฟรีถึงได้"</strong><br>
+ก่อนอ่าน input ตัวใหม่ ให้ "แผ่" ไปทุก state ที่ ε-transition พาไปถึง — เพราะเดินฟรี ไม่เสีย input<br>
+วิธีคิด: จาก \(q\) — เจอ ε-lane ไปที่ไหนได้ต่อ? ตามไปเรื่อยๆ จนตัน (fixed point) → นั่นคือ E(q)
+</div>
+
+<div class="analogy-box">
+<strong>🚇 อุปมา: รถไฟใต้ดินฟรี</strong><br>
+สมมติในเมืองมีรถไฟใต้ดินฟรี (ε-transition) ที่วิ่งเชื่อมสถานีบางที่<br>
+คุณอยู่สถานี \(q\) → E(q) = "ทุกสถานีที่ไปถึงได้ฟรี" (ไม่ต้องใช้ token / input)<br>
+ก่อนจะเดินขึ้นรถเมล์ (transition ด้วย symbol) → คุณ<strong>ควรใช้รถไฟฟรีให้เต็มที่ก่อน</strong>!
 </div>
 
 <h2>การสร้าง DFA \(M' = (K', \Sigma, \delta, s', F')\)</h2>
@@ -1706,6 +2002,41 @@ q₃, q₅ ทั้งคู่ transition ไปที่: 0→{q₃,q₅}, 1�
 3. \(xy^kz \in L\) สำหรับทุก \(k \geq 0\) (ปั๊ม y กี่รอบก็ยังอยู่ใน L)
 </div>
 
+<div class="intuition-box">
+<strong>Pumping Theorem = "หลัก Pigeonhole ของ DFA"</strong><br>
+ทำไม pump ได้? เพราะ DFA มี state <strong>จำกัด</strong>! ถ้าสตริงยาวกว่าจำนวน state → ต้อง<strong>วนซ้ำ state เดิม</strong>อย่างน้อย 1 ตัว<br>
+ส่วนที่วนซ้ำนั้นคือ \(y\) — ไป loop กี่รอบก็ยังยอมรับ (เหมือน hamster วิ่งบน wheel)<br><br>
+<strong>Pumping Theorem ใช้ทำอะไร?</strong> ใช้ <strong>พิสูจน์ว่าภาษาไม่ regular</strong> — ถ้าเจอสตริงที่ pump แล้วออกจากภาษา = ไม่ regular
+</div>
+
+<div class="analogy-box">
+<strong>🍿 อุปมา: ต่อลูกโป่ง</strong><br>
+สตริงยาวใน regular language = ลูกโป่งที่มี "ส่วนกลาง \(y\) เป่าลมเพิ่มได้"<br>
+• ค่อยๆ เป่า \(y\) ซ้ำ 1, 2, 3 รอบ → ยังเป็นลูกโป่งใน L<br>
+• ลด \(y\) ออก (k=0) → ยังคงเป็นลูกโป่ง<br>
+👉 ถ้าเป่าแล้วมัน "ระเบิด" (ออกจาก L) → ภาษานี้ไม่ใช่ regular!<br><br>
+<strong>🎡 อุปมา: DFA เหมือน Ferris Wheel</strong><br>
+มีที่นั่งจำกัด (states) — ถ้าคนเข้ามาเกินจำนวนที่นั่ง ต้องมีคนได้ที่นั่งซ้ำ<br>
+สายทางที่ผ่าน state ซ้ำ = "loop" ที่ pump ได้<br><br>
+<strong>🎮 อุปมา: Speed run glitch</strong><br>
+บาง glitch ใน Mario ทำให้ผู้เล่น "loop" ในห้องเดิม → ทำซ้ำได้เท่าไรก็เป็นสาย valid ของเกม → นี่คือ pump y
+</div>
+
+<div class="worked-box">
+<strong>สูตรการใช้ (5 ขั้นตอน — ท่องได้เลย!)</strong>
+<div class="step-line">1️⃣ สมมติ \(L\) เป็น regular → มี \(n\) (pumping length) จาก Pumping Theorem</div>
+<div class="step-line">2️⃣ <strong>เลือกสตริง \(\omega \in L\)</strong> ที่ \(|\omega| \geq n\) แบบฉลาด (ควรมีโครงสร้างชัดเจน)</div>
+<div class="step-line">3️⃣ <strong>พิจารณาทุกวิธี</strong>แบ่ง \(\omega = xyz\) ที่ \(|xy| \leq n, y \neq e\)</div>
+<div class="step-line">4️⃣ <strong>เลือก k</strong> (มัก k=0 หรือ k=2) ให้ \(xy^kz \notin L\) — เกิดขัดแย้ง!</div>
+<div class="step-line">5️⃣ สรุป: \(L\) ไม่เป็น regular ∎</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย 1:</strong> เลือกสตริงตัวอย่างสั้นเกินไป — ต้องยาวพอที่จะ pump ได้<br>
+<strong>ผิดบ่อย 2:</strong> ลืมเงื่อนไข \(|xy| \leq n\) — บังคับว่า y อยู่ใน n ตัวแรกเท่านั้น! (จำกัดว่า y คือ \(a\) กี่ตัวใน \(a^n b^n\))<br>
+<strong>ผิดบ่อย 3:</strong> ต้องพิจารณา<strong>ทุกความเป็นไปได้</strong>ของ y ไม่ใช่แค่กรณีเดียว
+</div>
+
 <h2>การใช้ Pumping Theorem พิสูจน์ว่าภาษาไม่ regular</h2>
 <div class="example-box">
 <strong>พิสูจน์:</strong> \(L = \{a^i b^i \mid i \geq 0\}\) ไม่เป็น regular
@@ -1739,6 +2070,34 @@ q₃, q₅ ทั้งคู่ transition ไปที่: 0→{q₃,q₅}, 1�
 
 <h2>ปัญหา</h2>
 <p>ให้ DFA \(M\) → สร้าง DFA \(M'\) ที่ \(L(M) = L(M')\) และ \(M'\) มี<strong>จำนวน state น้อยที่สุด</strong></p>
+
+<div class="intuition-box">
+<strong>ทำไมต้อง minimize?</strong> DFA จาก powerset construction มักมี state เยอะเกิน (2^n) → หลาย state มัน "พฤติกรรมเหมือนกัน" ก็รวมเป็นหนึ่งได้!<br>
+สอง state ที่ "เท่ากัน" คือ: ไม่ว่าจะรับ input อะไร → ผลลัพธ์ (ยอมรับ/ปฏิเสธ) เหมือนกันเสมอ → รวมได้!
+</div>
+
+<div class="analogy-box">
+<strong>👥 อุปมา: จัดกลุ่มเด็กนักเรียน</strong><br>
+สมมติมีเด็ก 6 คน — คุณอยากจัดกลุ่มโดย "เด็กในกลุ่มเดียวกันต้องทำอะไรเหมือนกัน":<br>
+• เริ่มด้วยแบ่ง 2 กลุ่มใหญ่: "เด็กดี" (final) / "เด็กดื้อ" (non-final)<br>
+• ในแต่ละกลุ่ม ถ้ามีเด็กที่ "ส่งไปโรงเรียนต่างกัน" (transition ไปคนละ group) → แยกกลุ่มออก<br>
+• ทำซ้ำจนไม่มีอะไรเปลี่ยน → รวมเด็กในกลุ่มเดียวกัน<br><br>
+<strong>🎮 อุปมา: NPC ในเกม</strong><br>
+NPC 5 ตัวในเกม ถ้าพูดประโยคเดียวกัน ให้รางวัลเดียวกัน → รวมเป็น NPC ตัวเดียวได้ ประหยัด RAM
+</div>
+
+<div class="worked-box">
+<strong>ทริก "แบ่งกลุ่ม" ทีละขั้น</strong>
+<div class="step-line">🔹 <strong>Iteration 0:</strong> แบ่งเป็น {Non-final states} และ {Final states} — เพราะ 2 กลุ่มนี้พฤติกรรมต่างกันแน่ (ยอมรับ vs ไม่)</div>
+<div class="step-line">🔹 <strong>Iteration k+1:</strong> ในแต่ละกลุ่มปัจจุบัน ดูว่า state ไหน transition ไปกลุ่มต่างกัน → แยกออก</div>
+<div class="step-line">🔹 <strong>หยุด:</strong> เมื่อไม่มีกลุ่มไหนแยกได้อีกใน 1 iteration</div>
+<div class="step-line">🔹 <strong>สร้าง DFA ใหม่:</strong> แต่ละกลุ่ม = 1 state ใหม่</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> ลืมทำ Step 1 (Eliminate unreachable) ก่อน! state ที่ไปไม่ถึงไม่ควรอยู่ในผลลัพธ์<br>
+<strong>ผิดบ่อย 2:</strong> สับสนระหว่าง "unreachable" (ไปไม่ถึง) กับ "equivalent" (เท่ากัน) — ต้องทำต่างขั้น
+</div>
 
 <h2>อัลกอริทึม (4 ขั้นตอน)</h2>
 <div class="step-container">
@@ -1816,6 +2175,42 @@ q₃, q₅ ทั้งคู่ transition ไปที่: 0→{q₃,q₅}, 1�
 • \(V - \Sigma\) = <strong>nonterminals</strong> (สัญลักษณ์กลาง — ตัวแปร)<br>
 • \(R \subseteq (V - \Sigma) \times V^*\) = <strong>rules</strong> (กฎการผลิต)<br>
 • \(S \in V - \Sigma\) = <strong>start symbol</strong>
+</div>
+
+<div class="intuition-box">
+<strong>CFG = "สูตรทำประโยค" ที่แตกได้ทีละส่วน</strong><br>
+คิดว่ามีคำ 2 ประเภท:<br>
+• <strong>Terminal (ตัวจริง)</strong> = คำสุดท้ายที่จะออกมา เช่น \(a, b, x, +\)  — ไม่แตกต่อได้<br>
+• <strong>Nonterminal (ตัวสมมุติ)</strong> = "ตัวแทน" ที่ต้องแตกเป็นอย่างอื่น เช่น \(S, E, T\)<br>
+กฎ \(A \to u\) = "แทน A ด้วย u" — เอาไปใช้ตรงไหนก็ได้ที่เจอ A (ไม่ต้องดูว่าอยู่ข้างๆ อะไร → "context-free")<br>
+เริ่มจาก \(S\) → แตกไปเรื่อยๆ จนเหลือแค่ terminal → นั่นคือสตริงในภาษา!
+</div>
+
+<div class="analogy-box">
+<strong>🌳 อุปมา: ต้นไม้ครอบครัว</strong><br>
+Nonterminal = "ตำแหน่งในครอบครัว" (พ่อ, แม่, ลูก) — Terminal = ชื่อจริง<br>
+กฎ: "พ่อ → ปู่ ตัวเอง" หมายถึง ทุกครั้งที่พูดถึง "พ่อ" คุณสามารถแทนได้ด้วย "ปู่ ตัวเอง"<br>
+เริ่มจากตำแหน่งบนสุด → แตกลงมาเรื่อยๆ → ได้ชื่อจริงทั้งหมด<br><br>
+<strong>🎮 อุปมา: Crafting ในเกม (Minecraft, Terraria)</strong><br>
+Recipe: "ดาบเหล็ก → เหล็ก+เหล็ก+เหล็ก+ไม้" — แต่ละองค์ประกอบก็ craft ต่อได้:<br>
+"เหล็ก → เหล็กดิบ+เตา"<br>
+สร้างของสุดท้ายจากรายการ recipe → นั่นคือ derivation!<br><br>
+<strong>📝 อุปมา: Mad Libs</strong><br>
+"เมื่อวาน [ชื่อ] ไปที่ [สถานที่] แล้วเจอ [สัตว์]" — [xxx] คือ nonterminal, ชื่อจริงคือ terminal
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง: Grammar สำหรับ \(a^n b^n\)</strong>
+<div class="step-line">กฎ: \(S \to aSb\) &nbsp;|&nbsp; \(S \to e\)</div>
+<div class="step-line">Derivation ของ "aabb":</div>
+<div class="step-line">\(S \Rightarrow aSb\) (ใช้กฎ 1)</div>
+<div class="step-line">\(\Rightarrow aaSbb\) (ใช้กฎ 1 อีก)</div>
+<div class="step-line">\(\Rightarrow aabb\) (ใช้กฎ 2: S → e)</div>
+<div class="step-line"><strong>สรุป:</strong> "aabb" \(\in L(G)\) ✓</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> ลืมกฎ base case! \(S \to aSb\) อย่างเดียว → derivation ไม่มีวันจบ! ต้องมี \(S \to e\) หรือกฎอื่นที่ end
 </div>
 <p>เขียน \(A \to u\) สำหรับกฎ \((A, u) \in R\)</p>
 <p>\(\omega \Rightarrow_G \upsilon\) iff มีกฎ \(A \to u\) ที่ \(\omega = xAy\) และ \(\upsilon = xuy\)</p>
@@ -1929,6 +2324,30 @@ Grammar \(G\) เป็น <strong>ambiguous</strong> iff มีสตริง 
 
 <section class="slide" data-chapter="3" data-title="Pushdown Automata (PDA) — นิยาม">
 <h1>Pushdown Automata (PDA) — นิยาม <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="intuition-box">
+<strong>PDA = NFA + "สมุดบันทึกช่วยจำ" (stack)</strong><br>
+NFA มีปัญหา: "จำ" ไม่ได้ (เพราะ state จำกัด) → รับภาษาเช่น \(a^n b^n\) ไม่ได้<br>
+PDA แก้ปัญหา: <strong>เพิ่ม stack</strong> — ช่วยจำได้เท่าที่ push เข้าไป (unlimited!)<br>
+Stack = "จานซ้อน" = LIFO (Last In, First Out) — เข้าหลังออกก่อน
+</div>
+
+<div class="analogy-box">
+<strong>🍽️ อุปมา: จานล้างในร้านอาหาร</strong><br>
+Stack ก็เหมือนกองจานที่ล้างเสร็จ:<br>
+• <strong>Push (วาง)</strong> — วางจานใหม่บนสุด<br>
+• <strong>Pop (หยิบ)</strong> — หยิบจานบนสุดออก<br>
+• <strong>Top</strong> — ดูว่าจานบนสุดเป็นอะไร<br><br>
+<strong>🎮 อุปมา: Undo Stack ในเกม/โปรแกรม</strong><br>
+กด Ctrl+Z = pop action ล่าสุด → ย้อน state<br>
+กดทำอะไรใหม่ = push action ใหม่<br><br>
+<strong>🎒 อุปมา: กระเป๋าใส่ของ (แบบใส่จากด้านบน)</strong><br>
+ใส่ของทีละชิ้น → ของที่ใส่ทีหลังต้องหยิบออกก่อน<br><br>
+<strong>💡 ทำไม stack ช่วย \(a^n b^n\)?</strong><br>
+Phase 1: อ่าน 'a' → push 'a' 1 ตัว → ทำซ้ำ n รอบ (stack มี n ตัว)<br>
+Phase 2: อ่าน 'b' → pop 'a' 1 ตัว → ทำซ้ำ n รอบ (stack ว่าง)<br>
+ถ้า b น้อยกว่า/มากกว่า a → stack ไม่ว่าง = reject!
+</div>
 
 <div class="def-box">
 <strong>PDA</strong> = NFA + Stack! — 6-tuple \(M = (K, \Sigma, \Gamma, \Delta, s, F)\)<br>
@@ -2101,6 +2520,29 @@ Regular ⊂ CFL ⊂ CSL ⊂ RE ⊂ All Languages<br>
 <em>ไม่มี e-rules, ไม่มี unit rules, ไม่มีกฎที่มีมากกว่า 2 ตัวทางขวา</em>
 </div>
 
+<div class="intuition-box">
+<strong>CNF = "ทำ Grammar ให้เป็น Binary Tree"</strong><br>
+ทำไมต้องแปลง? เพราะ parse tree ของ CNF จะเป็น <strong>binary tree</strong> เสมอ → parse ได้เร็ว (\(O(n^3)\)) ด้วย CYK algorithm<br>
+CNF ไม่ได้ทำให้ภาษาเปลี่ยน — แค่เปลี่ยน<strong>รูปแบบกฎ</strong>ให้เรียบง่ายลง (ยกเว้นภาษาที่มี ε ในตัว)
+</div>
+
+<div class="analogy-box">
+<strong>🌳 อุปมา: จัดต้นไม้ครอบครัวใหม่</strong><br>
+Grammar ปกติ = ต้นไม้ที่พ่อแม่มีลูกกี่คนก็ได้<br>
+CNF = ต้นไม้ที่พ่อแม่มีลูก<strong>ได้แค่ 2 คน</strong> เสมอ (เหมือน binary tree)<br><br>
+<strong>🍞 อุปมา: อบขนมปัง</strong><br>
+CNF = recipe มาตรฐาน "ต้องเป็นแป้ง+น้ำ (สองอย่าง)" หรือ "ต้องเป็นเกลือ (อย่างเดียวเลย)"<br>
+ห้ามใส่ 3 อย่างพร้อมกัน — แต่ก็ทำขนมปังทุกแบบได้ (แค่ต้องแตก step ให้ละเอียดขึ้น)
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> Order ของ 4 steps สำคัญ! ต้องทำ<strong>ตามลำดับ 1→2→3→4</strong>:<br>
+1. Binarize ก่อน (เพราะ step อื่น assume binary form)<br>
+2. หา nullable (ต้องหาให้ครบก่อน)<br>
+3. ลบ e-rules (ใช้ nullable set)<br>
+4. ลบ unit rules สุดท้าย (เพราะ step ก่อนหน้าอาจสร้าง unit เพิ่ม)
+</div>
+
 <h2>ขั้นตอนแปลงเป็น CNF (4 steps)</h2>
 <div class="step-container">
 <div class="step"><div class="step-num">1</div><div class="step-content">
@@ -2147,6 +2589,39 @@ Regular ⊂ CFL ⊂ CSL ⊂ RE ⊂ All Languages<br>
 <strong>CYK (Cocke-Younger-Kasami):</strong> ให้ CNF grammar \(G\) และ string \(\omega = x_1...x_n\)<br>
 คำนวณ \(N[i,j] = \{A \mid A \Rightarrow^* x_i...x_j\}\) — "nonterminals ที่ derive ได้ substring จากตำแหน่ง i ถึง j"<br>
 \(\omega \in L(G)\) iff \(S \in N[1,n]\)
+</div>
+
+<div class="intuition-box">
+<strong>CYK = "ตอบทีละส่วนเล็ก แล้วรวมเป็นใหญ่" (Dynamic Programming)</strong><br>
+คิดว่ากำลังต่อจิ๊กซอว์:<br>
+1. เริ่มด้วยชิ้นเล็กสุด (1 ตัวอักษร) → หา nonterminal ที่ผลิตมันได้<br>
+2. รวม 2 ชิ้นเล็กเป็นชิ้นใหญ่ขึ้น (2 ตัวอักษร) → หา A → BC ที่ตรงกัน<br>
+3. รวมต่อไปเรื่อยๆ จนได้ทั้งสตริง<br>
+4. ถ้า \(S\) อยู่ในตำแหน่ง [1,n] (ทั้งสตริง) → yes! สตริงอยู่ในภาษา
+</div>
+
+<div class="analogy-box">
+<strong>🧩 อุปมา: ต่อจิ๊กซอว์</strong><br>
+ต่อชิ้นเล็กก่อน → รวมเป็นชิ้นใหญ่ → รวมเป็นภาพเต็ม<br>
+แต่ละช่องในตาราง CYK = "ส่วนที่ต่อได้ถึงตรงนี้"<br><br>
+<strong>🏗️ อุปมา: สร้างตึก LEGO</strong><br>
+บล็อค LEGO ขนาด 1 → รวมเป็นขนาด 2 → รวมเป็นขนาด 3 → ... → รวมเป็นตึกทั้งตัว<br>
+ต้องรู้ว่า "รวม 2 บล็อคขนาด i กับ j ได้เป็นบล็อคขนาด i+j" (นี่คือกฎ CFG)<br><br>
+<strong>💰 อุปมา: ทอนเงิน</strong><br>
+เหมือน "จะทอน 100 บาท ด้วยเหรียญ ต้องใช้ยังไง" — คิดว่า 100 = 50+50 หรือ 90+10 → subproblem แต่ละแบบ
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง CYK ทีละช่อง — Grammar: \(S \to AB\), \(A \to a\), \(B \to b\), input = "ab"</strong>
+<div class="step-line">🔹 \(N[1,1]\) = ? → หา nonterm ที่ผลิต 'a' → \(\{A\}\)</div>
+<div class="step-line">🔹 \(N[2,2]\) = ? → หา nonterm ที่ผลิต 'b' → \(\{B\}\)</div>
+<div class="step-line">🔹 \(N[1,2]\) = ? → หา A → BC ที่ \(B \in N[1,1], C \in N[2,2]\) → S → AB match! → \(\{S\}\)</div>
+<div class="step-line"><strong>ผลลัพธ์:</strong> \(S \in N[1,2]\) → "ab" \(\in L(G)\) ✓</div>
+</div>
+
+<div class="mistake-box">
+<strong>ผิดบ่อย:</strong> ต้องแปลง Grammar เป็น CNF <strong>ก่อน</strong> ใช้ CYK — CYK ทำงานกับ CNF เท่านั้น!<br>
+<strong>ผิดบ่อย 2:</strong> ต้องเช็คทุก split point \(s\) ระหว่าง \(i\) กับ \(j\) — ไม่ใช่แค่ตรงกลาง
 </div>
 
 <h2>วิธีคำนวณ (Bottom-up)</h2>
@@ -2250,6 +2725,29 @@ Counter-example: \(\{a^nb^nc^m\}\) เป็น CFL, \(\{a^mb^nc^n\}\) เป็
 <section class="slide" data-chapter="4" data-title="TM — นิยามเชิงทางการ">
 <h1>Turing Machine — นิยาม</h1>
 
+<div class="intuition-box">
+<strong>Turing Machine = "คอมพิวเตอร์รุ่นแรกในโลก (แต่ทำได้ทุกอย่าง)"</strong><br>
+Turing คิดในปี 1936 — ก่อนจะมีคอมพิวเตอร์จริงๆ! แต่แนวคิด simple มาก:<br>
+📼 <strong>Tape</strong> = แถบกระดาษยาว<strong>ไม่จำกัด</strong> เขียนตัวอักษรบนช่องได้<br>
+👁️ <strong>Head</strong> = ตัวอ่าน/เขียน — ดูได้ทีละ 1 ช่อง เลื่อนซ้าย/ขวาได้<br>
+🧠 <strong>Finite Control</strong> = "โปรแกรม" — บอกว่า "อยู่ state ไหน อ่านอะไร → เขียนอะไร, เลื่อนไปทางไหน, เปลี่ยน state เป็นอะไร"<br><br>
+<strong>ทำไม TM ทรงพลังกว่า DFA/PDA?</strong> เพราะ TM<strong>เขียนทับ</strong>ได้ + เดินซ้ายก็ได้ + tape ไม่จำกัด → จำได้ทุกอย่างที่คอมพิวเตอร์จำได้!
+</div>
+
+<div class="analogy-box">
+<strong>📱 อุปมา: คอมพิวเตอร์รุ่นเก่า</strong><br>
+• Tape = RAM (แต่ยาวไม่จำกัด)<br>
+• Head = CPU register (ดูได้ทีละที่)<br>
+• State = Program Counter + status flag<br>
+• δ = Instruction set (opcode)<br>
+Turing พิสูจน์ว่า: <strong>ทุกอย่างที่คอมพิวเตอร์ทำได้ TM ทำได้!</strong> (Church-Turing Thesis)<br><br>
+<strong>🎮 อุปมา: เทปคาสเซ็ตในเกม (Pokemon Red/Blue!)</strong><br>
+Tape ก็เหมือน save file บนตลับเกม — เขียนทับได้ อ่านได้ ยาวไม่จำกัด (theoretically)<br><br>
+<strong>🧑‍🏫 อุปมา: ครูตรวจข้อสอบ</strong><br>
+ครูอ่านทีละข้อ (head), จำว่าคะแนนสะสมเท่าไร (state), เขียนคะแนนลง (write), เลื่อนไปข้อต่อไป (R)<br>
+เมื่อครบทุกข้อ → รู้ผลรวม (accept/reject)
+</div>
+
 <div class="tip-box">
 <strong>จากห้องเรียน:</strong> TM = "Assembler ยุค 1930s" — memory = tape, program = instruction set, state register = finite control
 </div>
@@ -2311,6 +2809,36 @@ Counter-example: \(\{a^nb^nc^m\}\) เป็น CFL, \(\{a^mb^nc^n\}\) เป็
 <section class="slide" data-chapter="4" data-title="TM — Combining Machines">
 <h1>TM — Combining Machines (เทคนิคการรวม TM) <span class="exam-badge">ออกสอบบ่อย</span></h1>
 
+<div class="intuition-box">
+<strong>Combining TMs = "การเขียนโปรแกรมด้วย TM เหมือน function call"</strong><br>
+แทนที่จะเขียน TM ยาวเป็นพัน state → เรา<strong>รวม TM ย่อยๆ</strong> เข้าด้วยกันเหมือน function<br>
+คิดว่าแต่ละ TM ย่อยเป็น "subroutine" ที่ทำหน้าที่เฉพาะ:<br>
+• \(R\) = subroutine "เลื่อนขวา 1 ช่อง"<br>
+• \(L_\sqcup\) = subroutine "เลื่อนซ้ายจนเจอ blank"<br>
+• \(a\) = subroutine "เขียนตัว a"<br>
+เอามาต่อกันเหมือน Lego → ได้ TM ใหญ่!
+</div>
+
+<div class="analogy-box">
+<strong>🧱 อุปมา: Lego block</strong><br>
+Basic TMs = ตัวต่อ Lego แต่ละชิ้น (R, L, R_⊔, ...) — เอามาต่อกัน = สร้างของใหญ่<br>
+เหมือน "R → 1 → L" คือ "เลื่อนขวา, เขียน 1, เลื่อนซ้าย"<br><br>
+<strong>💻 อุปมา: Function ใน Python</strong><br>
+<code>def double(x): return succ(succ(x))</code> — ใช้ succ 2 ครั้ง<br>
+ใน TM: <code>double = succ → succ</code> (ใช้ arrow แสดงลำดับ)<br><br>
+<strong>🍔 อุปมา: สายพานทำอาหาร (Restaurant Kitchen)</strong><br>
+แต่ละคนทำหน้าที่เดียว: หั่นผัก → ปรุงรส → ทอด → พลิก → เสิร์ฟ<br>
+รวมกันเป็น "สายการผลิต" = เมนูอาหารเต็ม
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง: TM สำหรับ f(n) = 2n+1 (จากห้องเรียน tm-annotated)</strong>
+<div class="step-line">แยก 2n+1 = succ(2n) = succ(2n) → 2 subroutine!</div>
+<div class="step-line">Design: input \(n\) → double → succ → output \(2n+1\)</div>
+<div class="step-line">เขียนเป็น: \(\triangleright \sqcup n \xrightarrow{\text{double}} \triangleright \sqcup 2n \xrightarrow{\text{succ}} \triangleright \sqcup 2n+1\)</div>
+<div class="step-line">💡 <strong>เทคนิค:</strong> decompose function → subroutine ที่มี → เอามาต่อ</div>
+</div>
+
 <div class="tip-box">
 <strong>จากห้องเรียน — Mnemonics (ตัวย่อ) สำหรับ Basic TMs:</strong><br>
 <table>
@@ -2347,6 +2875,25 @@ Counter-example: \(\{a^nb^nc^m\}\) เป็น CFL, \(\{a^mb^nc^n\}\) เป็
 
 <section class="slide" data-chapter="4" data-title="Recursive & RE Languages">
 <h1>ภาษา Recursive & Recursively Enumerable <span class="exam-badge">ออกสอบบ่อย</span></h1>
+
+<div class="intuition-box">
+<strong>ต่างกันตรงไหน? — คำตอบสั้น:</strong><br>
+• <strong>Recursive (Decidable):</strong> TM ตอบได้ทั้ง "ใช่" และ "ไม่ใช่" เสมอ — <strong>หยุดแน่นอน</strong><br>
+• <strong>RE (Semidecidable):</strong> TM ตอบได้แค่ "ใช่" — ถ้า "ไม่ใช่" อาจ<strong>วนไม่หยุด</strong>!<br><br>
+Recursive ⊂ RE — Recursive คือ RE ที่ "ดีกว่า" (รับประกันตอบได้ 2 ทาง)
+</div>
+
+<div class="analogy-box">
+<strong>🕵️ อุปมา: นักสืบ 2 แบบ</strong><br>
+• <strong>Recursive = นักสืบเก่ง:</strong> รับคดี → ยืนยันได้เสมอ ว่า "คนนี้ผิด" หรือ "คนนี้ไม่ผิด" — จบทุกเคส<br>
+• <strong>RE = นักสืบธรรมดา:</strong> รับคดี → ถ้าเจอหลักฐานคนผิด → บอกได้ "ผิด" — ถ้าคนไม่ผิด → หาหลักฐานไม่เจอ<strong>ต่อไปเรื่อยๆ ตลอดชีวิต</strong> (ไม่ตอบ "ไม่ผิด" ได้!)<br><br>
+<strong>🔍 อุปมา: การค้นหาใน Google</strong><br>
+• Recursive: ค้นแล้ว "เจอ" หรือ "ไม่เจอ" — Google บอกได้เสมอ<br>
+• RE: ค้นแล้วเจอ → บอก "เจอ"; ค้นไม่เจอ → Google กำลังโหลด...ต่อไป...ตลอดกาล 😱<br><br>
+<strong>🎮 อุปมา: การผ่านเกม</strong><br>
+• Recursive: เกมที่มี win screen และ game over screen — จบได้ 2 ทาง<br>
+• RE: เกมที่ถ้าชนะได้ → ขึ้น win screen; ถ้าแพ้ → เล่นไปเรื่อยๆ ไม่จบ (softlock)
+</div>
 
 <div class="def-box">
 <strong>Recursive language (decidable):</strong> \(L\) ถูก <strong>decide</strong> โดย TM \(M\) iff:<br>
@@ -2431,6 +2978,35 @@ Counter-example: \(\{a^nb^nc^m\}\) เป็น CFL, \(\{a^mb^nc^n\}\) เป็
 <div class="def-box">
 k-tape TM: \(\delta: (K-H) \times \Sigma^k \to K \times (\Sigma \cup \{\leftarrow, \rightarrow\})^k\)<br>
 <em>— อ่าน k tapes พร้อมกัน, เปลี่ยน state, เขียน/เลื่อนบนแต่ละ tape อิสระ</em>
+</div>
+
+<div class="intuition-box">
+<strong>Multi-tape TM = "TM ที่มีสมุดโน้ตหลายเล่ม"</strong><br>
+Standard TM มี 1 tape → ต้องเก็บทั้ง input, ผลลัพธ์กลาง, ตัวแปรชั่วคราวใน tape เดียว → เขียนโปรแกรมยาก!<br>
+Multi-tape TM มี k tapes → เก็บของแต่ละอย่างในสมุดเล่มต่างกัน → เขียนโปรแกรมง่ายกว่ามาก<br><br>
+<strong>ไม่ทรงพลังกว่า!</strong> พิสูจน์ได้ว่า 1-tape TM จำลอง k-tape ได้ → ภาษาที่รับได้เท่ากัน (แค่ช้ากว่า)
+</div>
+
+<div class="analogy-box">
+<strong>📓 อุปมา: การทำการบ้านคณิต</strong><br>
+• 1-tape TM = การบ้านที่มีสมุดแค่เล่มเดียว — ต้อง cross out, ลบ, เขียนซ้อน<br>
+• Multi-tape TM = มีสมุด<strong>หลายเล่ม</strong> — เล่มโจทย์, เล่มคำนวณ, เล่มคำตอบ → เขียนง่ายกว่าเยอะ!<br><br>
+<strong>💻 อุปมา: การใช้คอมพิวเตอร์</strong><br>
+Multi-tape เหมือนการเปิดหลาย tab ในโปรแกรม — Tab 1 = โจทย์, Tab 2 = ตัวแปร, Tab 3 = คำตอบ<br>
+เร็วกว่า/สะดวกกว่าเปิด tab เดียวสลับไปมา<br><br>
+<strong>🎬 อุปมา: ถ่ายหนังหลายกล้อง</strong><br>
+1-tape TM = ใช้กล้อง 1 ตัว ต้องหมุนถ่ายทุกมุม<br>
+Multi-tape = ใช้กล้อง 5 ตัวถ่ายพร้อมกัน → ตัดต่อทีหลังเร็วกว่า
+</div>
+
+<div class="worked-box">
+<strong>ตัวอย่าง: 2-tape TM สำหรับ Palindrome (\(\omega \omega^R\)) — จากห้องเรียน tm-annotated</strong>
+<div class="step-line">แนวคิด: Tape 1 = input, Tape 2 = temporary storage</div>
+<div class="step-line">Phase 1: คัดลอกส่วนแรกไป Tape 2 (แบบ reverse)</div>
+<div class="step-line">Phase 2: เดิน Tape 2 กลับต้นสมุด</div>
+<div class="step-line">Phase 3: เทียบ Tape 1 (ส่วนหลัง) กับ Tape 2 ทีละตัวอักษร</div>
+<div class="step-line">ถ้าเท่ากันทุกตัว → accept, ไม่เท่า → reject</div>
+<div class="step-line"><strong>เปรียบเทียบ:</strong> ทำด้วย 1-tape ยากมาก (ต้อง shift ไปมา) แต่ 2-tape ทำได้เร็ว!</div>
 </div>
 
 <div class="tip-box">
@@ -2557,6 +3133,32 @@ TM ใช้ tape เป็น "กระดาษทด" mark ได้ไม�
 <div class="thm-box">
 <strong>Halting Problem:</strong> กำหนด TM \(M\) และ input \(\omega\) → ตรวจว่า \(M\) จะหยุดบน \(\omega\) หรือไม่?<br><br>
 <strong>Theorem:</strong> Halting Problem เป็น <strong>undecidable</strong> — ไม่มีโปรแกรม (TM) ที่ตอบคำถามนี้ได้ทุกกรณี!
+</div>
+
+<div class="intuition-box">
+<strong>ทำไม Halting Problem แก้ไม่ได้?</strong><br>
+สมมติมีโปรแกรม H ที่บอกได้ว่า "โปรแกรม M จะรันจบไหม?"<br>
+→ เราสร้างโปรแกรม D ที่<strong>ทำตรงข้าม</strong>กับคำตอบของ H!<br>
+→ พอเอา D ไปถาม D เอง → เกิด paradox (ถ้า H ตอบใช่ → D บอกไม่ / ถ้า H ตอบไม่ → D บอกใช่)<br>
+→ ดังนั้น H ต้องไม่มีจริง! ∎
+</div>
+
+<div class="analogy-box">
+<strong>💇 อุปมา: Barber's Paradox</strong><br>
+ในหมู่บ้านหนึ่ง มีช่างตัดผม 1 คน — เขา "ตัดผมให้คนที่ไม่ตัดผมให้ตัวเอง" เท่านั้น<br>
+❓ แล้วใครตัดผมให้ช่างตัดผม?<br>
+• ถ้าเขาตัดให้ตัวเอง → เขาไม่ควรตัดให้ตัวเอง (ขัดแย้ง!)<br>
+• ถ้าเขาไม่ตัดให้ตัวเอง → เขาควรตัดให้ตัวเอง (ขัดแย้ง!)<br>
+→ ช่างตัดผมแบบนี้มีไม่ได้! (เหมือน Halting Problem)<br><br>
+<strong>🌀 อุปมา: "Liar's Paradox"</strong><br>
+ประโยค: <em>"ประโยคนี้เป็นเท็จ"</em> — ถ้าเป็นจริง → เท็จ, ถ้าเท็จ → จริง — เกิด loop!<br><br>
+<strong>🎮 อุปมา: RPG NPC ที่แก้เกม</strong><br>
+"สร้าง NPC ที่บอกได้ว่าเกมนี้ผู้เล่นจะแพ้ไหม" → ผู้เล่นสามารถทำตรงข้ามกับคำทำนาย → ทำนายไม่ได้!
+</div>
+
+<div class="mistake-box">
+<strong>เข้าใจผิด:</strong> Halting Problem แก้ไม่ได้ ≠ "โปรแกรมทั่วไปแก้ไม่ได้"!<br>
+บาง case แก้ได้ (เช่น loop ที่มี counter จำกัด) — แต่<strong>ไม่มี</strong> algorithm ที่แก้ได้<strong>ทุกกรณี</strong>
 </div>
 
 <div class="proof-box">
@@ -3376,6 +3978,13 @@ function toggleSolution(btn) {
   const content = btn.nextElementSibling;
   content.classList.toggle('show');
   btn.textContent = content.classList.contains('show') ? 'ซ่อนเฉลย' : 'แสดงเฉลย';
+}
+
+// ===== QUICK CHECK TOGGLE =====
+function toggleQuickCheck(btn) {
+  const ans = btn.nextElementSibling;
+  ans.classList.toggle('show');
+  btn.textContent = ans.classList.contains('show') ? '🙈 ซ่อนคำตอบ' : '💡 ดูคำตอบ';
 }
 
 // ===== QUIZ =====
