@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #E6E2D8;
+  --surface: #F0ECE2;
+  --board-bg: #C8C0AC;
+  --board-grain: rgba(0,0,0,0.025);
+  --cell-bg: #D8D0BA;
+  --cell-hover: #C8C0A4;
+  --cell-border: #BEB8A0;
+  --piece-dark: #3E2D1C;
+  --piece-dark-hi: #5A4430;
+  --piece-dark-hole: #271A0C;
+  --piece-dark-hole-hi: #3A2A18;
+  --piece-light: #D4C49C;
+  --piece-light-hi: #E8D8B0;
+  --piece-light-hole: #B0A078;
+  --piece-light-hole-hi: #C4B490;
+  --piece-shadow: rgba(0,0,0,0.18);
+  --accent: #2B6B5E;
+  --accent-glow: rgba(43,107,94,0.28);
+  --accent-soft: rgba(43,107,94,0.08);
+  --p1: #B85C38;
+  --p1-soft: rgba(184,92,56,0.12);
+  --p2: #2B6B5E;
+  --p2-soft: rgba(43,107,94,0.12);
+  --text: #2C2622;
+  --text-sec: #6A6458;
+  --text-muted: #9A9488;
+  --border: #D0C8B4;
+  --overlay-bg: rgba(230,226,216,0.92);
+  --legend-bg: #F0ECE2;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg: #141310;
+  --surface: #1C1A16;
+  --board-bg: #282420;
+  --board-grain: rgba(255,255,255,0.015);
+  --cell-bg: #322E28;
+  --cell-hover: #3E3830;
+  --cell-border: #484038;
+  --piece-dark: #5C4830;
+  --piece-dark-hi: #7A6248;
+  --piece-dark-hole: #3A2E1C;
+  --piece-dark-hole-hi: #4E4030;
+  --piece-light: #C0AA78;
+  --piece-light-hi: #D4BE90;
+  --piece-light-hole: #988860;
+  --piece-light-hole-hi: #AA9A70;
+  --piece-shadow: rgba(0,0,0,0.35);
+  --accent: #3A9080;
+  --accent-glow: rgba(58,144,128,0.25);
+  --accent-soft: rgba(58,144,128,0.1);
+  --p1: #D07048;
+  --p1-soft: rgba(208,112,72,0.15);
+  --p2: #3A9080;
+  --p2-soft: rgba(58,144,128,0.15);
+  --text: #D8D2C6;
+  --text-sec: #9A9488;
+  --text-muted: #6A6458;
+  --border: #3A3630;
+  --overlay-bg: rgba(20,19,16,0.94);
+  --legend-bg: #1C1A16;
+}}
+[data-theme="dark"]{
+  --bg: #141310;
+  --surface: #1C1A16;
+  --board-bg: #282420;
+  --board-grain: rgba(255,255,255,0.015);
+  --cell-bg: #322E28;
+  --cell-hover: #3E3830;
+  --cell-border: #484038;
+  --piece-dark: #5C4830;
+  --piece-dark-hi: #7A6248;
+  --piece-dark-hole: #3A2E1C;
+  --piece-dark-hole-hi: #4E4030;
+  --piece-light: #C0AA78;
+  --piece-light-hi: #D4BE90;
+  --piece-light-hole: #988860;
+  --piece-light-hole-hi: #AA9A70;
+  --piece-shadow: rgba(0,0,0,0.35);
+  --accent: #3A9080;
+  --accent-glow: rgba(58,144,128,0.25);
+  --accent-soft: rgba(58,144,128,0.1);
+  --p1: #D07048;
+  --p1-soft: rgba(208,112,72,0.15);
+  --p2: #3A9080;
+  --p2-soft: rgba(58,144,128,0.15);
+  --text: #D8D2C6;
+  --text-sec: #9A9488;
+  --text-muted: #6A6458;
+  --border: #3A3630;
+  --overlay-bg: rgba(20,19,16,0.94);
+  --legend-bg: #1C1A16;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  font-family:'Sora',system-ui,-apple-system,sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; padding:16px 16px 32px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ===== HEADER ===== */
+header{
+  max-width:700px; margin:0 auto 12px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
+}
+.hdr-left{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+h1{
+  font-size:clamp(22px,4vw,28px); font-weight:700;
+  letter-spacing:-0.5px; color:var(--text);
+}
+.scores{
+  font-size:13px; font-weight:500; color:var(--text-sec);
+  display:flex; gap:12px; font-variant-numeric:tabular-nums;
+}
+.scores .s1{color:var(--p1);}
+.scores .s2{color:var(--p2);}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.ctrl-btn{
+  border:1px solid var(--border); background:var(--surface);
+  color:var(--text-sec); border-radius:8px;
+  padding:6px 12px; font-size:12px; font-weight:500;
+  font-family:inherit; cursor:pointer;
+  transition:all .15s ease;
+}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent);}
+.switch-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--text-sec);cursor:pointer;
+  padding:6px 10px;border:1px solid var(--border);
+  border-radius:8px;background:var(--surface);
+  transition:all .15s;user-select:none;
+}
+.switch-label:has(input:checked){border-color:var(--accent);color:var(--accent);}
+.switch-label input{accent-color:var(--accent);margin:0;cursor:pointer;}
+.theme-btn{
+  border:none;background:none;font-size:18px;
+  cursor:pointer;padding:4px;line-height:1;
+  transition:transform .2s;
+}
+.theme-btn:hover{transform:rotate(20deg);}
+
+/* ===== STATUS ===== */
+.status-bar{
+  max-width:700px; margin:0 auto 16px;
+  display:flex; align-items:center; gap:8px;
+  font-size:14px; min-height:32px;
+}
+.player-badge{
+  font-weight:600; font-size:13px;
+  padding:3px 10px; border-radius:6px;
+  white-space:nowrap;
+}
+.player-badge.p1{background:var(--p1-soft);color:var(--p1);}
+.player-badge.p2{background:var(--p2-soft);color:var(--p2);}
+.status-text{color:var(--text-sec);font-weight:400;}
+
+/* ===== GAME LAYOUT ===== */
+.game-layout{
+  max-width:700px; margin:0 auto;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-template-areas:"board side";
+  gap:24px;
+  align-items:start;
+  justify-content:center;
+}
+@media(max-width:620px){
+  .game-layout{
+    grid-template-columns:1fr;
+    grid-template-areas:"staging""board""side";
+    justify-items:center;
+  }
+  .board-section{grid-area:board;}
+  .side-section{grid-area:side;width:100%;max-width:360px;}
+}
+
+/* ===== BOARD ===== */
+.board-section{grid-area:board;}
+.board-wrap{
+  background:var(--board-bg);
+  background-image:repeating-linear-gradient(
+    87deg,transparent,transparent 5px,var(--board-grain) 5px,var(--board-grain) 6px
+  );
+  border-radius:14px;
+  padding:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08),0 0 0 1px var(--border);
+}
+.board{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  width:min(calc(100vw - 56px),320px);
+  min-width:240px;
+}
+@media(min-width:621px){
+  .board{width:320px;}
+}
+.cell{
+  aspect-ratio:1;
+  border-radius:10px;
+  background:var(--cell-bg);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.06);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  transition:all .15s ease;
+}
+.cell.clickable{cursor:pointer;}
+.cell.clickable:hover{
+  background:var(--cell-hover);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.1),0 0 0 2px var(--accent-glow);
+}
+.cell.win{
+  animation:winPulse 1.8s ease-in-out infinite;
+}
+@keyframes winPulse{
+  0%,100%{box-shadow:0 0 0 2.5px var(--accent),inset 0 2px 4px rgba(0,0,0,0.06);}
+  50%{box-shadow:0 0 10px 2.5px var(--accent-glow),inset 0 2px 4px rgba(0,0,0,0.06);}
+}
+
+/* ===== PIECES ===== */
+.piece-body{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .12s ease;
+  flex-shrink:0;
+}
+/* Shape */
+.piece-body.round{border-radius:50%;}
+.piece-body.square{border-radius:18%;}
+/* Color — radial gradient for subtle 3D effect */
+.piece-body.dark{
+  background:radial-gradient(circle at 38% 36%,var(--piece-dark-hi),var(--piece-dark) 72%);
+  box-shadow:0 2px 3px var(--piece-shadow),inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.piece-body.light{
+  background:radial-gradient(circle at 38% 36%,var(--piece-light-hi),var(--piece-light) 72%);
+  box-shadow:0 2px 3px var(--piece-shadow),inset 0 1px 0 rgba(255,255,255,0.18);
+}
+/* Height — custom property driven */
+.piece-body.tall{width:var(--ps);height:var(--ps);}
+.piece-body.short{width:calc(var(--ps)*.62);height:calc(var(--ps)*.62);}
+/* Hollow */
+.piece-body.hollow::after{
+  content:'';position:absolute;
+  width:42%;height:42%;
+  border-radius:inherit;
+  box-shadow:inset 0 1.5px 3px rgba(0,0,0,0.22);
+}
+.piece-body.hollow.dark::after{
+  background:radial-gradient(circle at 50% 58%,var(--piece-dark-hole),var(--piece-dark-hole-hi) 80%);
+}
+.piece-body.hollow.light::after{
+  background:radial-gradient(circle at 50% 58%,var(--piece-light-hole),var(--piece-light-hole-hi) 80%);
+}
+/* Ghost preview */
+.piece-body.ghost{opacity:.3;pointer-events:none;}
+/* Placed animation */
+@keyframes plop{
+  0%{transform:scale(0.5);opacity:0;}
+  60%{transform:scale(1.08);}
+  100%{transform:scale(1);opacity:1;}
+}
+.piece-body.just-placed{animation:plop .25s ease-out;}
+
+/* ===== SIDE SECTION ===== */
+.side-section{
+  grid-area:side;
+  display:flex;flex-direction:column;gap:16px;
+  min-width:0;
+}
+
+/* ===== STAGING ===== */
+.staging{
+  background:var(--accent-soft);
+  border:2px solid var(--accent);
+  border-radius:12px;
+  padding:14px;
+  display:flex;flex-direction:column;
+  align-items:center;gap:8px;
+  animation:stageIn .25s ease;
+}
+@keyframes stageIn{
+  from{opacity:0;transform:translateY(-6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.staging-header{
+  font-size:12px;font-weight:600;
+  color:var(--accent);text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.staging-piece{
+  --ps:64px;
+  width:80px;height:80px;
+  display:flex;align-items:center;justify-content:center;
+}
+.staging-attrs{font-size:11px;color:var(--text-muted);font-weight:400;}
+@media(max-width:620px){
+  .staging{flex-direction:row;gap:14px;padding:10px 16px;}
+  .staging-piece{--ps:48px;width:56px;height:56px;}
+}
+
+/* ===== TRAY ===== */
+.tray-header{
+  font-size:12px;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:.5px;
+  margin-bottom:6px;
+}
+.tray-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+}
+.tray-slot{
+  --ps:36px;
+  aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:8px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  transition:all .15s ease;
+  position:relative;
+}
+.tray-slot.available.selectable{cursor:pointer;}
+.tray-slot.available.selectable:hover{
+  border-color:var(--accent);
+  background:var(--accent-soft);
+  transform:translateY(-2px);
+  box-shadow:0 3px 8px var(--piece-shadow);
+}
+.tray-slot.available.selectable:hover .piece-body{transform:scale(1.08);}
+.tray-slot.used{
+  opacity:.12;
+  pointer-events:none;
+  border-style:dashed;
+}
+.tray-slot.available:not(.selectable){opacity:.5;pointer-events:none;}
+
+/* ===== LEGEND ===== */
+.legend{
+  max-width:700px;margin:20px auto 0;
+  font-size:13px;color:var(--text-sec);
+}
+.legend summary{
+  cursor:pointer;font-weight:500;
+  padding:8px 0;list-style:none;
+  display:flex;align-items:center;gap:6px;
+}
+.legend summary::before{content:'▸';transition:transform .2s;display:inline-block;}
+.legend[open] summary::before{transform:rotate(90deg);}
+.legend summary::-webkit-details-marker{display:none;}
+.legend-content{
+  background:var(--legend-bg);border:1px solid var(--border);
+  border-radius:10px;padding:14px 18px;margin-top:4px;
+  line-height:1.7;
+}
+.legend-content p{margin-bottom:8px;}
+.legend-content strong{font-weight:600;color:var(--text);}
+.attr-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4px 16px;font-size:12px;margin-top:6px;
+}
+
+/* ===== OVERLAY ===== */
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  background:var(--overlay-bg);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+.overlay-content{
+  text-align:center;
+  animation:overlayIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes overlayIn{
+  from{opacity:0;transform:scale(.85);}
+  to{opacity:1;transform:scale(1);}
+}
+.overlay-msg{
+  font-size:clamp(24px,5vw,36px);
+  font-weight:700;line-height:1.4;
+  margin-bottom:20px;
+}
+.overlay-msg small{
+  display:block;font-size:.45em;
+  font-weight:400;color:var(--text-sec);
+  margin-top:4px;
+}
+.play-again-btn{
+  background:var(--accent);color:#fff;
+  border:none;border-radius:10px;
+  padding:12px 28px;font-size:15px;font-weight:600;
+  font-family:inherit;cursor:pointer;
+  transition:all .15s;
+}
+.play-again-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px var(--accent-glow);}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:380px){
+  .tray-slot{--ps:30px;}
+  .board{gap:4px;}
+  .board-wrap{padding:8px;border-radius:10px;}
+}
+</style>
+
+<header>
+  <div class="hdr-left">
+    <h1>Quarto</h1>
+    <div class="scores">
+      <span class="s1" id="score1">P1: 0</span>
+      <span>—</span>
+      <span class="s2" id="score2">P2: 0</span>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <label class="switch-label">
+      <input type="checkbox" id="square-rule" checked>
+      2×2 Rule
+    </label>
+    <button class="ctrl-btn" id="reset-btn">↻ ใหม่</button>
+    <button class="theme-btn" id="theme-btn">🌙</button>
+  </div>
+</header>
+
+<div class="status-bar">
+  <span class="player-badge p1" id="player-badge">ผู้เล่น 1</span>
+  <span class="status-text" id="status-text">เลือกหมาก 1 ตัว ส่งให้ผู้เล่น 2 วาง</span>
+</div>
+
+<div class="game-layout">
+  <div class="board-section">
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+
+  <div class="side-section">
+    <div class="staging" id="staging" hidden>
+      <div class="staging-header">วางหมากนี้</div>
+      <div class="staging-piece" id="staging-piece"></div>
+      <div class="staging-attrs" id="staging-attrs"></div>
+    </div>
+
+    <div>
+      <div class="tray-header" id="tray-header">หมากที่เหลือ · 16</div>
+      <div class="tray-grid" id="tray-grid"></div>
+    </div>
+  </div>
+</div>
+
+<details class="legend">
+  <summary>📖 วิธีเล่น & คุณสมบัติหมาก</summary>
+  <div class="legend-content">
+    <p><strong>เป้าหมาย:</strong> วางหมาก 4 ตัวเรียงกัน (แถว / คอลัมน์ / ทแยง) ที่มีคุณสมบัติร่วมกันอย่างน้อย 1 อย่าง → ประกาศ <strong>Quarto!</strong></p>
+    <p><strong>กลไกพิเศษ:</strong> คุณเลือกหมากให้ <em>คู่ต่อสู้</em> วาง — ไม่ได้เลือกให้ตัวเอง!</p>
+    <p><strong>2×2 Rule (เปิด/ปิดได้):</strong> กลุ่ม 2×2 ที่ share attribute ก็ชนะเช่นกัน</p>
+    <div class="attr-grid">
+      <div>🎨 สี — เข้ม / อ่อน</div>
+      <div>📏 ขนาด — สูง / เตี้ย</div>
+      <div>🔷 ทรง — กลม / เหลี่ยม</div>
+      <div>🕳️ หัว — ตัน / กลวง</div>
+    </div>
+  </div>
+</details>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="overlay-content">
+    <div class="overlay-msg" id="overlay-msg"></div>
+    <button class="play-again-btn" id="play-again-btn">🔄 เล่นอีกครั้ง</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   QUARTO — Local 2-Player Board Game
+   16 pieces × 4 binary attributes × 4×4 board
+   ============================================================ */
+
+// ===== STATE =====
+const G = {
+  board: new Array(16).fill(null),
+  avail: new Set(Array.from({length:16},(_,i)=>i)),
+  phase: 'choose',   // choose | place | over
+  chooser: 1,
+  placer: 2,
+  selected: null,
+  winner: null,
+  winCells: [],
+  squareRule: true,
+  scores: [0,0],
+};
+
+// ===== PIECE ATTRIBUTES =====
+// Index encodes: bit3=color, bit2=height, bit1=shape, bit0=top
+function attrs(i){
+  return {
+    color:  (i>>3)&1,  // 0=dark  1=light
+    height: (i>>2)&1,  // 0=tall  1=short
+    shape:  (i>>1)&1,  // 0=round 1=square
+    top:     i&1,      // 0=solid 1=hollow
+  };
+}
+
+const LBL=[['เข้ม','อ่อน'],['สูง','เตี้ย'],['กลม','เหลี่ยม'],['ตัน','กลวง']];
+function label(i){
+  const a=attrs(i);
+  return `${LBL[0][a.color]} · ${LBL[1][a.height]} · ${LBL[2][a.shape]} · ${LBL[3][a.top]}`;
+}
+
+// ===== PIECE DOM =====
+function makePiece(idx,anim){
+  const a=attrs(idx);
+  const d=document.createElement('div');
+  d.className='piece-body'
+    +` ${a.color?'light':'dark'}`
+    +` ${a.height?'short':'tall'}`
+    +` ${a.shape?'square':'round'}`
+    +` ${a.top?'hollow':'solid'}`
+    +(anim?' just-placed':'');
+  return d;
+}
+
+// ===== WIN DETECTION =====
+function winGroups(){
+  const g=[];
+  for(let r=0;r<4;r++) g.push([r*4,r*4+1,r*4+2,r*4+3]);
+  for(let c=0;c<4;c++) g.push([c,c+4,c+8,c+12]);
+  g.push([0,5,10,15],[3,6,9,12]);
+  if(G.squareRule){
+    for(let r=0;r<3;r++) for(let c=0;c<3;c++){
+      const t=r*4+c; g.push([t,t+1,t+4,t+5]);
+    }
+  }
+  return g;
+}
+
+function checkWin(){
+  for(const grp of winGroups()){
+    const pcs=grp.map(i=>G.board[i]);
+    if(pcs.some(p=>p===null)) continue;
+    for(let a=0;a<4;a++){
+      const v=pcs.map(p=>(p>>(3-a))&1);
+      if(v.every(x=>x===v[0])) return {cells:grp,attr:a};
+    }
+  }
+  return null;
+}
+
+// ===== ACTIONS =====
+function selectPiece(idx){
+  if(G.phase!=='choose'||!G.avail.has(idx)) return;
+  G.selected=idx;
+  G.phase='place';
+  render();
+}
+
+function placePiece(cell){
+  if(G.phase!=='place'||G.board[cell]!==null) return;
+  G.board[cell]=G.selected;
+  G.avail.delete(G.selected);
+  G.selected=null;
+
+  const w=checkWin();
+  if(w){
+    G.phase='over';
+    G.winner=G.placer;
+    G.winCells=w.cells;
+    G.scores[G.placer-1]++;
+  } else if(G.avail.size===0){
+    G.phase='over';
+    G.winner='draw';
+  } else {
+    const tmp=G.chooser;
+    G.chooser=G.placer;
+    G.placer=tmp;
+    G.phase='choose';
+  }
+  render();
+}
+
+function resetGame(){
+  G.board=new Array(16).fill(null);
+  G.avail=new Set(Array.from({length:16},(_,i)=>i));
+  G.phase='choose';
+  G.chooser=1;G.placer=2;
+  G.selected=null;G.winner=null;G.winCells=[];
+  render();
+}
+
+// ===== RENDERING =====
+const $=id=>document.getElementById(id);
+
+function render(){
+  renderStatus();
+  renderBoard();
+  renderStaging();
+  renderTray();
+  renderOverlay();
+  renderScores();
+}
+
+function renderStatus(){
+  const badge=$('player-badge');
+  const txt=$('status-text');
+  if(G.phase==='choose'){
+    badge.textContent=`ผู้เล่น ${G.chooser}`;
+    badge.className=`player-badge p${G.chooser}`;
+    txt.textContent=`เลือกหมาก 1 ตัว ส่งให้ผู้เล่น ${G.placer} วาง`;
+  } else if(G.phase==='place'){
+    badge.textContent=`ผู้เล่น ${G.placer}`;
+    badge.className=`player-badge p${G.placer}`;
+    txt.textContent='คลิกช่องว่างบนกระดานเพื่อวางหมาก';
+  } else {
+    if(G.winner==='draw'){
+      badge.textContent='';badge.className='player-badge';
+      txt.textContent='🤝 เสมอ! — หมากหมดแล้ว';
+    } else {
+      badge.textContent=`ผู้เล่น ${G.winner}`;
+      badge.className=`player-badge p${G.winner}`;
+      txt.textContent='ชนะ! 🏆 Quarto!';
+    }
+  }
+}
+
+function renderBoard(){
+  const el=$('board');
+  el.innerHTML='';
+  for(let i=0;i<16;i++){
+    const cell=document.createElement('div');
+    cell.className='cell';
+    if(G.winCells.includes(i)) cell.classList.add('win');
+
+    if(G.board[i]!==null){
+      const wasJustPlaced=(G.phase==='choose'||G.phase==='over')&&i===G.board.lastIndexOf(G.board[i]);
+      cell.appendChild(makePiece(G.board[i], false));
+      cell.title=label(G.board[i]);
+    } else if(G.phase==='place'){
+      cell.classList.add('clickable');
+      const ci=i;
+      cell.addEventListener('click',()=>placePiece(ci));
+      cell.addEventListener('mouseenter',()=>{
+        if(G.selected===null) return;
+        const ghost=makePiece(G.selected,false);
+        ghost.classList.add('ghost');
+        cell.appendChild(ghost);
+      });
+      cell.addEventListener('mouseleave',()=>{
+        const gh=cell.querySelector('.ghost');
+        if(gh) gh.remove();
+      });
+    }
+    el.appendChild(cell);
+  }
+}
+
+function renderStaging(){
+  const el=$('staging');
+  if(G.phase==='place'&&G.selected!==null){
+    el.hidden=false;
+    const pw=$('staging-piece');
+    pw.innerHTML='';
+    pw.appendChild(makePiece(G.selected,false));
+    $('staging-attrs').textContent=label(G.selected);
+  } else {
+    el.hidden=true;
+  }
+}
+
+function renderTray(){
+  const el=$('tray-grid');
+  el.innerHTML='';
+  $('tray-header').textContent=`หมากที่เหลือ · ${G.avail.size}`;
+  for(let i=0;i<16;i++){
+    const slot=document.createElement('div');
+    slot.className='tray-slot';
+    if(G.avail.has(i)){
+      slot.classList.add('available');
+      if(G.phase==='choose'){
+        slot.classList.add('selectable');
+        const pi=i;
+        slot.addEventListener('click',()=>selectPiece(pi));
+      }
+      slot.appendChild(makePiece(i,false));
+      slot.title=label(i);
+    } else {
+      slot.classList.add('used');
+    }
+    el.appendChild(slot);
+  }
+}
+
+function renderOverlay(){
+  const el=$('overlay');
+  if(G.phase==='over'){
+    el.hidden=false;
+    const msg=$('overlay-msg');
+    if(G.winner==='draw'){
+      msg.innerHTML='🤝 เสมอ!<small>หมาก 16 ตัวหมดแล้ว ไม่มีใคร Quarto</small>';
+    } else {
+      msg.innerHTML=`🏆 ผู้เล่น ${G.winner} ชนะ!<small>Quarto!</small>`;
+      msg.querySelector('small').style.color=G.winner===1?'var(--p1)':'var(--p2)';
+    }
+  } else {
+    el.hidden=true;
+  }
+}
+
+function renderScores(){
+  $('score1').textContent=`P1: ${G.scores[0]}`;
+  $('score2').textContent=`P2: ${G.scores[1]}`;
+}
+
+// ===== THEME =====
+function toggleTheme(){
+  const root=document.documentElement;
+  const cur=root.getAttribute('data-theme');
+  const isDark=cur==='dark'||(!cur&&matchMedia('(prefers-color-scheme:dark)').matches);
+  root.setAttribute('data-theme',isDark?'light':'dark');
+  $('theme-btn').textContent=isDark?'🌙':'☀️';
+}
+
+// ===== INIT =====
+$('reset-btn').addEventListener('click',resetGame);
+$('play-again-btn').addEventListener('click',resetGame);
+$('square-rule').addEventListener('change',e=>{G.squareRule=e.target.checked;});
+$('theme-btn').addEventListener('click',toggleTheme);
+
+// Set initial theme icon
+if(matchMedia('(prefers-color-scheme:dark)').matches) $('theme-btn').textContent='☀️';
+
+render();
+</script>
+</body>
+</html>
