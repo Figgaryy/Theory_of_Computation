@@ -1,8 +1,3 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quarto</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap">
 <style>
@@ -18,8 +13,8 @@
   --piece-dark-hi: #5A4430;
   --piece-dark-hole: #271A0C;
   --piece-dark-hole-hi: #3A2A18;
-  --piece-light: #D4C49C;
-  --piece-light-hi: #E8D8B0;
+  --piece-light: #EEE2C0;
+  --piece-light-hi: #FAF0D4;
   --piece-light-hole: #B0A078;
   --piece-light-hole-hi: #C4B490;
   --piece-shadow: rgba(0,0,0,0.18);
@@ -208,6 +203,7 @@ h1{
   .board{width:320px;}
 }
 .cell{
+  --ps:52px;
   aspect-ratio:1;
   border-radius:10px;
   background:var(--cell-bg);
@@ -246,7 +242,7 @@ h1{
 }
 .piece-body.light{
   background:radial-gradient(circle at 38% 36%,var(--piece-light-hi),var(--piece-light) 72%);
-  box-shadow:0 2px 3px var(--piece-shadow),inset 0 1px 0 rgba(255,255,255,0.18);
+  box-shadow:0 0 0 1.5px var(--piece-light-hole),0 2px 3px var(--piece-shadow),inset 0 1px 0 rgba(255,255,255,0.18);
 }
 /* Height — custom property driven */
 .piece-body.tall{width:var(--ps);height:var(--ps);}
@@ -410,6 +406,7 @@ h1{
 /* ===== RESPONSIVE ===== */
 @media(max-width:380px){
   .tray-slot{--ps:30px;}
+  .cell{--ps:40px;}
   .board{gap:4px;}
   .board-wrap{padding:8px;border-radius:10px;}
 }
@@ -500,6 +497,7 @@ const G = {
   winCells: [],
   squareRule: true,
   scores: [0,0],
+  _lastPlaced: -1,
 };
 
 // ===== PIECE ATTRIBUTES =====
@@ -571,6 +569,7 @@ function placePiece(cell){
   G.board[cell]=G.selected;
   G.avail.delete(G.selected);
   G.selected=null;
+  G._lastPlaced=cell;
 
   const w=checkWin();
   if(w){
@@ -596,6 +595,7 @@ function resetGame(){
   G.phase='choose';
   G.chooser=1;G.placer=2;
   G.selected=null;G.winner=null;G.winCells=[];
+  G._lastPlaced=-1;
   render();
 }
 
@@ -643,8 +643,7 @@ function renderBoard(){
     if(G.winCells.includes(i)) cell.classList.add('win');
 
     if(G.board[i]!==null){
-      const wasJustPlaced=(G.phase==='choose'||G.phase==='over')&&i===G.board.lastIndexOf(G.board[i]);
-      cell.appendChild(makePiece(G.board[i], false));
+      cell.appendChild(makePiece(G.board[i], i===G._lastPlaced));
       cell.title=label(G.board[i]);
     } else if(G.phase==='place'){
       cell.classList.add('clickable');
@@ -742,5 +741,3 @@ if(matchMedia('(prefers-color-scheme:dark)').matches) $('theme-btn').textContent
 
 render();
 </script>
-</body>
-</html>
